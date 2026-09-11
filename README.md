@@ -1,9 +1,16 @@
-# The Goddess in the Cellar
+# Inform 6 Tooling
 
-A small Inform 6 text adventure in the style of H. P. Lovecraft. A grandfather
-clock in a dark cellar teleports the player to an alien world, where a flaming
-goddess demands a gold coin offering — any other action while in her presence
-is punished by a lightning bolt.
+This repository is about **Inform 6 tooling** — the compiler, the standard
+library, a Z-machine interpreter for manual play, and `ztest.py`, a headless
+Z-machine v5 interpreter for automated testing, validation, and debugging of
+Inform 6 projects. The toolchain, testing methodology, and library-mechanics
+documentation below apply to any Inform 6 game.
+
+The included game **"The Goddess in the Cellar"** is a small test project used
+to exercise and validate the toolchain. It is a Lovecraftian text adventure: a
+grandfather clock in a dark cellar teleports the player to an alien world, where
+a flaming goddess demands a gold coin offering — any other action while in her
+presence is punished by a lightning bolt.
 
 ## Toolchain
 
