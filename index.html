@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,51 +7,107 @@
     <style>
         body {
             margin: 0;
-            padding: 2rem;
-            font-family: Helvetica, Arial, sans-serif;
+            padding: 1rem;
+            font-family: monospace;
             background: #1a1a2e;
             color: #e0e0e0;
+        }
+        #gameContainer {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+            border: 1px solid #444;
+            background: #0f0f1e;
+            min-height: 400px;
+        }
+        #gameWindow {
+            height: 600px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
         }
-        h1 { font-size: 1.5rem; margin-bottom: 1rem; }
-        p { margin-bottom: 1.5rem; color: #a0a0a0; }
-        .loading { color: #888; }
-        a {
-            display: inline-block;
-            padding: 0.75rem 2rem;
+        #gameText {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            border: 1px solid #333;
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+        }
+        #gameInput {
+            display: flex;
+            gap: 0.5rem;
+        }
+        #commandInput {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #444;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            font-family: monospace;
+        }
+        button {
+            padding: 0.5rem 1rem;
             background: #16213e;
             color: #e0e0e0;
-            text-decoration: none;
             border: 1px solid #30475e;
-            border-radius: 4px;
-            font-size: 1.1rem;
+            cursor: pointer;
         }
-        a:hover { background: #30475e; }
+        button:hover { background: #30475e; }
     </style>
 </head>
 <body>
-    <h1>The Goddess in the Cellar</h1>
-    <p class="loading">Loading the game in your browser via Parchment...</p>
-    <p id="status"></p>
-    <p><a id="gameLink" href="#">Click here to play if it doesn't load</a></p>
+    <div id="gameContainer">
+        <h1>The Goddess in the Cellar</h1>
+        <div id="gameWindow">
+            <div id="gameText"></div>
+            <div id="gameInput">
+                <input id="commandInput" type="text" placeholder="Type a command...">
+                <button onclick="sendCommand()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://eblong.com/zarf/glulx/quixe/quixe-2.2.1.js"></script>
+    <script src="https://eblong.com/zarf/glulx/quixe/glulx-2.2.1.js"></script>
+    <script src="https://eblong.com/zarf/glulx/quixe/iface_default.js"></script>
 
     <script>
-        // Use raw.githubusercontent with cache-busting via git commit SHA
-        // The SHA changes with each recompile, forcing a fresh download
-        const storyUrl = 'https://raw.githubusercontent.com/dagfinndybvig/inform/main/adventure_lovecraft.z5';
-        const gameLink = `https://iplayif.com/?story=${encodeURIComponent(storyUrl)}`;
-        
-        // Set fallback link
-        document.getElementById('gameLink').href = gameLink;
-        
-        // Try to redirect after a brief delay to let the page render
-        setTimeout(() => {
-            window.location.href = gameLink;
-        }, 500);
+        let glk = null;
+        let vm = null;
+
+        async function initGame() {
+            try {
+                // Fetch the Z5 story file from the same repository
+                const response = await fetch('adventure_lovecraft.z5');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const buffer = await response.arrayBuffer();
+                
+                // Initialize Quixe with the story file
+                GiLoad.load_run(buffer);
+            } catch (error) {
+                document.getElementById('gameText').textContent = `Error loading game: ${error.message}`;
+            }
+        }
+
+        function sendCommand() {
+            const input = document.getElementById('commandInput');
+            const text = input.value.trim();
+            if (text && glk) {
+                glk.lineInput(text);
+                input.value = '';
+            }
+        }
+
+        document.getElementById('commandInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendCommand();
+        });
+
+        // Initialize when page loads
+        window.addEventListener('load', initGame);
     </script>
 </body>
 </html>
