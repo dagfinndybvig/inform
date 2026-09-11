@@ -25,6 +25,14 @@ grandfather clock in a dark cellar teleports the player to an alien world, where
 a flaming goddess demands a gold coin offering — any other action while in her
 presence is punished by a lightning bolt.
 
+### Play in your browser
+
+No install needed — play directly at **<https://dagfinndybvig.github.io/inform/>**.
+It loads Parchment (a JavaScript Z-machine interpreter) which runs the compiled
+game in any modern browser. You type commands like `look`, `take key`, `go
+north`, `enter clock`, `give coin to goddess`. Type `help` in the game for a
+list of standard commands.
+
 ## Toolchain
 
 ```
