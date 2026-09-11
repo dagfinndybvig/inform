@@ -31,11 +31,27 @@
         }
         a:hover { background: #30475e; }
     </style>
+    <script>
+        // Add cache-busting query parameter based on current date
+        // This forces browsers to re-fetch the .z5 file after each day
+        const today = new Date().toISOString().split('T')[0];
+        const storyUrl = `https://raw.githubusercontent.com/dagfinndybvig/inform/main/adventure_lovecraft.z5?v=${today}`;
+        const gameLink = `https://iplayif.com/?story=${encodeURIComponent(storyUrl)}`;
+        
+        // Redirect to the game
+        window.location.href = gameLink;
+    </script>
     <meta http-equiv="refresh" content="0; url=https://iplayif.com/?story=https://raw.githubusercontent.com/dagfinndybvig/inform/main/adventure_lovecraft.z5">
 </head>
 <body>
     <h1>The Goddess in the Cellar</h1>
     <p>Loading the game in your browser via Parchment...</p>
-    <p>If it does not load automatically, <a href="https://iplayif.com/?story=https://raw.githubusercontent.com/dagfinndybvig/inform/main/adventure_lovecraft.z5">click here to play</a>.</p>
+    <p>If it does not load automatically, <a id="gameLink" href="#">click here to play</a>.</p>
+    <script>
+        // Set the link href as well
+        const today = new Date().toISOString().split('T')[0];
+        const storyUrl = `https://raw.githubusercontent.com/dagfinndybvig/inform/main/adventure_lovecraft.z5?v=${today}`;
+        document.getElementById('gameLink').href = `https://iplayif.com/?story=${encodeURIComponent(storyUrl)}`;
+    </script>
 </body>
 </html>
