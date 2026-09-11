@@ -47,9 +47,11 @@ Object RoomName "Room Label"
 
 It will not parse:
 
-- Objects declared with `Class` or `Object -> SubClass`
-- Direction properties set via `with` on a separate line with unusual formatting
-- Direction properties that are part of a larger expression
+- Objects declared with `Class` (Inform 6 class definitions)
+- Direction properties whose value is a string or routine rather than an
+  object name (e.g., `n_to "The door is locked."` or `n_to DoorIsOpen`)
+- Direction properties that are part of a larger expression or computed at
+  runtime
 
 If your source uses standard `Object` declarations with inline directional
 properties (the common Inform 6 pattern), the parser will handle it.
