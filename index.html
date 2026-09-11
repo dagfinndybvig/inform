@@ -19,6 +19,7 @@
         }
         h1 { font-size: 1.5rem; margin-bottom: 1rem; }
         p { margin-bottom: 1.5rem; color: #a0a0a0; }
+        .loading { color: #888; }
         a {
             display: inline-block;
             padding: 0.75rem 2rem;
@@ -30,39 +31,29 @@
             font-size: 1.1rem;
         }
         a:hover { background: #30475e; }
-        .loading { color: #888; }
     </style>
-    <script>
-        // Fetch the latest .z5 file from GitHub API and redirect to iplayif
-        async function loadGame() {
-            try {
-                // Use GitHub API to get the latest version
-                const response = await fetch('https://api.github.com/repos/dagfinndybvig/inform/contents/adventure_lovecraft.z5');
-                const data = await response.json();
-                
-                if (data.download_url) {
-                    // Use the download_url from API, which bypasses cache
-                    const gameLink = `https://iplayif.com/?story=${encodeURIComponent(data.download_url)}`;
-                    window.location.href = gameLink;
-                } else {
-                    throw new Error('Could not fetch download URL');
-                }
-            } catch (error) {
-                console.error('Error loading game:', error);
-                // Fallback to raw GitHub URL
-                const fallbackUrl = 'https://raw.githubusercontent.com/dagfinndybvig/inform/main/adventure_lovecraft.z5';
-                const gameLink = `https://iplayif.com/?story=${encodeURIComponent(fallbackUrl)}`;
-                window.location.href = gameLink;
-            }
-        }
-        
-        // Load game on page load
-        window.addEventListener('load', loadGame);
-    </script>
 </head>
 <body>
     <h1>The Goddess in the Cellar</h1>
     <p class="loading">Loading the game in your browser via Parchment...</p>
-    <p>If it does not load automatically, <a href="https://iplayif.com/?story=https://raw.githubusercontent.com/dagfinndybvig/inform/main/adventure_lovecraft.z5">click here to play</a>.</p>
+    <p id="status"></p>
+    <p><a id="gameLink" href="#">Click here to play if it doesn't load</a></p>
+
+    <script>
+        // Direct approach: fetch the raw file and redirect immediately
+        (function() {
+            // Use raw.githubusercontent.com directly - it has cache headers we can work with
+            const storyUrl = 'https://raw.githubusercontent.com/dagfinndybvig/inform/main/adventure_lovecraft.z5';
+            const gameLink = `https://iplayif.com/?story=${encodeURIComponent(storyUrl)}`;
+            
+            // Set fallback link
+            document.getElementById('gameLink').href = gameLink;
+            
+            // Try to redirect after a brief delay to let the page render
+            setTimeout(() => {
+                window.location.href = gameLink;
+            }, 500);
+        })();
+    </script>
 </body>
 </html>
