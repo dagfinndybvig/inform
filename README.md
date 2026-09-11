@@ -19,6 +19,8 @@ in the Cellar" game source, the documentation, and the methodology notes — is
 licensed under the MIT Licence. You are free to use, modify, and distribute
 it.
 
+The headless tooling is especilly aimed at agentic coding.
+
 The included game **"The Goddess in the Cellar"** is a small test project used
 to exercise and validate the toolchain. It is a Lovecraftian text adventure: a
 grandfather clock in a dark cellar teleports the player to an alien world, where
