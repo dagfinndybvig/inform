@@ -20,94 +20,37 @@
             background: #0f0f1e;
             min-height: 400px;
         }
-        #gameWindow {
-            height: 600px;
-            display: flex;
-            flex-direction: column;
+        h1 { margin-top: 0; }
+        #loading {
+            padding: 2rem;
+            text-align: center;
+            color: #888;
         }
-        #gameText {
-            flex: 1;
-            overflow-y: auto;
+        .error {
+            color: #f44;
             padding: 1rem;
-            border: 1px solid #333;
-            background: #000;
-            color: #0f0;
-            font-family: monospace;
-            font-size: 14px;
-            line-height: 1.4;
-            margin-bottom: 1rem;
+            border: 1px solid #f44;
+            margin: 1rem 0;
         }
-        #gameInput {
-            display: flex;
-            gap: 0.5rem;
-        }
-        #commandInput {
-            flex: 1;
-            padding: 0.5rem;
-            border: 1px solid #444;
-            background: #1a1a2e;
-            color: #e0e0e0;
-            font-family: monospace;
-        }
-        button {
-            padding: 0.5rem 1rem;
-            background: #16213e;
-            color: #e0e0e0;
-            border: 1px solid #30475e;
-            cursor: pointer;
-        }
-        button:hover { background: #30475e; }
     </style>
 </head>
 <body>
     <div id="gameContainer">
         <h1>The Goddess in the Cellar</h1>
-        <div id="gameWindow">
-            <div id="gameText"></div>
-            <div id="gameInput">
-                <input id="commandInput" type="text" placeholder="Type a command...">
-                <button onclick="sendCommand()">Submit</button>
-            </div>
-        </div>
+        <div id="loading">Loading game...</div>
     </div>
 
-    <script src="https://eblong.com/zarf/glulx/quixe/quixe-2.2.1.js"></script>
-    <script src="https://eblong.com/zarf/glulx/quixe/glulx-2.2.1.js"></script>
-    <script src="https://eblong.com/zarf/glulx/quixe/iface_default.js"></script>
-
     <script>
-        let glk = null;
-        let vm = null;
-
-        async function initGame() {
-            try {
-                // Fetch the Z5 story file from the same repository
-                const response = await fetch('adventure_lovecraft.z5');
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const buffer = await response.arrayBuffer();
-                
-                // Initialize Quixe with the story file
-                GiLoad.load_run(buffer);
-            } catch (error) {
-                document.getElementById('gameText').textContent = `Error loading game: ${error.message}`;
-            }
-        }
-
-        function sendCommand() {
-            const input = document.getElementById('commandInput');
-            const text = input.value.trim();
-            if (text && glk) {
-                glk.lineInput(text);
-                input.value = '';
-            }
-        }
-
-        document.getElementById('commandInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') sendCommand();
+        // Redirect to iplayif.com with a fresh URL that forces reload
+        window.addEventListener('load', function() {
+            // Use GitHub's raw CDN with cache-busting hash based on server time
+            const timestamp = Math.floor(Date.now() / 1000);
+            const storyUrl = `https://raw.githubusercontent.com/dagfinndybvig/inform/main/adventure_lovecraft.z5?v=${timestamp}`;
+            const gameLink = `https://iplayif.com/?story=${encodeURIComponent(storyUrl)}`;
+            
+            // Redirect to iplayif
+            window.location.href = gameLink;
         });
-
-        // Initialize when page loads
-        window.addEventListener('load', initGame);
     </script>
 </body>
 </html>
