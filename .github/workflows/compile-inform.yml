@@ -1,0 +1,60 @@
+name: Compile Inform 6
+
+on:
+  push:
+    paths:
+      - '*.inf'
+      - '.github/workflows/compile-inform.yml'
+    branches:
+      - main
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Inform 6 compiler and library
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y inform
+          
+          # Verify installation
+          inform --version
+
+      - name: Compile all .inf files
+        run: |
+          # Find all .inf files and compile them
+          for inf_file in *.inf; do
+            if [ -f "$inf_file" ]; then
+              echo "Compiling $inf_file..."
+              # Extract base filename without extension
+              base_name="${inf_file%.inf}"
+              # Compile to Z5 format
+              inform -v5 "$inf_file" "${base_name}.z5"
+              if [ $? -eq 0 ]; then
+                echo "✓ Successfully compiled $inf_file -> ${base_name}.z5"
+              else
+                echo "✗ Compilation of $inf_file failed"
+                exit 1
+              fi
+            fi
+          done
+
+      - name: Commit and push compiled files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Check if there are any changes
+          if git diff --quiet; then
+            echo "No changes to compiled files"
+          else
+            git add *.z5
+            git commit -m "Recompile Inform 6 games [skip ci]"
+            git push
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
