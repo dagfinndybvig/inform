@@ -12,6 +12,10 @@ Respect all licences involved — the Inform 6 compiler, the standard library,
 and Frotz each carry their own licence terms. See their respective directories
 for details.
 
+The original work in this repository — `ztest.py`, the "Goddess in the Cellar"
+game source, the documentation, and the methodology notes — is licensed under
+the MIT Licence. You are free to use, modify, and distribute it.
+
 The included game **"The Goddess in the Cellar"** is a small test project used
 to exercise and validate the toolchain. It is a Lovecraftian text adventure: a
 grandfather clock in a dark cellar teleports the player to an alien world, where
