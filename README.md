@@ -1,3 +1,5 @@
+<img width="1024" height="1024" alt="cover_text_adventure_v2" src="https://github.com/user-attachments/assets/948375f6-db28-4527-b27c-7769f81cc9b3" />
+
 # Inform 6 Tooling
 
 This repository is about **Inform 6 tooling** — the compiler, the standard
