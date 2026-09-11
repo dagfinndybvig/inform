@@ -138,10 +138,47 @@ clock teleport (a `before` routine on the clock object) was added manually via
 
 ## Rendering
 
-If Graphviz `dot` is installed, `--png` and `--svg` will render directly:
+`zmap.py` always produces DOT output with no external dependencies — only
+Python is required. The `--png` and `--svg` flags additionally require
+**Graphviz** (`dot` on PATH):
 
 ```bash
 python zmap.py adventure_lovecraft.inf --png map.png
+```
+
+### Installing Graphviz
+
+**Windows** (winget):
+
+```bash
+winget install --id Graphviz.Graphviz --accept-source-agreements --accept-package-agreements
+```
+
+This installs `dot` to `C:\Program Files\Graphviz\bin`. Add it to your PATH
+(permanently, for the current user) if the installer does not:
+
+```powershell
+[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path', 'User') + ';C:\Program Files\Graphviz\bin', 'User')
+```
+
+Restart the terminal afterwards for the PATH change to take effect.
+
+**macOS** (Homebrew):
+
+```bash
+brew install graphviz
+```
+
+**Linux** (apt):
+
+```bash
+sudo apt install graphviz
+```
+
+Verify the installation:
+
+```bash
+dot -V
 ```
 
 If `dot` is not available, the DOT output can be rendered online at
