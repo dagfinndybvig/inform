@@ -18,7 +18,7 @@ Global flower_eaten;
     move lantern to Cottage;
     move notebook to Cottage;
     move flower to ornate_box;
-    "TEST: Welcome to the Neolithic Cottage. You find yourself before an ancient and foreboding structure, seeking refuge from forces you dare not name.^^";
+    "Welcome to the Neolithic Cottage. You find yourself before an ancient and foreboding structure, seeking refuge from forces you dare not name.^^";
 ];
 
 ! ============================================================
