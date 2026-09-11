@@ -40,20 +40,18 @@
     <p><a id="gameLink" href="#">Click here to play if it doesn't load</a></p>
 
     <script>
-        // Direct approach: fetch the raw file and redirect immediately
-        (function() {
-            // Use raw.githubusercontent.com directly - it has cache headers we can work with
-            const storyUrl = 'https://raw.githubusercontent.com/dagfinndybvig/inform/main/adventure_lovecraft.z5';
-            const gameLink = `https://iplayif.com/?story=${encodeURIComponent(storyUrl)}`;
-            
-            // Set fallback link
-            document.getElementById('gameLink').href = gameLink;
-            
-            // Try to redirect after a brief delay to let the page render
-            setTimeout(() => {
-                window.location.href = gameLink;
-            }, 500);
-        })();
+        // Use cache-busting timestamp to force fresh downloads
+        const timestamp = Math.floor(Date.now() / 1000); // Unix timestamp in seconds
+        const storyUrl = `https://raw.githubusercontent.com/dagfinndybvig/inform/main/adventure_lovecraft.z5?t=${timestamp}`;
+        const gameLink = `https://iplayif.com/?story=${encodeURIComponent(storyUrl)}`;
+        
+        // Set fallback link
+        document.getElementById('gameLink').href = gameLink;
+        
+        // Try to redirect after a brief delay to let the page render
+        setTimeout(() => {
+            window.location.href = gameLink;
+        }, 500);
     </script>
 </body>
 </html>
