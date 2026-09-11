@@ -1,7 +1,7 @@
 Constant Story "The Goddess in the Cellar";
 Constant Headline "^A Lovecraftian tale of portals and sacrifice^";
 Constant IFID "8ba9c0d1-e2f3-4456-9a7b-c8d9e0f1a2b3";
-Serial "240913";
+Serial "240914";
 Constant MAX_SCORE 76;
 
 Include "Parser";
@@ -18,7 +18,7 @@ Global flower_eaten;
     move lantern to Cottage;
     move notebook to Cottage;
     move flower to ornate_box;
-    "You find yourself before an ancient and foreboding structure, seeking refuge from forces you dare not name. The air itself seems thick with unspoken dread.^^";
+    "WELCOME TO THE NEOLITHIC COTTAGE. You find yourself before an ancient and foreboding structure, seeking refuge from forces you dare not name.^^";
 ];
 
 ! ============================================================
