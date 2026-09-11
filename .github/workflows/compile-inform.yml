@@ -17,27 +17,26 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Install Inform 6 compiler
         run: |
           sudo apt-get update
           sudo apt-get install -y inform
 
-      - name: Compile .inf files to adventure_lovecraft.z5
+      - name: Compile adventure_lovecraft.inf
         run: |
-          for inf_file in *.inf; do
-            if [ -f "$inf_file" ]; then
-              echo "Compiling $inf_file to adventure_lovecraft.z5"
-              inform -v5 "$inf_file" "adventure_lovecraft.z5"
-            fi
-          done
+          inform -v5 adventure_lovecraft.inf adventure_lovecraft.z5
           ls -lh adventure_lovecraft.z5
 
-      - name: Commit and push
+      - name: Commit and push compiled file
         run: |
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git add -f adventure_lovecraft.z5
-          git diff --cached --quiet || (git commit -m "Compile to adventure_lovecraft.z5 [skip ci]" && git push origin main)
+          
+          if git diff --quiet adventure_lovecraft.z5; then
+            echo "No changes to adventure_lovecraft.z5"
+          else
+            git add adventure_lovecraft.z5
+            git commit -m "Auto-compile adventure_lovecraft.inf [skip ci]"
+            git push origin main
+          fi
