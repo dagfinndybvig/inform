@@ -28,18 +28,16 @@ jobs:
           # Verify installation
           inform --version
 
-      - name: Compile all .inf files
+      - name: Compile all .inf files to test.z5
         run: |
-          # Find all .inf files and compile them
+          # Find all .inf files and compile them to test.z5
           for inf_file in *.inf; do
             if [ -f "$inf_file" ]; then
-              echo "Compiling $inf_file..."
-              # Extract base filename without extension
-              base_name="${inf_file%.inf}"
-              # Compile to Z5 format
-              inform -v5 "$inf_file" "${base_name}.z5"
+              echo "Compiling $inf_file to test.z5..."
+              # Compile to Z5 format with fixed output name
+              inform -v5 "$inf_file" "test.z5"
               if [ $? -eq 0 ]; then
-                echo "✓ Successfully compiled $inf_file -> ${base_name}.z5"
+                echo "✓ Successfully compiled $inf_file -> test.z5"
               else
                 echo "✗ Compilation of $inf_file failed"
                 exit 1
@@ -47,17 +45,17 @@ jobs:
             fi
           done
 
-      - name: Commit and push compiled files
+      - name: Commit and push compiled file
         run: |
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           
           # Check if there are any changes
           if git diff --quiet; then
-            echo "No changes to compiled files"
+            echo "No changes to test.z5"
           else
-            git add *.z5
-            git commit -m "Recompile Inform 6 games [skip ci]"
+            git add test.z5
+            git commit -m "Recompile Inform 6 games to test.z5 [skip ci]"
             git push origin main
           fi
         env:
