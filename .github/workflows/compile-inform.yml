@@ -17,42 +17,27 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Install Inform 6 compiler and library
+      - name: Install Inform 6 compiler
         run: |
           sudo apt-get update
           sudo apt-get install -y inform
-          
-          # Verify installation
-          inform --version
 
-      - name: Compile all .inf files to test.z5
+      - name: Compile .inf files to test.z5
         run: |
-          # Find all .inf files and compile them to test.z5
           for inf_file in *.inf; do
             if [ -f "$inf_file" ]; then
-              echo "Compiling $inf_file to test.z5..."
-              # Compile to Z5 format with fixed output name
+              echo "Compiling $inf_file to test.z5"
               inform -v5 "$inf_file" "test.z5"
-              if [ $? -eq 0 ]; then
-                echo "✓ Successfully compiled $inf_file -> test.z5"
-              else
-                echo "✗ Compilation of $inf_file failed"
-                exit 1
-              fi
             fi
           done
+          ls -lh test.z5
 
-      - name: Commit and push compiled file
+      - name: Commit and push
         run: |
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          
-          # Check if there are any changes
-          if git diff --quiet; then
-            echo "No changes to test.z5"
-          else
-            git add test.z5
-            git commit -m "Recompile Inform 6 games to test.z5 [skip ci]"
-            git push
-          fi
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add -f test.z5
+          git diff --cached --quiet || (git commit -m "Compile to test.z5 [skip ci]" && git push origin main)
