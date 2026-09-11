@@ -3,18 +3,21 @@
 # Inform 6 Tooling
 
 This repository is about **Inform 6 tooling** — the compiler, the standard
-library, a Z-machine interpreter for manual play, and `ztest.py`, a headless
-Z-machine v5 interpreter for automated testing, validation, and debugging of
-Inform 6 projects. The toolchain, testing methodology, and library-mechanics
-documentation below apply to any Inform 6 game.
+library, a Z-machine interpreter for manual play, `ztest.py` (a headless
+Z-machine v5 interpreter for automated testing, validation, and debugging),
+and `zmap.py` (a headless source parser that generates game-world maps for
+visual verification of room layouts and connections). The toolchain, testing
+methodology, and library-mechanics documentation below apply to any Inform 6
+game.
 
 Respect all licences involved — the Inform 6 compiler, the standard library,
 and Frotz each carry their own licence terms. See their respective directories
 for details.
 
-The original work in this repository — `ztest.py`, the "Goddess in the Cellar"
-game source, the documentation, and the methodology notes — is licensed under
-the MIT Licence. You are free to use, modify, and distribute it.
+The original work in this repository — `ztest.py`, `zmap.py`, the "Goddess
+in the Cellar" game source, the documentation, and the methodology notes — is
+licensed under the MIT Licence. You are free to use, modify, and distribute
+it.
 
 The included game **"The Goddess in the Cellar"** is a small test project used
 to exercise and validate the toolchain. It is a Lovecraftian text adventure: a
@@ -29,6 +32,10 @@ inform/
 ├── adventure_lovecraft.inf   # main source
 ├── adventure_lovecraft.z5     # compiled game (Z-machine v5)
 ├── adventure.inf / .z5        # original (non-Lovecraft) version
+├── ztest.py                   # headless Z-machine v5 interpreter (testing)
+├── zmap.py                    # source parser → Graphviz DOT map (debugging)
+├── Z_TEST_TOOL.md             # ztest.py documentation
+├── INFORM_MAP_TOOL.md         # zmap.py documentation
 ├── inform6_compiler/
 │   └── inform6.exe            # Inform 6.44 compiler (Windows)
 ├── inform6lib/
@@ -82,6 +89,29 @@ Use it to validate that gameplay changes (verb routing, scoring, object
 placement, room descriptions) produce the expected output, and to debug
 issues by running targeted command sequences and inspecting the response
 without launching the GUI.
+
+### Map generation and visual debugging
+
+For visual verification of room layouts and connections, use `zmap.py` — a
+headless source parser that reads an `.inf` file and emits a Graphviz DOT map
+of the game world. Full documentation in
+[`INFORM_MAP_TOOL.md`](INFORM_MAP_TOOL.md).
+
+```bash
+# generate a DOT map from source (no compilation needed)
+python zmap.py adventure_lovecraft.inf --edge "Cellar:Alien World:enter clock:dashed"
+
+# write DOT to a file for rendering elsewhere
+python zmap.py adventure_lovecraft.inf -o map.dot
+
+# render to PNG if Graphviz is installed
+python zmap.py adventure_lovecraft.inf --png map.png --edge "Cellar:Alien World:enter clock:dashed"
+```
+
+Use it to check that room connections are correct after adding or moving
+rooms, to spot disconnected areas, and to visualize the world layout without
+playing through. Dynamic connections (teleports, conditional exits set in
+`before` routines) are not auto-detected — add them with `--edge`.
 
 ## The game
 
