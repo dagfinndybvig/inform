@@ -25,19 +25,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y inform
 
-      - name: Compile .inf files to test.z5
+      - name: Compile .inf files to adventure_lovecraft.z5
         run: |
           for inf_file in *.inf; do
             if [ -f "$inf_file" ]; then
-              echo "Compiling $inf_file to test.z5"
-              inform -v5 "$inf_file" "test.z5"
+              echo "Compiling $inf_file to adventure_lovecraft.z5"
+              inform -v5 "$inf_file" "adventure_lovecraft.z5"
             fi
           done
-          ls -lh test.z5
+          ls -lh adventure_lovecraft.z5
 
       - name: Commit and push
         run: |
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git add -f test.z5
-          git diff --cached --quiet || (git commit -m "Compile to test.z5 [skip ci]" && git push origin main)
+          git add -f adventure_lovecraft.z5
+          git diff --cached --quiet || (git commit -m "Compile to adventure_lovecraft.z5 [skip ci]" && git push origin main)
