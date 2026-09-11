@@ -1,0 +1,193 @@
+Constant Story "The Goddess in the Cellar";
+Constant Headline "^A Lovecraftian tale of portals and sacrifice^";
+Constant IFID "8ba9c0d1-e2f3-4456-9a7b-c8d9e0f1a2b3";
+Serial "240910";
+Constant MAX_SCORE 76;
+
+Include "Parser";
+Include "VerbLib";
+
+Global goddess_appeased;
+Global flower_eaten;
+
+[ Initialise;
+    location = Cottage;
+    move grandfather_clock to Cellar;
+    move coin to Cellar;
+    move rusty_key to Cottage;
+    move lantern to Cottage;
+    move notebook to Cottage;
+    move flower to ornate_box;
+    "You find yourself before an ancient and foreboding structure, seeking refuge from forces you dare not name. The air itself seems thick with unspoken dread.^^";
+];
+
+! ============================================================
+! Rooms and their contents
+! ============================================================
+
+Object Cottage "Cottage"
+    with description
+        "You stand within a decaying dwelling of cyclopean stonework. The hearth contains a fire that flickers with an unnatural, sickly hue, casting grotesque shadows upon the walls. A wooden door, warped with age and something darker, leads north to a blighted garden. A narrow, spiraling stairway descends into Stygian depths below.",
+    n_to Garden,
+    d_to Cellar,
+    has light;
+
+Object rusty_key "rusty key"
+    with name 'rusty' 'key' 'iron',
+    description "An iron key of unknown provenance, its surface pitted and marred by what may be ancient runes or merely the ravages of untold centuries. It feels unnaturally cold to the touch.",
+    initial "An iron key lies upon the floor, its purpose lost to the mists of time.",
+    has scored;
+
+Object lantern "brass lantern"
+    with name 'brass' 'lantern' 'lamp' 'antique',
+    description "A brass lantern of antique and suspicious design. Its glass is stained with what might be soot -- or something far less innocuous.",
+    initial "A tarnished brass lantern rests upon a shelf, its presence suggesting it has witnessed things no mortal eye should behold.",
+    after [;
+        SwitchOn: give self light; "The lantern sputters aloud with a sound like a dying breath, then emits a pallid, flickering light that seems to recoil from the corners of the room.";
+        SwitchOff: give self ~light; "The light expires with a whispered hiss, as though the darkness itself had drawn its final breath.";
+    ],
+    has switchable;
+
+Object notebook "tattered notebook"
+    with name 'tattered' 'notebook' 'book' 'journal' 'diary' 'leather',
+    description "A small notebook bound in cracked leather, its pages yellowed and spotted with mildew. The hand that penned these words trembled, the ink faded and blotched, yet two passages remain legible:^^  'Eat of the violet bloom that lies within the ornate box in the forest ere you cross the threshold of the clock. The air beyond is death to mortal lungs; only that flower's essence will remake you for what waits on the other side.'^^  'The goddess of blue flame demands her sacrifice. Bear the gold coin into her presence and offer it freely -- she will accept no lesser tribute, and to act in her sight without giving is to be unmade.'",
+    initial "A tattered notebook lies upon the floor, its pages curled and stained.",
+    has scored;
+
+Object Garden "Garden"
+    with description
+        "You tread upon a garden long abandoned to forces beyond mortal comprehension. The stone path is cracked and uneven, as if rejected by some non-Euclidean geometry. To the south lies the accursed dwelling. To the east, a black and ancient wood looms with malevolent intent.",
+    s_to Cottage,
+    e_to Forest,
+    has light scored;
+
+Object Forest "Dark Forest"
+    with description
+        "You stand amidst a forest of gnarled and twisted trees that seem to drink the very light from the air. The trunks bear deep furrows, as though clawed by some monstrous hand in ages past. The silence here is profound and oppressive, broken only by sounds that may be the wind -- or may be something far worse. The garden lies to the west, though the path seems to shift when viewed from the corner of the eye.",
+    w_to Garden,
+    has light scored;
+
+Object -> ornate_box "ornate box"
+    with name 'ornate' 'box' 'chest' 'carved' 'wooden',
+    description "A small wooden box of exquisite craftsmanship, its surface carved with intricate, swirling patterns that seem to shift when not looked at directly. The patterns form shapes that trouble the mind, as if they depict scenes from realms beyond human comprehension.",
+    initial "An ornate wooden box rests among the roots of a gnarled tree, its craftsmanship eerily at odds with the primitive forest around it.",
+    with with_key rusty_key,
+    has lockable locked container openable;
+
+Object flower "blue flower"
+    with name 'blue' 'flower' 'blossom' 'bloom',
+    description "A single bloated flower of an unnatural violet hue, its petals glistening with a viscous sheen. Its fragrance is cloying, almost narcotic, and you feel a creeping unease merely gazing upon it.",
+    after [;
+        Eat:
+            flower_eaten = true;
+            score = score + 10;
+            "You bite into the bloom, and its viscous nectar floods your mouth with a taste at once sweet and profoundly wrong -- a flavor that seems to resonate in chambers of your mind that were never meant to open. The petals dissolve upon your tongue like ash, and for a moment the garden's crooked geometry seems to swim and right itself. You sense, with a certainty beyond all reason, that your lungs have been quietly remade to endure an atmosphere not of this earth.";
+    ],
+    has edible scored;
+
+Object Cellar "Dusty Cellar"
+    with description
+        "The cellar yawns before you, a cavern of damp stone and creeping shadow. The air is thick with the scent of mildew and something older, something that stirs memories best left buried. Crates of unknown vintage are stacked in corners, their contents mercifully obscured. A rickety ladder ascends to the dwelling above.",
+    u_to Cottage,
+    has scored;
+
+Object -> grandfather_clock "grandfather clock"
+    with name 'grandfather' 'clock' 'tall' 'wooden' 'pendulum',
+    description "A massive grandfather clock of blackened wood, its face bearing no numbers -- only shifting, non-Euclidean symbols that seem to rearrange themselves when viewed from the corner of the eye. The pendulum swings with a slow, hypnotic rhythm that seems out of sync with time itself.",
+    initial "A grandfather clock of uncanny proportions stands against the far wall, its ticking echoing with a sound that seems to come from within your own skull.",
+    before [;
+        Enter: 
+            if (parent(grandfather_clock) == Cellar) {
+                move grandfather_clock to AlienWorld;
+                print "As you step inside the clock, reality fractures around you. The clock's interior twists unnaturally through dimensions beyond mortal comprehension, and suddenly you find yourself standing on alien soil beneath a violet sky.^";
+                PlayerTo(AlienWorld, 2);
+                if (~~flower_eaten) {
+                    deadflag = 1;
+                    "^The air of this alien world is no air at all. Your first breath sears your lungs like vitriol, and what floods them is something for which your body was never wrought -- a thin, violet vapor that burns where it touches living tissue. You claw at your throat, your chest heaving uselessly, but no earthly grace shields you now. The cyclopean spires wheel overhead as you crumple to the alien stone, asphyxiating horribly while the goddess's blue flames regard you without pity.";
+                }
+                rtrue;
+            }
+            else if (parent(grandfather_clock) == AlienWorld) {
+                move grandfather_clock to Cellar;
+                print "As you step inside the clock, the fabric of space inverts upon itself. The clock's interior writhes unnaturally, and suddenly you are back in the familiar darkness of the cellar.^";
+                PlayerTo(Cellar, 2);
+                if (goddess_appeased) {
+                    deadflag = 2;
+                    score = score + 10;
+                    "^You stumble from the clock into the reeking darkness of the cellar, and the alien weight upon your soul lifts at last. The clock's ticking slows, then stills, and when you turn to look upon its face the non-Euclidean symbols have gone quiet -- mere carved wood once more, harmless in its antiquity. Whatever passed between you and the blue-flamed goddess in that impossible place, it is ended. You have looked upon the beyond and returned, bearing the knowledge that such things exist -- and that they may, on terms not wholly yours to dictate, be appeased. The dwelling settles around you, old and silent, and for the first time its shadows feel like only shadows.";
+                }
+                rtrue;
+            }
+            else {
+                "You step inside the clock, but nothing unusual happens.";
+            }
+    ],
+    has enterable container;
+
+Object AlienWorld "Alien World"
+    with description
+        "You stand upon a landscape of cyclopean stone spires that pierce a violet sky swirling with unnameable constellations. The very geometry of this place is wrong, angles folding in upon themselves in ways that make your vision swim. Distant shapes move in the periphery, things that should not exist in any sane universe. The grandfather clock stands before you, its familiar form a small comfort amidst the cosmic horror.",
+    has light scored;
+
+Object -> AlienHorror "indescribable horror"
+    with name 'horror' 'thing' 'shape' 'monstrosity',
+    description "It is merciful that your mind cannot fully comprehend what you see. The thing shifts and writhes with a motion that defies all laws of physics, its form existing simultaneously in multiple dimensions. To look upon it directly is to invite madness.",
+    initial "Something moves at the edge of vision, a shape that should not exist.",
+    found_in AlienWorld,
+    has;
+
+Object -> FlamingGoddess "flaming goddess"
+    with name 'flaming' 'goddess' 'statue' 'idol' 'figure' 'effigy' 'obsidian' 'blue' 'flame' 'flames',
+    description "A towering effigy, thrice the height of a man, wrought from some unknown obsidian stone whose surface drinks the light around it. Across that void-black surface crawl flames of a cold and sickly blue -- they lick the stone yet never consume it, and they cast no heat, only a creeping chill that settles into your marrow. The figure is neither wholly feminine nor wholly alien: its proportions are elongated beyond mortal ken, the limbs too numerous and jointed at angles that the eye refuses to follow, the face a smooth and featureless mask save for two hollow pits where eyes should be. From those pits the blue flames burn brightest, and you cannot shake the sense that they regard you -- that they have always regarded you, and that they will go on regarding you long after your bones are dust. To look upon it too long is to feel the boundaries of your self grow thin, as though something within the idol were reaching back across the gulf between your worlds.",
+    initial "A towering flaming goddess looms nearby, its eerie blue flames casting grotesque shadows across the alien soil.",
+    react_before [;
+        if (goddess_appeased) rfalse;
+        if (action == ##Give && noun == coin && second == self) rfalse;
+        deadflag = 1;
+        "The goddess's hollow eyes blaze with terrible azure light. Without warning, a bolt of cold blue fire arcs from her outstretched, too-many limbs and engulfs you utterly. Your final sensation is of your very essence unravelling, thread by thread, scattered into the screaming void between the stars.";
+    ],
+    life [;
+        Give:
+            if (noun == coin) {
+                goddess_appeased = true;
+                remove coin;
+                score = score + 20;
+                "The goddess's hollow eyes flare with a sudden, blinding azure light -- the cold flames roar higher for a heartbeat, then subside. The coin is gone, swallowed whole by the fire that does not consume. The idol's gaze, if gaze it can be called, seems to soften, and the oppressive dread that pressed upon your soul recedes. You sense, with a certainty beyond reason, that you are permitted to depart this place.";
+            }
+            deadflag = 1;
+            "The goddess's eyes flare with wrath at your paltry offering. A bolt of cold blue fire leaps from her limbs and engulfs you, and your essence unravels into the void.";
+    ],
+    has animate;
+
+Object coin "gold coin"
+    with name 'gold' 'coin' 'tarnished' 'disc',
+    description "A coin of gold -- or what appears to be gold -- bearing strange glyphs that seem to writhe when viewed directly. The metal is unnaturally warm, as though freshly minted, yet you sense it has existed for eons beyond mortal reckoning.",
+    initial "Something glints in the dust: a coin of dubious origin, its very presence filling you with a creeping disquiet.",
+    has scored;
+
+! ============================================================
+! A simple custom verb
+! ============================================================
+
+[ InhaleSub;
+    if (noun == 0) {
+        "You draw in a breath, but the air tastes stale and somehow wrong, as though it has passed through lungs not entirely human.";
+    }
+    if (noun == flower) {
+        "The flower's scent is sickly-sweet, thick with notes that seem to resonate in parts of your mind best left undisturbed. A faint buzzing fills your ears.";
+    }
+    if (noun == coin) {
+        "The coin emits a faint, metallic odor -- like old blood mixed with something far more ancient and unnameable.";
+    }
+    "You inhale near ", (the) noun, ", and the air seems to thicken with unseen presences.";
+];
+
+Verb 'inhale'
+    * noun -> Inhale
+    * -> Inhale;
+
+Include "Grammar";
+
+Extend 'smell' replace
+    * noun -> Inhale
+    * -> Smell;

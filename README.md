@@ -1,0 +1,496 @@
+# The Goddess in the Cellar
+
+A small Inform 6 text adventure in the style of H. P. Lovecraft. A grandfather
+clock in a dark cellar teleports the player to an alien world, where a flaming
+goddess demands a gold coin offering — any other action while in her presence
+is punished by a lightning bolt.
+
+## Toolchain
+
+```
+inform/
+├── adventure_lovecraft.inf   # main source
+├── adventure_lovecraft.z5     # compiled game (Z-machine v5)
+├── adventure.inf / .z5        # original (non-Lovecraft) version
+├── inform6_compiler/
+│   └── inform6.exe            # Inform 6.44 compiler (Windows)
+├── inform6lib/
+│   └── inform6lib-master/     # Inform 6 library (parser.h, verblib.h, grammar.h, ...)
+└── frotz/
+    └── Frotz.exe              # Z-machine interpreter
+```
+
+### Compile
+
+From the `inform/` directory (Git Bash):
+
+```bash
+./inform6_compiler/inform6.exe +inform6lib/inform6lib-master adventure_lovecraft.inf
+```
+
+The `+path` argument adds the library directory to the include search path so
+`Include "Parser"`, `Include "VerbLib"`, and `Include "Grammar"` resolve. A
+clean compile prints only the version banner and exits 0; any other output is
+an error or warning.
+
+### Run
+
+```bash
+./frotz/Frotz.exe adventure_lovecraft.z5
+```
+
+For automated testing, pipe commands via stdin:
+
+```bash
+printf 'd\nenter clock\ngive coin to goddess\n' | ./frotz/Frotz.exe adventure_lovecraft.z5
+```
+
+### Automated testing, validation, and debugging
+
+Frotz is GUI-only and cannot be driven from a pipe reliably. For automated
+testing, validation, and debugging, use `ztest.py` — a headless Z-machine v5
+interpreter that feeds scripted commands to the story file and prints all
+output to stdout. Full documentation in [`Z_TEST_TOOL.md`](Z_TEST_TOOL.md).
+
+```bash
+# regression-test a scoring path after a code change
+python ztest.py --mark --seed 1 "take key" "n" "e" "unlock ornate box with rusty key" "open ornate box" "take flower" "eat flower" "score"
+
+# run a script of commands and diff against a baseline
+python ztest.py --mark --seed 1 --script tests/scoring.txt > tests/scoring.out
+diff tests/scoring.out tests/scoring.baseline
+```
+
+Use it to validate that gameplay changes (verb routing, scoring, object
+placement, room descriptions) produce the expected output, and to debug
+issues by running targeted command sequences and inspecting the response
+without launching the GUI.
+
+## The game
+
+### Map
+
+```
+Cottage --n--> Garden --e--> Forest
+  |d
+  v
+Cellar  ==[enter clock]==>  Alien World
+```
+
+The Cellar is dark (no `light` attribute); the player must bring the brass
+lantern (switchable, grants `light` when on) or fumble in darkness. Alien
+World has `light`.
+
+### Key objects
+
+- **brass lantern** — `switchable`; its `after` routine gives/takes the `light`
+  attribute on `SwitchOn`/`SwitchOff`.
+- **grandfather clock** — `enterable container` in the Cellar. Entering it
+  teleports the player (and the clock itself) between Cellar and Alien World.
+- **gold coin** — starts in the Cellar; the offering the goddess demands.
+- **flaming goddess** — `animate` object in Alien World. Kills the player on
+  any action except `give coin to goddess`; accepts the coin and becomes
+  pacified (`goddess_appeased` flag), after which the player may leave.
+- **indescribable horror** — a `found_in` floating object in Alien World.
+
+### Scoring
+
+The game has 76 points (`MAX_SCORE 76`), from three sources:
+
+| Source | Items | Points |
+|--------|-------|--------|
+| Room exploration (`has scored`) | Garden, Forest, Cellar, Alien World | 5 each = 20 |
+| Object acquisition (`has scored`) | notebook, rusty key, flower, coin | 4 each = 16 |
+| Milestone (manual `score +=`) | eat flower, give coin to goddess, return safely | 10 + 20 + 10 = 40 |
+| **Total** | | **76** |
+
+- Rooms with `has scored` award `ROOM_SCORE` (default 5) on first visit, via
+  `ScoreArrival` (called by `LookSub`). The starting room (Cottage) is not
+  scored.
+- Objects with `has scored` award `OBJECT_SCORE` (default 4) when first taken,
+  via `NoteObjectAcquisitions` (called every turn).
+- The three narrative milestones award points manually with `score = score + N`
+  and print `[Your score has just gone up by N points.]`.
+- The Z-machine v5 status line shows the current score automatically; `score`
+  prints it, and `fullscore` shows the places/things breakdown.
+
+### Custom verb
+
+`inhale [noun]` — defined with `Verb 'inhale'` and an `InhaleSub` routine,
+with special-case text for the flower and coin.
+
+The library `smell`/`sniff` verb is extended to route `smell <noun>` to the
+same `Inhale` action, so `smell flower`, `sniff flower`, and `inhale flower`
+all produce the custom response. See "Extending a library verb" below.
+
+## Methodology
+
+**Consult the library first.** The Inform 6 library is the source of truth
+for how every mechanism actually works. Before implementing or debugging any
+behavior, grep the library headers for the relevant property/routine and read
+the implementation. Guessing at semantics is how features silently fail to
+integrate — the library often has non-obvious preconditions (attributes,
+globals, scope) that a feature depends on.
+
+**Standards must be constantly checked.** Inform 6 has precise, non-obvious requirements for object attributes and properties. Always verify against the library definitions (`linklpa.h` for attributes like `lockable`, `openable`, `container`; `grammar.h` for verb grammar). A single missing attribute (e.g., `openable` on a lockable container) can silently break a feature. **Always regression-test after changes** — even small edits can cascade and break unrelated functionality.
+
+1. Goddess not appearing → read `MoveFloatingObjects` and `PlayerTo`.
+2. Goddess not visible after teleport → read `LookSub` and the `thedark`
+   handling in `LookSub`.
+3. `give coin to goddess` rejected → read the `Give` grammar line and the
+   `creature` token.
+
+The library files worth knowing:
+
+| File | Contains |
+|------|----------|
+| `linklpa.h` | property and attribute definitions (`found_in`, `react_before`, ...) |
+| `grammar.h` | verb grammar lines and the `creature`/`noun`/`held` tokens |
+| `parser.h` | the main loop, `BeforeRoutines`, `AfterRoutines`, `RunLife`, `deadflag` handling |
+| `verblib.h` | action routines (`GiveSub`, `LookSub`), `MoveFloatingObjects`, `PlayerTo`, `AdjustLight` |
+
+## Inform 6 library mechanics (with references)
+
+### Object placement: `->` vs `found_in` vs top-level
+
+- `Object -> foo` makes `foo` a child of the last **top-level** object
+  declared before it — not the immediately preceding object of any depth.
+  It is physically in that location from the start — no runtime movement
+  needed. This is the simplest, most reliable way to place a static object
+  in a room.
+- `Object foo` (no arrow) is top-level (parentless). It must be moved somewhere
+  with `move foo to <room>` (often in `Initialise`) or it floats.
+- `found_in Room` marks a **floating object**. It is NOT placed automatically.
+  The library's `MoveFloatingObjects` moves it into `location` when (and only
+  when) `location` matches. See `verblib.h:1057` (`MoveFloatingObjects`).
+
+**Pitfall:** `->` nests under the last top-level object, not the last object
+of any nesting depth. If room R has a `->` child box, and box has a `->` child
+flower, the flower becomes a sibling of box (both children of R), not a child
+of box. There is no `-->` operator in Inform 6 for deeper nesting. To place an
+object inside another object's child (e.g., an item inside a box inside a
+room), make it top-level and `move` it into the container in `Initialise`:
+`move flower to ornate_box;`. This is the same pattern used for the coin and
+the grandfather clock.
+
+**Pitfall:** `found_in` objects only appear if `MoveFloatingObjects` runs.
+That routine is called from `PlayerTo` (`verblib.h:1094`) and from the normal
+`Go` handler (`verblib.h:2107`). A custom teleport that uses raw
+`move player to Room` bypasses both, so `found_in` objects never arrive. Use
+`->` (static child) for objects that must always be in a room, or call
+`PlayerTo` for the move.
+
+### Moving the player: `PlayerTo` vs `move player`
+
+Never use raw `move player to Room` for travel. It does not update the
+`location` global, does not run `MoveFloatingObjects`, and does not adjust
+light. `PlayerTo` (`verblib.h:1089`) does all of this:
+
+```inform
+[ PlayerTo newplace flag;
+    NoteDeparture();
+    move player to newplace;
+    while (parent(newplace)) newplace = parent(newplace);
+    location = real_location = newplace;
+    MoveFloatingObjects(); AdjustLight(1);
+    switch (flag) {
+      0:    <Look>;
+      1:    NoteArrival(); ScoreArrival();
+      2:    LookSub(1);
+    }
+];
+```
+
+The `flag` argument controls the arrival behavior:
+
+| flag | arrival |
+|------|---------|
+| 0 | generates a full `<Look>` action (runs `react_before`/`before`) |
+| 1 | `NoteArrival` + `ScoreArrival` only (no look) |
+| 2 | calls `LookSub(1)` directly (no action, no `react_before`) |
+
+**Pitfall:** flag 0 generates a real `Look` action, which passes through
+`BeforeRoutines` and thus `react_before` of every in-scope object. If an
+in-scope object has a hostile `react_before` (e.g., the goddess), the player
+is killed on arrival before they can type. Use flag 2 for teleports into a
+room with a `react_before` guardian.
+
+### Light and darkness
+
+- A room with `has light` is self-lit. A room without it is dark unless a
+  light-giving object (the player's lantern, with `has light` granted on
+  switch-on) is present.
+- When the player is in darkness, `location` is set to the special object
+  `thedark` (not the real room). `real_location` still holds the real room.
+- `LookSub` (`verblib.h:2271`) checks `if (location == thedark)` first and
+  prints "Darkness" instead of the room description and its contents.
+  This is why a raw `move player` from a dark room leaves the player in
+  darkness even after arriving in a lit room: `location` was never updated
+  off `thedark`. `PlayerTo` fixes this via `AdjustLight`.
+
+### Action processing order
+
+For each typed command, the library runs (`parser.h:5166`, `BeforeRoutines`
+at `parser.h:5522`):
+
+1. `GamePreRoutine`
+2. `player.orders`
+3. `react_before` of every object in scope (`parser.h:5527`)
+4. `location.before`
+5. the noun's `before`
+6. the action routine (e.g., `GiveSub`)
+7. `react_after`, `location.after`, noun's `after` (`AfterRoutines`, `parser.h:5536`)
+8. end-of-turn sequence (daemons, each_turn, `AdjustLight`)
+
+`react_before` returning true (`rtrue`) stops the action before it runs.
+This is the mechanism the goddess uses to intercept every action.
+
+### `life` and the `Give` action
+
+- `GiveSub` (`verblib.h:1945`) validates the gift, then calls
+  `RunLife(second, ##Give)` — i.e., the recipient's `life` routine.
+- `life` is the standard way NPCs react to `Give`, `Show`, `Ask`, `Tell`,
+  `Answer`, `Kiss`, `Attack`, etc.
+- The `Give` verb grammar (`grammar.h:279-281`) uses the `creature` token,
+  which **requires the recipient to have the `animate` attribute**. Without
+  `animate`, the parser rejects `give X to Y` before `life` ever runs.
+
+**Pitfall:** an NPC that must receive `give` must have `has animate`. A
+statue/idol that is nonetheless a valid give-target needs `animate` even if
+it is thematically inanimate.
+
+### Death
+
+- Set `deadflag = 1` to kill the player. The main loop (`parser.h:5166`)
+  detects this, breaks the turn, and runs the death sequence
+  (`parser.h:5323`): prints `*** You have died ***`, score, and the
+  restart/restore/quit prompt.
+- `deadflag = 2` is "win"; other values call `DeathMessage`.
+- Setting `deadflag` from within `react_before` or `life` is safe — the
+  loop checks it at turn end.
+
+### Scoring
+
+The library has a built-in scoring system with three layers. All three
+are automatic once you set the right attributes/defaults — no manual code
+needed for the first two.
+
+**Room scoring** (`has scored` on rooms, `ROOM_SCORE` per room):
+
+`ScoreArrival` (`verblib.h:2250`) is called from `LookSub` (line 2339) and
+from `PlayerTo` with flag 1 (line 1097). It checks `if (location hasnt
+visited)`, gives the `visited` attribute, and if the room has `scored`,
+adds `ROOM_SCORE` (default 5) to `score` and `places_score`. The starting
+room is scored too (the library calls `<Look>` after `Initialise`), so
+omit `scored` from the start room if you don't want free points.
+
+**Object scoring** (`has scored` on objects, `OBJECT_SCORE` per object):
+
+`NoteObjectAcquisitions` (`parser.h:5475`) runs every turn. It loops over
+objects in the player's inventory; any that haven't been `moved` get the
+`moved` attribute, and if they have `scored`, `OBJECT_SCORE` (default 4)
+is added to `score` and `things_score`. Points are awarded on first pickup,
+not on subsequent turns.
+
+**Task/milestone scoring** (manual `score += N`):
+
+For one-time narrative milestones (eating the flower, giving the coin,
+winning), award points manually with `score = score + N;` at the right
+point in the code. Do **not** append a notification string — the library
+prints its own automatically (see "Score notification" below).
+
+```inform
+Constant MAX_SCORE 76;
+
+! In the flower's after routine:
+Eat:
+    flower_eaten = true;
+    score = score + 10;
+    "...description...";
+```
+
+### Score notification
+
+The library has `notify_mode = true` by default (`parser.h:270`). At the
+end of every turn, if `score` changed, `NotifyTheScore()` (`parser.h:5680`)
+prints `[The score has just gone up by N points.]` automatically
+(`english.h:1137`, `Miscellany` message 50). This covers **all** score
+changes — room visits, object pickups, and manual `score +=`.
+
+**Pitfall:** appending your own `[Your score has just gone up by N
+points.]` to the response string duplicates the library notification.
+The "sometimes" symptom: room/object scoring fires only the library
+notification (correct), but manual milestones fire both your text and the
+library's (duplicated). The fix is to never add notification text
+yourself — just increment `score` and let the library announce it.
+Players can toggle this with `notify on` / `notify off`.
+
+`MAX_SCORE` sets the denominator for the score display. `ScoreSub`
+(`verblib.h:1372`) prints `score out of MAX_SCORE`; `FullScoreSub`
+(`verblib.h:1408`) adds a breakdown of `places_score` and `things_score`
+subtotals. (The `task_scores`/`Achieved`/`PrintTaskName` system exists for
+named task breakdowns in `fullscore`, but requires more setup and is
+overkill for a small game — manual `score +=` is simpler.)
+
+**Display:** In Z-machine v5, the status line shows score and turns
+automatically (`DrawStatusLine`, `parser.h:6363`). `score` prints the
+current score; `fullscore` prints the places/things breakdown.
+
+### Extending a library verb
+
+`Extend 'verb'` adds new grammar lines to an existing library verb; it must
+appear **after** `Include "Grammar"` (which is where the library defines
+the verb you are extending). Before that point the verb does not exist yet,
+and `Extend` fails with "There is no previous grammar for the verb."
+
+```inform
+Include "Grammar";
+
+Extend 'smell' replace
+    * noun -> Inhale
+    * -> Smell;
+```
+
+The `replace` keyword is essential here. Without it, `Extend` merely
+**appends** new grammar lines after the library's existing ones. When two
+lines both match the same input (e.g., the library's `* noun -> Smell` and
+your `* noun -> Inhale`), the parser tries them in source order and the
+library's line wins — so your redirect silently never fires. `replace`
+discards the library's grammar for that verb and substitutes your lines
+entirely, so your `* noun -> Inhale` takes priority. Include a fallback
+`* -> Smell` (no noun) so bare `smell` still works via the library action.
+
+**Pitfall:** `Extend 'smell' 'sniff'` is invalid syntax — `Extend` takes a
+single verb name, not a list of synonyms. The library's `Verb 'smell' 'sniff'`
+already groups `sniff` under `smell`, so extending `smell` automatically
+covers `sniff`.
+
+## Implementation details
+
+### The clock teleport (`grandfather_clock.before`)
+
+```inform
+before [;
+    Enter:
+        if (parent(grandfather_clock) == Cellar) {
+            move grandfather_clock to AlienWorld;
+            print "...^";
+            PlayerTo(AlienWorld, 2);
+            rtrue;
+        }
+        else if (parent(grandfather_clock) == AlienWorld) {
+            move grandfather_clock to Cellar;
+            print "...^";
+            PlayerTo(Cellar, 2);
+            rtrue;
+        }
+        else "You step inside the clock, but nothing unusual happens.";
+],
+```
+
+- The clock moves with the player (both sides work symmetrically) by
+  checking `parent(grandfather_clock)` to decide direction.
+- `PlayerTo(..., 2)` is essential: flag 2 calls `LookSub` directly without
+  generating a `Look` action, so the goddess's `react_before` does not fire
+  on arrival.
+- `rtrue` from `before` stops the default `Enter` handling.
+
+### The goddess (`react_before` + `life`)
+
+```inform
+react_before [;
+    if (goddess_appeased) rfalse;                         # pacified: allow all
+    if (action == ##Give && noun == coin && second == self) rfalse;  # let Give reach life
+    deadflag = 1;                                         # everything else: death
+    "...lightning bolt...";
+],
+life [;
+    Give:
+        if (noun == coin) {
+            goddess_appeased = true;
+            remove coin;
+            "...accepted...";
+        }
+        deadflag = 1;                                     # wrong gift: death
+        "...wrath...";
+],
+has animate;                                              # required for `give ... to goddess`
+```
+
+- `react_before` runs before every action while the goddess is in scope
+  (i.e., while in Alien World). It allows only `give coin to goddess`
+  through to `life`; all else is death.
+- `life` handles the actual `Give`: the right coin pacifies her and is
+  consumed (`remove coin`); a wrong gift is also death.
+- `has animate` is mandatory so the `creature` token in the `Give` grammar
+  accepts her as a recipient.
+- After `goddess_appeased`, `react_before` returns false, so all actions
+  (including `enter clock` to leave) are allowed.
+
+### The coin
+
+The coin is a top-level object (`Object coin`, no arrow) moved to the Cellar
+in `Initialise`:
+
+```inform
+[ Initialise;
+    location = Cottage;
+    move grandfather_clock to Cellar;
+    move coin to Cellar;
+    "...";
+];
+```
+
+It was made top-level because inserting the goddess as a child of Alien
+World would otherwise have made the coin (originally `Object -> coin` after
+the goddess) a child of the goddess. Keeping it top-level and placing it
+explicitly avoids the source-order parentage trap.
+
+## Gotchas summary
+
+- `found_in` objects need `MoveFloatingObjects` to run; raw `move player`
+  does not trigger it. Prefer `->` for static room contents.
+- `->` nests under the last top-level object, not the last object of any
+  depth. A `->` child of a `->` child becomes a sibling, not a nested child.
+  To nest an object inside a container that is itself a room child, make it
+  top-level and `move` it into the container in `Initialise`.
+- Raw `move player to Room` does not update `location`/`real_location` or
+  adjust light. Use `PlayerTo`.
+- `PlayerTo(..., 0)` generates a `Look` action that runs `react_before`;
+  use flag 2 to skip it when arriving in a room with a `react_before`
+  guardian.
+- `give X to Y` requires `Y` to have `animate` (the `creature` grammar
+  token). Add `has animate` to any NPC that must receive gifts.
+- A room without `has light` is dark; in darkness `location == thedark`
+  and the room's contents are not listed. `AdjustLight` (called by
+  `PlayerTo`) restores the real `location` when light is available.
+- Inserting a top-level object between a parent and its `->` children
+  re-parents the children. Place static objects as direct `->` children of
+  their room, or move them explicitly in `Initialise`.
+- `Extend` must appear after `Include "Grammar"`, and needs `replace` when
+  the new grammar line should override a matching library line (e.g.,
+  redirecting `smell <noun>` to a custom action). Without `replace`, the
+  library's line wins and the redirect silently never fires.
+- `has scored` on a room awards `ROOM_SCORE` (5) on first visit, but only
+  if the room is lit — `ScoreArrival` checks `location`, which is `thedark`
+  in a dark room, so a dark room won't score until the player brings light.
+  `has scored` on an object awards `OBJECT_SCORE` (4) on first pickup.
+  Both are automatic; no manual code needed. Set `Constant MAX_SCORE N;`
+  so the score display shows `N out of N`.
+- For narrative milestones (not tied to rooms or pickup), use manual
+  `score = score + N;` rather than the `task_scores`/`Achieved` system —
+  simpler and sufficient for a small game.
+- Do not append `[Your score has just gone up by N points.]` to response
+  strings. The library's `NotifyTheScore` (`notify_mode = true` by default)
+  prints this automatically at end of turn for all score changes. Adding
+  your own duplicates it. Just increment `score` and let the library
+  announce it.
+- Descriptions should be logically consistent and non-redundant. A room's
+  `description` and an object's `initial` both print on first view, so naming
+  the same object in both produces a doubled description. Put the object's
+  first appearance in exactly one place: either the room prose or the
+  `initial` property, not both. When an object can appear in two rooms (e.g.,
+  the clock, which moves between Cellar and AlienWorld), check which
+  description fires where — `initial` only prints before the object has been
+  moved/taken, so a moved object needs its presence described in the room
+  prose of its new location.

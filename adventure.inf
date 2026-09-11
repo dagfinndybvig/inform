@@ -1,0 +1,97 @@
+Constant Story "The Little Adventure";
+Constant Headline "^A tiny Inform 6 example game^";
+Serial "240910";
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+    location = Cottage;
+    "Welcome to The Little Adventure! You are a traveler seeking shelter.^^";
+];
+
+! ============================================================
+! Rooms and their contents
+! ============================================================
+
+Object Cottage "Cottage"
+    with description
+        "You are in a cozy cottage. A warm fire crackles in the hearth.
+        There is a wooden door leading north to the garden, and a narrow
+        stairway going down to a cellar.",
+    n_to Garden,
+    d_to Cellar,
+    has light;
+
+Object -> key "rusty key"
+    with name 'rusty' 'key',
+    description "An old iron key, covered in rust.",
+    initial "A rusty key lies on the floor near the hearth.",
+    has;
+
+Object -> lantern "brass lantern"
+    with name 'brass' 'lantern' 'lamp',
+    description "A sturdy brass lantern. It looks like it still works.",
+    initial "A brass lantern sits on a shelf.",
+    after [;
+        SwitchOn: give self light; "The lantern flickers to life, casting a warm glow.";
+        SwitchOff: give self ~light; "The lantern goes dark.";
+    ],
+    has switchable;
+
+Object Garden "Garden"
+    with description
+        "You stand in a small garden. Flowers bloom along a stone path.
+        The cottage is to the south. A dark forest lies to the east.",
+    s_to Cottage,
+    e_to Forest,
+    has light;
+
+Object -> flower "blue flower"
+    with name 'blue' 'flower',
+    description "A delicate blue flower with a sweet fragrance.",
+    initial "A single blue flower grows beside the path.",
+    has;
+
+Object Forest "Dark Forest"
+    with description
+        "Tall trees block out most of the sunlight. The forest is quiet
+        and a bit eerie. The garden is back to the west.",
+    w_to Garden,
+    has light;
+
+Object Cellar "Dusty Cellar"
+    with description
+        "The cellar is dim and musty. Old crates are stacked in corners.
+        A ladder leads back up to the cottage.",
+    u_to Cottage,
+    has;
+
+Object -> coin "gold coin"
+    with name 'gold' 'coin',
+    description "A shiny gold coin. It must be worth something!",
+    initial "Something glints in the dust: a gold coin!",
+    has;
+
+! ============================================================
+! A simple custom verb
+! ============================================================
+
+[ InhaleSub;
+    if (noun == 0) {
+        "You inhale deeply but smell nothing unusual.";
+    }
+    if (noun == flower) {
+        "The flower has a sweet, pleasant fragrance.";
+    }
+    if (noun == coin) {
+        "Metal doesn't smell like much.";
+    }
+    "You inhale near ", (the) noun, ". Nothing special.";
+];
+
+Verb 'inhale'
+    * noun -> Inhale
+    * -> Inhale;
+
+Include "Grammar";
