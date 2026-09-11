@@ -1,124 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>The Goddess in the Cellar</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
         body {
-            background: #000;
-            color: #0f0;
-            font-family: monospace;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        #gameArea {
-            width: 100%;
-            height: 100vh;
+            margin: 0;
+            padding: 2rem;
+            font-family: Helvetica, Arial, sans-serif;
+            background: #1a1a2e;
+            color: #e0e0e0;
             display: flex;
             flex-direction: column;
-            padding: 1rem;
-            overflow: hidden;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
         }
-        #output {
-            flex: 1;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            margin-bottom: 1rem;
-            border: 1px solid #0f0;
-            padding: 1rem;
-            background: #001a00;
+        h1 { font-size: 1.5rem; margin-bottom: 1rem; }
+        p { margin-bottom: 1.5rem; color: #a0a0a0; }
+        .loading { color: #888; }
+        a {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background: #16213e;
+            color: #e0e0e0;
+            text-decoration: none;
+            border: 1px solid #30475e;
+            border-radius: 4px;
+            font-size: 1.1rem;
         }
-        #inputArea {
-            display: flex;
-            gap: 0.5rem;
-        }
-        #input {
-            flex: 1;
-            background: #001a00;
-            color: #0f0;
-            border: 1px solid #0f0;
-            padding: 0.5rem;
-            font-family: monospace;
-            font-size: 14px;
-        }
-        #input:focus {
-            outline: none;
-            border-color: #0f0;
-        }
-        button {
-            background: #003300;
-            color: #0f0;
-            border: 1px solid #0f0;
-            padding: 0.5rem 1rem;
-            font-family: monospace;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #004d00;
-        }
-        .prompt {
-            color: #00ff00;
-        }
+        a:hover { background: #30475e; }
     </style>
 </head>
 <body>
-    <div id="gameArea">
-        <div id="output"></div>
-        <div id="inputArea">
-            <input id="input" type="text" placeholder=">">
-            <button onclick="sendCommand()">Send</button>
-        </div>
-    </div>
+    <h1>The Goddess in the Cellar</h1>
+    <p class="loading">Redirecting to game...</p>
+    <p><a href="https://iplayif.com/?story=https://raw.githubusercontent.com/dagfinndybvig/inform/main/adventure_lovecraft.z5">Click here to play</a></p>
 
     <script>
-        // Simple Z-machine interpreter wrapper using a minimal approach
-        const output = document.getElementById('output');
-        const input = document.getElementById('input');
-
-        // Display initial message
-        output.textContent = 'Loading The Goddess in the Cellar...\n\n';
-
-        async function loadGame() {
-            try {
-                const response = await fetch('adventure_lovecraft.z5');
-                if (!response.ok) {
-                    throw new Error(`Failed to load: ${response.status}`);
-                }
-                
-                const buffer = await response.arrayBuffer();
-                output.textContent = 'Game loaded! Starting...\n\n';
-                output.textContent += 'WORKFLOW TEST: Welcome to the Neolithic Cottage. You find yourself before an ancient and foreboding structure, seeking refuge from forces you dare not name.\n\n';
-                output.textContent += '> ';
-                
-                input.focus();
-            } catch (error) {
-                output.textContent = `ERROR: Could not load story file\n${error.message}`;
-            }
-        }
-
-        function sendCommand() {
-            const cmd = input.value.trim();
-            if (!cmd) return;
-            
-            output.textContent += cmd + '\n';
-            output.textContent += 'You stand in darkness. What do you do?\n\n> ';
-            input.value = '';
-            input.focus();
-        }
-
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendCommand();
-        });
-
-        // Start loading when page loads
-        window.addEventListener('load', loadGame);
+        // Redirect to iplayif.com
+        window.location.href = 'https://iplayif.com/?story=https://raw.githubusercontent.com/dagfinndybvig/inform/main/adventure_lovecraft.z5';
     </script>
 </body>
 </html>
