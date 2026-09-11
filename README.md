@@ -25,6 +25,9 @@ grandfather clock in a dark cellar teleports the player to an alien world, where
 a flaming goddess demands a gold coin offering — any other action while in her
 presence is punished by a lightning bolt.
 
+Read this article on my motivation. The link between text adventures, ontology and agentic coding:<br>
+https://www.linkedin.com/pulse/text-adventures-ontology-through-looking-glass-dagfinn-dybvig-eawie/
+
 ### Play in your browser
 
 No install needed — play directly at **<https://dagfinndybvig.github.io/inform/>**.
