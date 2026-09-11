@@ -11,12 +11,12 @@ on:
 jobs:
   compile:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install Inform 6 compiler and library
         run: |
@@ -47,8 +47,8 @@ jobs:
 
       - name: Commit and push compiled files
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
           
           # Check if there are any changes
           if git diff --quiet; then
@@ -56,5 +56,7 @@ jobs:
           else
             git add *.z5
             git commit -m "Recompile Inform 6 games [skip ci]"
-            git push origin main
+            git push
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
