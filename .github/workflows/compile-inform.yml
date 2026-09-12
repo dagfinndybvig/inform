@@ -18,14 +18,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Inform 6 compiler
+      - name: Build Inform 6.44 compiler from source
         run: |
-          sudo apt-get update
-          sudo apt-get install -y inform
+          git clone --depth 1 https://github.com/DavidKinder/Inform6.git /tmp/inform6src
+          cd /tmp/inform6src
+          cc -O2 --std=c11 -DUNIX -o inform6 *.c
+          sudo mv inform6 /usr/local/bin/
 
       - name: Compile adventure_lovecraft.inf
         run: |
-          inform -v5 adventure_lovecraft.inf adventure_lovecraft.z5
+          inform6 +inform6lib/inform6lib-master adventure_lovecraft.inf
           ls -lh adventure_lovecraft.z5
 
       - name: Commit and push compiled file
