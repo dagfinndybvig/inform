@@ -50,7 +50,7 @@ Object lantern "brass lantern"
 
 Object notebook "tattered notebook"
     with name 'tattered' 'notebook' 'book' 'journal' 'diary' 'leather',
-    description "A small notebook bound in cracked leather, its pages yellowed and spotted with mildew. The hand that penned these words trembled, the ink faded and blotched, yet two passages remain legible. The first, dated in a scrawled hand: 'The flower opens. It opens.' The second, written in a steady, educated hand: 'DO NOT EAT THE FLOWER.'",
+    description "A small notebook bound in cracked leather, its pages yellowed and spotted with mildew. The hand that penned these words trembled, the ink faded and blotched, yet two passages remain legible. The first, dated in a scrawled hand: 'She demands a sacrifice of gold, or she will cross into our world and consume it whole.' The second, written in a steady, educated hand: 'Eat the blue flower before you enter her realm. Its nectar will shield your lungs from the air of that place.'",
     initial "A tattered notebook lies upon the floor, its pages curled and stained.",
     has scored;
 
