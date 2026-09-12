@@ -33,10 +33,12 @@ https://www.linkedin.com/pulse/text-adventures-ontology-through-looking-glass-da
 ### Play in your browser
 
 No install needed — play directly at **<https://dagfinndybvig.github.io/inform/>**.
-It loads Parchment (a JavaScript Z-machine interpreter) which runs the compiled
-game in any modern browser. You type commands like `look`, `take key`, `go
-north`, `enter clock`, `give coin to goddess`. Type `help` in the game for a
-list of standard commands.
+The page loads a self-hosted copy of [Parchment](https://github.com/curiousdannii/parchment)
+(a JavaScript Z-machine interpreter) which runs the compiled game in any modern
+browser. Both the interpreter and the story file are served from the same GitHub
+Pages domain, so there are no CORS or third-party caching issues. You type
+commands like `look`, `take key`, `go north`, `enter clock`, `give coin to
+goddess`. Type `help` in the game for a list of standard commands.
 
 ## Toolchain
 
@@ -49,6 +51,9 @@ inform/
 ├── zmap.py                    # source parser → Graphviz DOT map (debugging)
 ├── Z_TEST_TOOL.md             # ztest.py documentation
 ├── INFORM_MAP_TOOL.md         # zmap.py documentation
+├── Z_SERVING_TOOL.md          # self-hosted Parchment serving documentation
+├── parchment.html             # Parchment single-file build (browser play)
+├── index.html                 # landing page, redirects to parchment.html
 ├── inform6_compiler/
 │   └── inform6.exe            # Inform 6.44 compiler (Windows)
 ├── inform6lib/
@@ -125,6 +130,24 @@ Use it to check that room connections are correct after adding or moving
 rooms, to spot disconnected areas, and to visualize the world layout without
 playing through. Dynamic connections (teleports, conditional exits set in
 `before` routines) are not auto-detected — add them with `--edge`.
+
+### Serving the game in a browser
+
+The game is served via a self-hosted copy of Parchment on GitHub Pages.
+The CI workflow (`.github/workflows/compile-inform.yml`) automatically
+recompiles `adventure_lovecraft.inf` on every push to `main` and commits the
+updated `.z5` back to the repo. GitHub Pages then serves both
+`parchment.html` (the interpreter) and `adventure_lovecraft.z5` (the story
+file) from the same domain, so the browser loads the game with no CORS
+issues and no dependency on iplayif.com. Full documentation in
+[`Z_SERVING_TOOL.md`](Z_SERVING_TOOL.md).
+
+The CI workflow builds the Inform 6 compiler from source (matching the
+bundled version) and uses the repo's bundled library, so the CI-compiled
+binary is consistent with local compilation. It also creates case-sensitivity
+symlinks for the library headers, which are lowercase on disk but referenced
+with mixed case in the game source — a non-issue on Windows but a hard
+failure on Linux.
 
 ## The game
 
