@@ -27,6 +27,12 @@ jobs:
 
       - name: Compile adventure_lovecraft.inf
         run: |
+          cd inform6lib/inform6lib-master
+          ln -s parser.h Parser.h
+          ln -s verblib.h VerbLib.h
+          ln -s grammar.h Grammar.h
+          ln -s english.h English.h
+          cd ../..
           inform6 +inform6lib/inform6lib-master adventure_lovecraft.inf
           ls -lh adventure_lovecraft.z5
 
