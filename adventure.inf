@@ -7,7 +7,7 @@ Include "VerbLib";
 
 [ Initialise;
     location = Cottage;
-    "Welcome to The Little Adventure! You are a traveler seeking shelter.^^";
+    "Welcome to The Little Adventure. You are a traveler seeking shelter.^^";
 ];
 
 ! ============================================================
