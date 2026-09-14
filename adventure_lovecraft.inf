@@ -10,6 +10,7 @@ Include "VerbLib";
 
 Global goddess_appeased;
 Global flower_eaten;
+Global coin_pried;
 
 [ Initialise;
     location = Cottage;
@@ -72,6 +73,14 @@ Object -> twig "twig"
     with name 'twig' 'stick' 'branch' 'wood' 'splinter',
     description "A slender twig, snapped from some nearby tree. Its bark is gnarled and darkened, as though the wood itself remembers the twisted forest to the east.",
     initial "A twig lies among the gnarled roots, pale against the dark soil.",
+    before [;
+        Insert:
+            if (second == crack) {
+                noun = coin;
+                second = twig;
+                return PrySub();
+            }
+    ],
     has scored;
 
 Object StoneCircle "Stone Circle"
@@ -195,10 +204,12 @@ Object -> crack "dark crack"
     description [;
         if (parent(coin) == nothing) {
             move coin to Cellar;
-            "A jagged fissure splits the flagstones, plunging into darkness. As you peer into its depths, something catches the pale light -- a gold coin, wedged deep within the crack, just within reach.";
+            "A jagged fissure splits the flagstones, plunging into darkness. As you peer into its depths, something catches the pale light -- a gold coin, wedged deep within the crack, beyond the reach of your fingers.";
         }
+        if (coin_pried)
+            "A jagged fissure splits the flagstones, plunging into darkness. The gold coin lies loose at the bottom, ready to be taken.";
         if (coin in Cellar)
-            "A jagged fissure splits the flagstones, plunging into darkness. The gold coin glints within, waiting to be taken.";
+            "A jagged fissure splits the flagstones, plunging into darkness. The gold coin glints deep within, wedged beyond the reach of your fingers.";
         "A jagged fissure splits the flagstones, plunging into darkness. Nothing remains within.";
     ],
     initial "A jagged crack splits the stone floor, its depths lost to shadow.",
@@ -242,7 +253,12 @@ Object -> FlamingGoddess "flaming goddess"
 Object coin "gold coin"
     with name 'gold' 'coin' 'tarnished' 'disc',
     description "A coin of gold -- or what appears to be gold -- bearing strange glyphs that seem to writhe when viewed directly. The metal is unnaturally warm, as though freshly minted, yet you sense it is far older than the world itself.",
-    initial "A gold coin rests deep within the crack, its surface catching what little light there is.",
+    initial "A gold coin glints deep within the crack, wedged beyond the reach of your fingers.",
+    before [;
+        Take, Remove:
+            if (coin_pried == false)
+                "The coin is wedged too deeply in the crack for your fingers to reach. You would need something thin and strong to pry it loose.";
+    ],
     has scored;
 
 ! ============================================================
@@ -288,7 +304,31 @@ Verb 'inhale'
     * noun -> Inhale
     * -> Inhale;
 
+[ PrySub;
+    if (noun ~= coin && noun ~= crack)
+        "You can't pry that loose.";
+    if (coin_pried)
+        "The coin is already loose on the flagstones.";
+    if (second ~= twig)
+        "You would need something thin and strong -- a twig, perhaps -- to pry the coin loose.";
+    if (parent(coin) == nothing)
+        move coin to Cellar;
+    coin_pried = true;
+    give coin moved;
+    "You work the twig into the fissure and lever it carefully. The coin shifts, teeters, and drops onto the flagstones at your feet.";
+];
+
 Include "Grammar";
+
+Extend 'pry' first
+    * noun 'with' held -> Pry
+    * noun -> Pry;
+
+Extend 'take' last
+    * noun 'with' held -> Pry;
+
+Extend 'get' last
+    * noun 'with' held -> Pry;
 
 Extend 'smell' replace
     * noun -> Inhale
