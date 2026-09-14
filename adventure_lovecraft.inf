@@ -286,7 +286,11 @@ Object -> FlamingGoddess "flaming goddess"
 Object coin "gold coin"
     with name 'gold' 'coin' 'tarnished' 'disc',
     description "A coin of gold -- or what appears to be gold -- bearing strange glyphs that seem to writhe when viewed directly. The metal is unnaturally warm, as though freshly minted, yet you sense it is far older than the world itself.",
-    initial "A gold coin glints deep within the crack, wedged beyond the reach of your fingers.",
+    initial [;
+        if (coin_pried)
+            "A gold coin lies loose on the flagstones, freed from the crack.";
+        "A gold coin glints deep within the crack, wedged beyond the reach of your fingers.";
+    ],
     before [;
         Take, Remove:
             if (coin_pried == false)
@@ -347,7 +351,6 @@ Verb 'inhale'
     if (parent(coin) == nothing)
         move coin to Cellar;
     coin_pried = true;
-    give coin moved;
     "You work the twig into the fissure and lever it carefully. The coin shifts, teeters, and drops onto the flagstones at your feet.";
 ];
 
