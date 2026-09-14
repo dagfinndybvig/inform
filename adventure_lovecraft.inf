@@ -303,7 +303,7 @@ Object VisionDaemon
             switch (random(3)) {
                 1: "A voice slithers through your thoughts: ~Bring me what glitters. Bring me gold.~";
                 2: "Blue flame dances at the edge of your vision, then is gone. A promise, or a threat.";
-                3: "You feel an inexorable pull toward the darkness below. She is calling.";
+                3: "You feel an inexorable pull toward the darkness below. Something is calling.";
             }
         else
             switch (random(3)) {
