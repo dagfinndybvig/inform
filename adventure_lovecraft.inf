@@ -18,6 +18,7 @@ Global coin_pried;
     move lantern to Cottage;
     move notebook to Cottage;
     move flower to ornate_box;
+    StartDaemon(VisionDaemon);
     "You are a stranger in a strange land.^^In the wilderness you find yourself before an ancient and foreboding structure, seeking refuge from forces you dare not name.^^Type 'help' for instructions.";
 ];
 
@@ -282,6 +283,35 @@ Object -> FlamingGoddess "flaming goddess"
             "The goddess's eyes flare with wrath at your paltry offering. A bolt of cold blue fire leaps from her limbs and engulfs you, and your essence unravels into the void.";
     ],
     has animate;
+
+Object VisionDaemon
+    with daemon [;
+        if (goddess_appeased) {
+            StopDaemon(self);
+            rfalse;
+        }
+        if (turns < 4) rfalse;
+        if (random(5) ~= 1) rfalse;
+        new_line;
+        if (AlienWorld has visited)
+            switch (random(3)) {
+                1: "A voice like cracking ice tears through your mind: ~The offering. The offering. The offering.~";
+                2: "Cold blue fire licks at the edges of your vision. She is waiting, and her patience has limits.";
+                3: "The goddess's hunger pulses through the air itself, a pressure behind your eyes. ~You cannot delay forever, mortal.~";
+            }
+        else if (Cellar has visited)
+            switch (random(3)) {
+                1: "The goddess's voice slithers through your thoughts: ~Bring me what glitters. Bring me gold.~";
+                2: "Blue flame dances at the edge of your vision, then is gone. A promise, or a threat.";
+                3: "You feel an inexorable pull toward the darkness below. She is calling.";
+            }
+        else
+            switch (random(3)) {
+                1: "A whisper brushes your mind, cold and alien: ~Soon...~";
+                2: "For a moment, the shadows seem to flicker with blue light. Then it passes.";
+                3: "A chill runs down your spine, as though unseen eyes are watching from somewhere far below.";
+            }
+    ];
 
 Object coin "gold coin"
     with name 'gold' 'coin' 'tarnished' 'disc',
