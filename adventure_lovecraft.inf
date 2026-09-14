@@ -15,7 +15,6 @@ Global coin_pried;
 [ Initialise;
     location = Cottage;
     move grandfather_clock to Cellar;
-    move rusty_key to Cottage;
     move lantern to Cottage;
     move notebook to Cottage;
     move flower to ornate_box;
@@ -26,6 +25,14 @@ Global coin_pried;
 ! Rooms and their contents
 ! ============================================================
 
+[ HearthstoneReveal;
+    if (parent(rusty_key) == nothing) {
+        move rusty_key to Cottage;
+        "You lever the loose hearthstone aside, revealing a rusty iron key hidden in the gap beneath.";
+    }
+    "You shift the loose hearthstone, but there is nothing else beneath it.";
+];
+
 Object Cottage "Neolithic Cottage"
     with description
         "You stand within a decaying dwelling of cyclopean stonework. The hearth contains a fire that flickers with an unnatural, sickly hue, casting grotesque shadows upon the walls. A wooden door to the north leads to a garden, while a stone staircase descends into claustrophobic darkness below.",
@@ -33,10 +40,36 @@ Object Cottage "Neolithic Cottage"
     d_to Cellar,
     has light;
 
+Object -> hearthstone "loose hearthstone"
+    with name 'hearthstone' 'hearthstones' 'stone' 'stones' 'loose' 'hearth' 'flagstone',
+    description [;
+        if (parent(rusty_key) == nothing) {
+            move rusty_key to Cottage;
+            "One of the hearthstones sits slightly askew, its mortar crumbled to dust. As you peer into the gap beneath, something metallic catches the sickly light -- a key, hidden there long ago.";
+        }
+        if (rusty_key in Cottage)
+            "The loose hearthstone sits askew, the gap beneath it exposed. The key lies within reach.";
+        "The loose hearthstone sits slightly askew, its gap empty now.";
+    ],
+    initial "One of the hearthstones around the hearth sits slightly askew, its mortar crumbled to dust.",
+    before [;
+        Take: return HearthstoneReveal();
+        Remove: return HearthstoneReveal();
+        Push: return HearthstoneReveal();
+        Pull: return HearthstoneReveal();
+        LookUnder:
+            if (parent(rusty_key) == nothing) {
+                move rusty_key to Cottage;
+                "Beneath the loose hearthstone, something metallic catches the sickly light -- a key, hidden there long ago.";
+            }
+            "There is nothing beneath the loose hearthstone now but dust.";
+    ],
+    has static;
+
 Object rusty_key "rusty key"
     with name 'rusty' 'key' 'iron',
     description "An iron key of unknown provenance, its surface pitted and marred by what may be ancient runes or merely the ravages of untold centuries. It feels unnaturally cold to the touch.",
-    initial "An iron key lies upon the floor, its purpose lost to the mists of time.",
+    initial "A rusty key lies in the gap beneath the loose hearthstone.",
     has scored;
 
 Object lantern "brass lantern"
@@ -51,7 +84,7 @@ Object lantern "brass lantern"
 
 Object notebook "tattered notebook"
     with name 'tattered' 'notebook' 'book' 'journal' 'diary' 'leather',
-    description "A small notebook bound in cracked leather, its pages yellowed and spotted with mildew. The hand that penned these words trembled, the ink faded and blotched, yet three passages remain legible. The first, dated in a scrawled hand: 'She demands a sacrifice of gold, or she will cross into our world and consume it whole.' The second, written in a steady, educated hand: 'Eat the blue flower before you enter her realm. Its nectar will shield your lungs from the air of that place.' The third, hastily scrawled in a shaking hand: 'The stones form a ring. Enter from the south, go east or west around, and seek the gap to the north. Map it if you would not be lost.'",
+    description "A small notebook bound in cracked leather, its pages yellowed and spotted with mildew. The hand that penned these words trembled, the ink faded and blotched, yet four passages remain legible. The first, dated in a scrawled hand: 'She demands a sacrifice of gold, or she will cross into our world and consume it whole.' The second, written in a steady, educated hand: 'Eat the blue flower before you enter her realm. Its nectar will shield your lungs from the air of that place.' The third, hastily scrawled in a shaking hand: 'The stones form a ring. Enter from the south, go east or west around, and seek the gap to the north. Map it if you would not be lost.' The fourth, in a cramped, furtive hand: 'I will hide the key.'",
     initial "A tattered notebook lies upon the floor, its pages curled and stained.",
     has scored;
 

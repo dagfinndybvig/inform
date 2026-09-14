@@ -18,11 +18,15 @@ with a violet bloom essential for survival beyond.
 
 You begin in the Cottage. Three objects are here:
 
-- **rusty key** — on the floor. Unlocks the ornate box at the altar in the Stone Circle labyrinth.
+- **rusty key** — hidden beneath a loose hearthstone by the hearth.
+  Examine the hearthstone (`examine hearthstone`) to discover the key, then
+  `take key`. You can also `take hearthstone`, `push hearthstone`,
+  `pull hearthstone`, or `look under hearthstone` to reveal it. Unlocks the
+  ornate box at the altar in the Stone Circle labyrinth.
 - **brass lantern** — on a shelf. Switchable; grants light when lit. Essential
   for the dark Cellar below.
 - **tattered notebook** — on the floor. Reading it (`read notebook`) reveals
-  three pieces of advice, penned by a trembling hand:
+  four pieces of advice, penned by a trembling hand:
   1. Eat the violet bloom that lies within the ornate box at the altar in the
      Stone Circle labyrinth before crossing through the clock. The air beyond
      is death to mortal lungs.
@@ -30,6 +34,7 @@ You begin in the Cottage. Three objects are here:
      it freely, or be unmade.
   3. The stones form a ring. Enter from the south, go east or west around, and
      seek the gap to the north. Map it if you would not be lost.
+  4. I will hide the key.
 
 ### 2. The Garden
 
@@ -57,7 +62,8 @@ north to reach the **Altar Chamber** at the centre. There you find:
 
 To proceed:
 
-1. Return to the Cottage and take the **rusty key**
+1. Return to the Cottage and examine the **loose hearthstone** to reveal the
+   **rusty key**, then take it
 2. Return to the Altar Chamber via the labyrinth
 3. `unlock box` with the rusty key
 4. `open box` to reveal its contents
@@ -120,7 +126,8 @@ clock to the Cellar. The game ends with `*** You have won ***`.
 ## Required sequence
 
 ```
-read notebook          # learn the two rules
+read notebook          # learn the four rules
+examine hearthstone    # discover the hidden key
 take key              # for the ornate box
 take lantern          # for the dark Cellar
 n                      # to Garden

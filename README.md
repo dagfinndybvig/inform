@@ -47,8 +47,8 @@ The page loads a self-hosted copy of [Parchment](https://github.com/curiousdanni
 (a JavaScript Z-machine interpreter) which runs the compiled game in any modern
 browser. Both the interpreter and the story file are served from the same GitHub
 Pages domain, so there are no CORS or third-party caching issues. You type
-commands like `look`, `take key`, `go north`, `enter clock`, `give coin to
-goddess`. Type `help` in the game for a list of standard commands.
+commands like `look`, `examine hearthstone`, `go north`, `enter clock`,
+`give coin to goddess`. Type `help` in the game for a list of standard commands.
 
 ## Toolchain
 
@@ -135,7 +135,7 @@ canonical `adventure_lovecraft.z5`:
 
 ```bash
 # regression-test a scoring path after a code change
-python ztest.py --mark --seed 1 --story test_lovecraft.z5 "take key" "n" "e" "n" "n" "e" "n" "n" "unlock ornate box with rusty key" "open ornate box" "take flower" "eat flower" "score"
+python ztest.py --mark --seed 1 --story test_lovecraft.z5 "examine hearthstone" "take key" "n" "e" "n" "n" "e" "n" "n" "unlock ornate box with rusty key" "open ornate box" "take flower" "eat flower" "score"
 
 # run a script of commands and diff against a baseline
 python ztest.py --mark --seed 1 --story test_lovecraft.z5 --script tests/scoring.txt > tests/scoring.out
@@ -160,6 +160,35 @@ regression tests, don't assert on the listing line for a room whose objects
 have all been moved; assert on `examine`/`take` responses instead. Objects
 with an `initial` property always show their initial text until first taken,
 which is the reliable way to make an object visible on entry.
+
+#### Known gotcha: comma-separated switch labels in before/life routines
+
+The Inform 6.44 compiler has a bug where comma-separated action labels in a
+`before` or `life` routine's switch only reliably match the first label in
+the group. For example, `before [; Take, Remove, Push, Pull, LookUnder: ...];`
+matches `Take` but silently fails to match `Push`, `Pull`, or `LookUnder` —
+the action falls through to the library default, producing no custom output.
+This also affects the library's own `LanguageLM` switch: `Pull,Push,Turn:`
+(`english.h:1198`) only matches `Pull`, which is why `push <noun>` and
+`turn <noun>` produce no output in the bundled game (confirmed against the
+original canonical build). The workaround is to give each action its own
+label and delegate to a shared helper routine:
+
+```inform
+before [;
+    Take: return HearthstoneReveal();
+    Remove: return HearthstoneReveal();
+    Push: return HearthstoneReveal();
+    Pull: return HearthstoneReveal();
+],
+```
+
+This is a compiler bug, not a library bug — the labels are syntactically
+valid Inform 6, but the compiler generates incorrect dispatch code for all
+but the first label in a comma-separated group within `before`/`after`/`life`
+routines. The library's `LanguageLM` switch in `english.h` uses the same
+pattern and is affected the same way (which is why `push`/`turn` are broken
+out of the box).
 
 ### Map generation and visual debugging
 
@@ -244,6 +273,13 @@ World has `light`.
 
 - **brass lantern** — `switchable`; its `after` routine gives/takes the `light`
   attribute on `SwitchOn`/`SwitchOff`.
+- **loose hearthstone** — `static` object in the Cottage. The rusty key is
+  hidden beneath it; `examine hearthstone` reveals the key (moves it to the
+  Cottage). `take hearthstone`, `push hearthstone`, `pull hearthstone`, and
+  `look under hearthstone` also work. The notebook's fourth passage hints that
+  the key is hidden, but not where.
+- **rusty key** — hidden under the hearthstone; unlocks the ornate box at the
+  altar. Not visible or takeable until the hearthstone is examined.
 - **grandfather clock** — `enterable container` in the Cellar. Entering it
   teleports the player (and the clock itself) between Cellar and Alien World.
 - **twig** — in the Dark Forest. Needed to pry the gold coin from the Cellar
@@ -265,7 +301,7 @@ The game has 80 points (`MAX_SCORE 80`), from three sources:
 | Source | Items | Points |
 |--------|-------|--------|
 | Room exploration (`has scored`) | Garden, Forest, Cellar, Alien World | 5 each = 20 |
-| Object acquisition (`has scored`) | notebook, rusty key, twig, flower, coin | 5 each = 20 |
+| Object acquisition (`has scored`) | notebook, rusty key, twig, flower, coin | 4 each = 20 |
 | Milestone (manual `score +=`) | eat flower, give coin to goddess, return safely | 10 + 20 + 10 = 40 |
 | **Total** | | **80** |
 
@@ -702,3 +738,10 @@ routine) avoids the source-order parentage trap.
   description fires where — `initial` only prints before the object has been
   moved/taken, so a moved object needs its presence described in the room
   prose of its new location.
+- `RunRoutines` (`parser.h:5601`) transparently substitutes `real_location`
+  for `thedark` when running `before`/`after`/`each_turn`/`react_before`/
+  `react_after` etc. — every property except `initial`, `short_name`, and
+  `description`. So a dark room's `before` and `each_turn` routines still fire
+  even though `location == thedark`. `react_before` guardians are therefore
+  active in a dark room, which matters if a custom teleport uses flag 0
+  (generates a `Look` action) to arrive in a dark room guarded by one.
