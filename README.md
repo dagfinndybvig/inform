@@ -75,6 +75,13 @@ The `+path` argument adds the library directory to the include search path so
 clean compile prints only the version banner and exits 0; any other output is
 an error or warning.
 
+> **Contributor workflow:** Local compilation is for testing only. When
+> changing `adventure_lovecraft.inf`, do not commit or push the locally
+> generated `adventure_lovecraft.z5`. Commit the source change by itself; the
+> `compile-inform.yml` GitHub Actions workflow recompiles the game and commits
+> the updated `.z5` to `main`. After local testing, use
+> `git restore adventure_lovecraft.z5` to discard the local generated copy.
+
 ### Run
 
 ```bash
