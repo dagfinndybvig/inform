@@ -190,6 +190,19 @@ routines. The library's `LanguageLM` switch in `english.h` uses the same
 pattern and is affected the same way (which is why `push`/`turn` are broken
 out of the box).
 
+#### Known gotcha: give moved suppresses OBJECT_SCORE
+
+`NoteObjectAcquisitions` (parser.h) awards `OBJECT_SCORE` (default 4) to each
+`scored` object the first time it enters the player's possession, checking
+`if (i hasnt moved)`. If `give coin moved` is called *before* the player takes
+the object — e.g., in a `PrySub` routine that dislodges the coin — the
+library sees `moved` already set and skips the award. The full win path then
+scores 76/80 instead of 80/80. The fix: never `give X moved` manually for a
+`scored` object; let the library set `moved` naturally on `take`. If the
+`moved` flag was being used to suppress a stale `initial` description, replace
+the string `initial` with a routine that checks the relevant flag (e.g.,
+`coin_pried`) and returns the appropriate text.
+
 ### Map generation and visual debugging
 
 For visual verification of room layouts and connections, use `zmap.py` — a
@@ -328,7 +341,8 @@ all produce the custom response. See "Extending a library verb" below.
 to Unlock), so the game extends it with `Extend 'pry' first` to intercept
 `pry coin with twig` before the library grammar. A `PrySub` routine handles
 the coin-in-crack puzzle: it requires the twig, sets the `coin_pried` flag,
-and gives the coin `moved` so it lists normally once dislodged. Two gotchas:
+and moves the coin to the Cellar. The coin's `initial` is a routine that
+checks `coin_pried` to show the correct description after prying. Two gotchas:
 the extension must come **after** `Include "Grammar"` (the library defines
 `pry` inside `Grammar.h`), and `get` is a separate verb from `take` in this
 library, so `Extend 'take' last` and `Extend 'get' last` both add
