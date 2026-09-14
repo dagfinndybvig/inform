@@ -22,12 +22,14 @@ You begin in the Cottage. Three objects are here:
 - **brass lantern** — on a shelf. Switchable; grants light when lit. Essential
   for the dark Cellar below.
 - **tattered notebook** — on the floor. Reading it (`read notebook`) reveals
-  two pieces of advice, penned by a trembling hand:
+  three pieces of advice, penned by a trembling hand:
   1. Eat the violet bloom that lies within the ornate box at the altar in the
      Stone Circle labyrinth before crossing through the clock. The air beyond
      is death to mortal lungs.
   2. The goddess of blue flame demands her sacrifice — the gold coin. Offer
      it freely, or be unmade.
+  3. The stones form a ring. Enter from the south, go east or west around, and
+     seek the gap to the north. Map it if you would not be lost.
 
 ### 2. The Garden
 
