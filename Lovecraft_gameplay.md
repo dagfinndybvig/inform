@@ -71,8 +71,9 @@ find:
 
 - **grandfather clock** — carved with non-Euclidean symbols. Entering it
   teleports you to the Alien World.
-- **gold coin** — glinting in the dust. This is the goddess's demanded
-  sacrifice.
+- **dark crack** — a jagged fissure in the floor. The **gold coin** is hidden
+  within. You must `examine crack` to discover the coin before you can take it.
+  This is the goddess's demanded sacrifice.
 
 ### 6. The Alien World
 
@@ -136,6 +137,7 @@ w                      # back to Garden
 s                      # back to Cottage
 d                      # descend to Cellar
 switch on lantern      # light the Cellar
+examine crack          # discover the hidden coin
 take coin             # the goddess's tribute
 enter clock           # teleport to Alien World
 give coin to goddess  # appease her

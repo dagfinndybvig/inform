@@ -225,7 +225,9 @@ World has `light`.
   attribute on `SwitchOn`/`SwitchOff`.
 - **grandfather clock** — `enterable container` in the Cellar. Entering it
   teleports the player (and the clock itself) between Cellar and Alien World.
-- **gold coin** — starts in the Cellar; the offering the goddess demands.
+- **gold coin** — hidden in a crack in the Cellar floor; the player must
+  `examine crack` to discover it before it can be taken. The offering the
+  goddess demands.
 - **flaming goddess** — `animate` object in Alien World. Kills the player on
   any action except `give coin to goddess`; accepts the coin and becomes
   pacified (`goddess_appeased` flag), after which the player may leave.
@@ -567,22 +569,36 @@ has animate;                                              # required for `give .
 
 ### The coin
 
-The coin is a top-level object (`Object coin`, no arrow) moved to the Cellar
-in `Initialise`:
+The coin is a top-level object (`Object coin`, no arrow). It does **not** start
+in the Cellar — it starts nowhere. A `dark crack` object (a `->` child of the
+Cellar, `has static`) has a `description` routine that, on first examination,
+moves the coin to the Cellar:
 
 ```inform
-[ Initialise;
-    location = Cottage;
-    move grandfather_clock to Cellar;
-    move coin to Cellar;
-    "...";
-];
+Object -> crack "dark crack"
+    with name 'crack' 'fissure' 'gap' 'crevice' 'floor',
+    description [;
+        if (parent(coin) == nothing) {
+            move coin to Cellar;
+            "A jagged fissure splits the flagstones ... a gold coin, wedged deep within the crack ...";
+        }
+        if (coin in Cellar)
+            "... The gold coin glints within ...";
+        "... Nothing remains within.";
+    ],
+    initial "A jagged crack splits the stone floor, its depths lost to shadow.",
+    has static;
 ```
 
-It was made top-level because inserting the goddess as a child of Alien
-World would otherwise have made the coin (originally `Object -> coin` after
-the goddess) a child of the goddess. Keeping it top-level and placing it
-explicitly avoids the source-order parentage trap.
+Before the crack is examined, the coin is nowhere (not in scope), so `take
+coin` fails with "You can't see any such thing." After examining the crack,
+the coin is moved to the Cellar, becomes visible, and can be taken normally.
+
+The coin was kept as a top-level object (rather than a `->` child) because
+inserting the goddess as a child of Alien World would otherwise have made the
+coin (originally `Object -> coin` after the goddess) a child of the goddess.
+Keeping it top-level and placing it explicitly (via the crack's `description`
+routine) avoids the source-order parentage trap.
 
 ## Gotchas summary
 

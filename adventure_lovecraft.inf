@@ -14,7 +14,6 @@ Global flower_eaten;
 [ Initialise;
     location = Cottage;
     move grandfather_clock to Cellar;
-    move coin to Cellar;
     move rusty_key to Cottage;
     move lantern to Cottage;
     move notebook to Cottage;
@@ -185,6 +184,20 @@ Object -> grandfather_clock "grandfather clock"
     ],
     has enterable container;
 
+Object -> crack "dark crack"
+    with name 'crack' 'fissure' 'gap' 'crevice' 'floor',
+    description [;
+        if (parent(coin) == nothing) {
+            move coin to Cellar;
+            "A jagged fissure splits the flagstones, plunging into darkness. As you peer into its depths, something catches the pale light -- a gold coin, wedged deep within the crack, just within reach.";
+        }
+        if (coin in Cellar)
+            "A jagged fissure splits the flagstones, plunging into darkness. The gold coin glints within, waiting to be taken.";
+        "A jagged fissure splits the flagstones, plunging into darkness. Nothing remains within.";
+    ],
+    initial "A jagged crack splits the stone floor, its depths lost to shadow.",
+    has static;
+
 Object AlienWorld "Alien World"
     with description
         "You stand upon a landscape of cyclopean stone spires that pierce a violet sky swirling with unnameable constellations. The very geometry of this place is wrong, angles folding in upon themselves in ways that make your head ache. To the south, a towering figure wreathed in blue flame regards you with eyes that contain infinities.",
@@ -223,7 +236,7 @@ Object -> FlamingGoddess "flaming goddess"
 Object coin "gold coin"
     with name 'gold' 'coin' 'tarnished' 'disc',
     description "A coin of gold -- or what appears to be gold -- bearing strange glyphs that seem to writhe when viewed directly. The metal is unnaturally warm, as though freshly minted, yet you sense it is far older than the world itself.",
-    initial "Something glints in the dust: a coin of dubious origin, its very presence filling you with a creeping disquiet.",
+    initial "A gold coin rests deep within the crack, its surface catching what little light there is.",
     has scored;
 
 ! ============================================================
