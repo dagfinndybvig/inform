@@ -64,14 +64,27 @@ Object Garden "Garden"
 
 Object Forest "Dark Forest"
     with description
-        "You stand amidst a forest of gnarled and twisted trees that seem to drink the very light from the air. The trunks bear deep furrows, as though clawed by some monstrous hand in ages past. Among the roots of the largest tree, you can make out an ornate wooden box.",
+        "You stand amidst a forest of gnarled and twisted trees that seem to drink the very light from the air. The trunks bear deep furrows, as though clawed by some monstrous hand in ages past. To the north, a faint path leads through the undergrowth toward a clearing.",
     w_to Garden,
+    n_to StoneCircle,
     has light scored;
+
+Object StoneCircle "Stone Circle"
+    with description
+        "In a clearing amidst the twisted trees stands a ring of weathered menhirs, their surfaces carved with symbols that predate human memory. The stones hum faintly with a resonance felt more in the bones than the ears. The forest stretches southward.",
+    s_to Forest,
+    has light;
+
+Object -> altar "stone altar"
+    with name 'stone' 'altar' 'sacrificial' 'slab',
+    description "A slab of dark stone, its surface worn smooth by countless hands -- or claws -- over millennia. Dark stains, long since dried to black, mark channels cut into the stone to drain what was once placed upon it. Faint carvings spiral inward toward a shallow basin at the centre.",
+    initial "At the centre of the circle stands a stone altar, its surface darkened by ages of use -- or sacrifice.",
+    has static;
 
 Object -> ornate_box "ornate box"
     with name 'ornate' 'box' 'chest' 'carved' 'wooden',
     description "A small wooden box of exquisite craftsmanship, its surface carved with intricate, swirling patterns that seem to shift when not looked at directly. The patterns form shapes that hurt to comprehend -- angles that should not exist, spirals that curve into impossible directions.",
-    initial "An ornate wooden box rests among the roots of a gnarled tree, its craftsmanship eerily at odds with the primitive forest around it.",
+    initial "An ornate wooden box sits atop the altar, its craftsmanship eerily at odds with the crude stone around it.",
     with_key rusty_key,
     has lockable locked container openable;
 

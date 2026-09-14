@@ -128,7 +128,7 @@ canonical `adventure_lovecraft.z5`:
 
 ```bash
 # regression-test a scoring path after a code change
-python ztest.py --mark --seed 1 --story test_lovecraft.z5 "take key" "n" "e" "unlock ornate box with rusty key" "open ornate box" "take flower" "eat flower" "score"
+python ztest.py --mark --seed 1 --story test_lovecraft.z5 "take key" "n" "e" "n" "unlock ornate box with rusty key" "open ornate box" "take flower" "eat flower" "score"
 
 # run a script of commands and diff against a baseline
 python ztest.py --mark --seed 1 --story test_lovecraft.z5 --script tests/scoring.txt > tests/scoring.out
@@ -186,7 +186,7 @@ failure on Linux.
 ### Map
 
 ```
-Cottage --n--> Garden --e--> Forest
+Cottage --n--> Garden --e--> Forest --n--> Stone Circle
   |d
   v
 Cellar  ==[enter clock]==>  Alien World

@@ -76,12 +76,12 @@ This is useful for grep-based assertions in regression scripts.
 
 ## Example session
 
-A scoring regression test — take the key, travel to the Forest, unlock the
-ornate box, take and eat the flower, then check the score:
+A scoring regression test — take the key, travel to the Stone Circle via the
+Forest, unlock the ornate box, take and eat the flower, then check the score:
 
 ```bash
 python ztest.py --mark --seed 1 \
-  "take key" "n" "e" \
+  "take key" "n" "e" "n" \
   "unlock ornate box with rusty key" \
   "open ornate box" \
   "take flower" \
@@ -99,6 +99,7 @@ Taken.
 [The score has just gone up by five points.]
 ###CMD: e
 [The score has just gone up by five points.]
+###CMD: n
 ###CMD: unlock ornate box with rusty key
 You unlock the ornate box.
 ###CMD: open ornate box
@@ -115,12 +116,13 @@ swim and right itself. You sense, with a certainty beyond all reason, that
 your lungs have been quietly remade to endure an atmosphere not of this earth.
 [The score has just gone up by ten points.]
 ###CMD: score
-You have so far scored 28 out of a possible 76, in 7 turns.
+You have so far scored 28 out of a possible 76, in 8 turns.
 ```
 
 Score breakdown: key (+4) + Garden (+5) + Forest (+5) + flower (+4) + eat
-flower milestone (+10) = **28 out of 76**, in 7 turns. This matches the
-scoring design documented in `README.md` exactly.
+flower milestone (+10) = **28 out of 76**, in 8 turns. Stone Circle has no
+`scored` attribute, so it awards no points. This matches the scoring design
+documented in `README.md` exactly.
 
 ## What it implements
 

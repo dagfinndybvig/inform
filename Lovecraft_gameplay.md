@@ -8,8 +8,8 @@ goddess demands tribute.
 
 You find yourself before an ancient, foreboding cottage, seeking refuge from
 forces you dare not name. Within lies a grandfather clock that is no mere
-timepiece — it is a gate between worlds. In the Forest, an ornate box holds
-a violet bloom essential for survival beyond.
+timepiece — it is a gate between worlds. Beyond the Forest, a Stone Circle
+holds an ornate box with a violet bloom essential for survival beyond.
 
 ## Walkthrough
 
@@ -17,13 +17,13 @@ a violet bloom essential for survival beyond.
 
 You begin in the Cottage. Three objects are here:
 
-- **rusty key** — on the floor. Unlocks the ornate box in the Forest.
+- **rusty key** — on the floor. Unlocks the ornate box in the Stone Circle.
 - **brass lantern** — on a shelf. Switchable; grants light when lit. Essential
   for the dark Cellar below.
 - **tattered notebook** — on the floor. Reading it (`read notebook`) reveals
   two pieces of advice, penned by a trembling hand:
-  1. Eat the violet bloom that lies within the ornate box in the forest before
-     crossing through the clock. The air beyond is death to mortal lungs.
+  1. Eat the violet bloom that lies within the ornate box in the Stone Circle
+     before crossing through the clock. The air beyond is death to mortal lungs.
   2. The goddess of blue flame demands her sacrifice — the gold coin. Offer
      it freely, or be unmade.
 
@@ -34,11 +34,16 @@ From here, proceed east to the **Dark Forest**.
 
 ### 3. The Forest
 
-The Dark Forest contains an **ornate wooden box** with intricate, shifting
+Go east to the **Dark Forest**. A faint path leads north to a clearing.
+
+### 4. The Stone Circle
+
+North of the Forest stands a ring of weathered menhirs. At the centre is a
+**stone altar** bearing an **ornate wooden box** with intricate, shifting
 patterns carved into its surface. The box is locked. To proceed:
 
 1. Return to the Cottage and take the **rusty key**
-2. Return to the Forest
+2. Return to the Stone Circle
 3. `unlock box` with the rusty key
 4. `open box` to reveal its contents
 5. Inside is the **blue flower** — eat it (`eat flower`) before proceeding
@@ -46,7 +51,7 @@ patterns carved into its surface. The box is locked. To proceed:
 The flower's nectar remakes your lungs to endure the alien atmosphere. Without
 this, you will asphyxiate upon entering the Alien World.
 
-### 4. The Cellar
+### 5. The Cellar
 
 Return to the Cottage, then descend. The Cellar is dark — you must bring the
 lantern (from the Cottage) and switch it on, or fumble in blindness. Here you
@@ -57,7 +62,7 @@ find:
 - **gold coin** — glinting in the dust. This is the goddess's demanded
   sacrifice.
 
-### 5. The Alien World
+### 6. The Alien World
 
 Enter the clock. You arrive on a landscape of cyclopean stone spires beneath
 a violet sky. Two things are here:
@@ -68,13 +73,13 @@ a violet sky. Two things are here:
   flame. She is animate and aware. While unappeased, she kills on any action
   except `give coin to goddess`. Do nothing else in her presence.
 
-### 6. The Offering
+### 7. The Offering
 
 Give the coin to the goddess (`give coin to goddess`). She accepts it with
 flashing eyes, the coin swallowed by her fire, and the oppressive dread
 recedes. You are now permitted to act freely.
 
-### 7. The Return
+### 8. The Return
 
 Enter the clock again to return to the Cellar. If the goddess has been
 appeased, the game ends in victory: the clock's symbols go quiet, the
@@ -102,9 +107,11 @@ take key              # for the ornate box
 take lantern          # for the dark Cellar
 n                      # to Garden
 e                      # to Forest
+n                      # to Stone Circle
 unlock box            # with the rusty key
 open box              # reveal the flower
 eat flower            # survive the alien air
+s                      # back to Forest
 w                      # back to Garden
 s                      # back to Cottage
 d                      # descend to Cellar

@@ -112,12 +112,14 @@ digraph game_map {
     Cottage [label="Cottage"];
     Garden [label="Garden"];
     Forest [label="Dark Forest"];
+    StoneCircle [label="Stone Circle"];
     Cellar [label="Dusty Cellar"];
     AlienWorld [label="Alien World"];
 
     Cottage -> Garden [label="N / S", dir=both, style=solid];
     Cottage -> Cellar [label="D / U", dir=both, style=solid];
     Garden -> Forest [label="E / W", dir=both, style=solid];
+    Forest -> StoneCircle [label="N / S", dir=both, style=solid];
     Cellar -> AlienWorld [label="enter clock", style=dashed];
 }
 ```
@@ -125,16 +127,17 @@ digraph game_map {
 This matches the game map:
 
 ```
-Cottage --N--> Garden --E--> Forest
+Cottage --N--> Garden --E--> Forest --N--> Stone Circle
   |D
   v
 Cellar  ==[enter clock]==>  Alien World
 ```
 
-The four standard connections (N/S, D/U, E/W) were detected automatically from
-the source's `n_to`, `s_to`, `e_to`, `w_to`, `u_to`, `d_to` properties. The
-clock teleport (a `before` routine on the clock object) was added manually via
-`--edge` since it has no directional property.
+The five standard connections (N/S, D/U, E/W, and the second N/S to Stone
+Circle) were detected automatically from the source's `n_to`, `s_to`, `e_to`,
+`w_to`, `u_to`, `d_to` properties. The clock teleport (a `before` routine on
+the clock object) was added manually via `--edge` since it has no directional
+property.
 
 ## Rendering
 
