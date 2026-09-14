@@ -6,7 +6,7 @@ This repository is about **Inform 6 tooling** — the compiler, the standard
 library, a Z-machine interpreter for manual play, `ztest.py` (a headless
 Z-machine v5 interpreter for automated testing, validation, and debugging),
 and `zmap.py` (a headless source parser that generates game-world maps for
-visual verification of room layouts and connections). The toolchain, testing
+visual verification of room layouts and connections), as well as a pipeline to compile and publish files when sent to GitHub. The toolchain, testing
 methodology, and library-mechanics documentation below apply to any Inform 6
 game.
 
