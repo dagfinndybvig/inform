@@ -246,8 +246,12 @@ World has `light`.
   attribute on `SwitchOn`/`SwitchOff`.
 - **grandfather clock** — `enterable container` in the Cellar. Entering it
   teleports the player (and the clock itself) between Cellar and Alien World.
+- **twig** — in the Dark Forest. Needed to pry the gold coin from the Cellar
+  crack; `pry coin with twig`, `take coin with twig`, and `put twig in crack`
+  all route to the same `Pry` action.
 - **gold coin** — hidden in a crack in the Cellar floor; the player must
-  `examine crack` to discover it before it can be taken. The offering the
+  `examine crack` to discover it, then pry it loose with the twig before it
+  can be taken (`take coin` fails with a hint until pried). The offering the
   goddess demands.
 - **flaming goddess** — `animate` object in Alien World. Kills the player on
   any action except `give coin to goddess`; accepts the coin and becomes
@@ -256,14 +260,14 @@ World has `light`.
 
 ### Scoring
 
-The game has 76 points (`MAX_SCORE 76`), from three sources:
+The game has 80 points (`MAX_SCORE 80`), from three sources:
 
 | Source | Items | Points |
 |--------|-------|--------|
 | Room exploration (`has scored`) | Garden, Forest, Cellar, Alien World | 5 each = 20 |
-| Object acquisition (`has scored`) | notebook, rusty key, flower, coin | 4 each = 16 |
+| Object acquisition (`has scored`) | notebook, rusty key, twig, flower, coin | 5 each = 20 |
 | Milestone (manual `score +=`) | eat flower, give coin to goddess, return safely | 10 + 20 + 10 = 40 |
-| **Total** | | **76** |
+| **Total** | | **80** |
 
 - Rooms with `has scored` award `ROOM_SCORE` (default 5) on first visit, via
   `ScoreArrival` (called by `LookSub`). The starting room (Cottage) is not
@@ -275,7 +279,7 @@ The game has 76 points (`MAX_SCORE 76`), from three sources:
 - The Z-machine v5 status line shows the current score automatically; `score`
   prints it, and `fullscore` shows the places/things breakdown.
 
-### Custom verb
+### Custom verbs
 
 `inhale [noun]` — defined with `Verb 'inhale'` and an `InhaleSub` routine,
 with special-case text for the flower and coin.
@@ -283,6 +287,17 @@ with special-case text for the flower and coin.
 The library `smell`/`sniff` verb is extended to route `smell <noun>` to the
 same `Inhale` action, so `smell flower`, `sniff flower`, and `inhale flower`
 all produce the custom response. See "Extending a library verb" below.
+
+`pry [noun] [with twig]` — the library already defines `pry`/`lever` (mapped
+to Unlock), so the game extends it with `Extend 'pry' first` to intercept
+`pry coin with twig` before the library grammar. A `PrySub` routine handles
+the coin-in-crack puzzle: it requires the twig, sets the `coin_pried` flag,
+and gives the coin `moved` so it lists normally once dislodged. Two gotchas:
+the extension must come **after** `Include "Grammar"` (the library defines
+`pry` inside `Grammar.h`), and `get` is a separate verb from `take` in this
+library, so `Extend 'take' last` and `Extend 'get' last` both add
+`* noun 'with' held -> Pry` to make `take coin with twig` and
+`get coin with twig` parse.
 
 ## Methodology
 
@@ -461,7 +476,7 @@ point in the code. Do **not** append a notification string — the library
 prints its own automatically (see "Score notification" below).
 
 ```inform
-Constant MAX_SCORE 76;
+Constant MAX_SCORE 80;
 
 ! In the flower's after routine:
 Eat:
@@ -525,6 +540,24 @@ entirely, so your `* noun -> Inhale` takes priority. Include a fallback
 single verb name, not a list of synonyms. The library's `Verb 'smell' 'sniff'`
 already groups `sniff` under `smell`, so extending `smell` automatically
 covers `sniff`.
+
+A third placement keyword is `first`: it puts your lines **before** the
+library's, so yours are tried first without discarding the library grammar.
+This is the right choice when the library already defines the verb with
+different behavior you want to keep as a fallback:
+
+```inform
+Include "Grammar";
+
+! The library defines pry/lever (mapped to Unlock); intercept first.
+Extend 'pry' first
+    * noun 'with' held -> Pry
+    * noun -> Pry;
+```
+
+Note that `get` is a separate verb from `take` in this library (not a
+synonym), so `take X with Y` and `get X with Y` each need their own
+`Extend ... last * noun 'with' held -> Pry;` line to parse.
 
 ## Implementation details
 

@@ -40,6 +40,9 @@ From here, proceed east to the **Dark Forest**.
 
 Go east to the **Dark Forest**. A faint path leads north to a clearing.
 
+A **twig** lies among the gnarled roots. Take it — you will need it in the
+Cellar to pry the gold coin from the crack.
+
 ### 4. The Stone Circle and Labyrinth
 
 North of the Forest stands a ring of weathered menhirs. Going north from the
@@ -72,7 +75,9 @@ find:
 - **grandfather clock** — carved with non-Euclidean symbols. Entering it
   teleports you to the Alien World.
 - **dark crack** — a jagged fissure in the floor. The **gold coin** is hidden
-  within. You must `examine crack` to discover the coin before you can take it.
+  within, wedged too deep to reach by hand. You must `examine crack` to
+  discover the coin, then pry it loose with the **twig** from the Forest
+  (`pry coin with twig`, or `put twig in crack`) before you can take it.
   This is the goddess's demanded sacrifice.
 
 ### 6. The Alien World
@@ -108,9 +113,9 @@ dwelling settles, and you have survived the beyond.
 
 ## Win condition
 
-Eat the flower from the ornate box, obtain the coin from the Cellar, appease
-the goddess with the coin, then return through the clock to the Cellar. The
-game ends with `*** You have won ***`.
+Eat the flower from the ornate box, pry the coin loose from the Cellar crack
+with the twig, appease the goddess with the coin, then return through the
+clock to the Cellar. The game ends with `*** You have won ***`.
 
 ## Required sequence
 
@@ -120,6 +125,7 @@ take key              # for the ornate box
 take lantern          # for the dark Cellar
 n                      # to Garden
 e                      # to Forest
+take twig             # needed to pry the coin from the crack
 n                      # to Stone Circle
 n                      # into Labyrinth South
 e                      # to Labyrinth East
@@ -138,6 +144,7 @@ s                      # back to Cottage
 d                      # descend to Cellar
 switch on lantern      # light the Cellar
 examine crack          # discover the hidden coin
+pry coin with twig    # dislodge the wedged coin
 take coin             # the goddess's tribute
 enter clock           # teleport to Alien World
 give coin to goddess  # appease her
