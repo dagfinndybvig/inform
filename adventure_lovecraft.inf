@@ -68,6 +68,12 @@ Object Forest "Dark Forest"
     n_to StoneCircle,
     has light scored;
 
+Object -> twig "twig"
+    with name 'twig' 'stick' 'branch' 'wood' 'splinter',
+    description "A slender twig, snapped from some nearby tree. Its bark is gnarled and darkened, as though the wood itself remembers the twisted forest to the east.",
+    initial "A twig lies among the gnarled roots, pale against the dark soil.",
+    has scored;
+
 Object StoneCircle "Stone Circle"
     with description
         "In a clearing amidst the twisted trees stands a ring of weathered menhirs, their surfaces carved with symbols that predate human memory. The stones hum faintly with a resonance felt more in the bones than the ears. To the north, a narrow gap between the menhirs leads into a labyrinth of stone. The forest stretches southward.",

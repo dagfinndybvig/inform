@@ -140,6 +140,20 @@ placement, room descriptions) produce the expected output, and to debug
 issues by running targeted command sequences and inspecting the response
 without launching the GUI.
 
+#### Known gotcha: dropped objects may not appear in room listings
+
+The bundled Inform 6 library (locally modified with the fix for L61122) only
+prints the "You can also see X here." listing when at least one other object
+in the room printed its `initial` or `describe` text during the same look.
+If a room contains only moved (taken-and-dropped) objects, the listing is
+silently omitted — the objects are still there and fully interactable
+(`examine`, `take` work). This affects every object equally and is a
+library-level behaviour, not a bug in the game source. When writing
+regression tests, don't assert on the listing line for a room whose objects
+have all been moved; assert on `examine`/`take` responses instead. Objects
+with an `initial` property always show their initial text until first taken,
+which is the reliable way to make an object visible on entry.
+
 ### Map generation and visual debugging
 
 For visual verification of room layouts and connections, use `zmap.py` — a
