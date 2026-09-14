@@ -11,7 +11,9 @@ testing of gameplay impossible.
 
 `ztest.py` lives in the `inform/` project directory and defaults to
 `adventure_lovecraft.z5` (the compiled game for *The Goddess in the Cellar*).
-It can run any Z-machine v5 story file via `--story`:
+For local testing after a code change, compile to `test_lovecraft.z5` and pass
+it with `--story` instead (see [Workflow](#workflow) below). It can run any
+Z-machine v5 story file via `--story`:
 
 ```bash
 python ztest.py --story adventure.z5 "look" "quit"
@@ -180,13 +182,13 @@ misinterpret them as code. For this project's compiler, it works.
 The intended workflow for regression-testing after a code change:
 
 1. Edit `adventure_lovecraft.inf`.
-2. Recompile:
+2. Recompile to the local test build (not the canonical file):
    ```bash
-   ./inform6_compiler/inform6.exe +inform6lib/inform6lib-master adventure_lovecraft.inf
+   ./inform6_compiler/inform6.exe +inform6lib/inform6lib-master adventure_lovecraft.inf test_lovecraft.z5
    ```
-3. Run a test playthrough:
+3. Run a test playthrough against the test build:
    ```bash
-   python ztest.py --mark --seed 1 "look" "take key" "n" "e" "score" "quit" "y"
+   python ztest.py --mark --seed 1 --story test_lovecraft.z5 "look" "take key" "n" "e" "score" "quit" "y"
    ```
 4. Check the output for expected responses, score changes, and absence of
    library errors.
@@ -195,7 +197,7 @@ For repeatable test suites, keep command lists in `.txt` files under version
 control and run them with `--script`:
 
 ```bash
-python ztest.py --mark --seed 1 --script tests/scoring.txt > tests/scoring.out
+python ztest.py --mark --seed 1 --story test_lovecraft.z5 --script tests/scoring.txt > tests/scoring.out
 ```
 
 Then `diff` against a known-good baseline.
