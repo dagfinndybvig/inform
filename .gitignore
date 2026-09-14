@@ -1,2 +1,4 @@
 __pycache__/
 nul
+*.z5
+!adventure_lovecraft.z5

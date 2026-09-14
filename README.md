@@ -19,7 +19,17 @@ in the Cellar" game source, the documentation, and the methodology notes — is
 licensed under the MIT Licence. You are free to use, modify, and distribute
 it.
 
-The headless tooling is especilly aimed at agentic coding.
+The headless tooling is especilly aimed at agentic coding. To support that,
+compilation is split into two paths:
+
+- **Local testing** — compile to `test_lovecraft.z5` (gitignored) and drive it
+  with `ztest.py` for automated regression tests. One throwaway file, never
+  committed. See [Compile](#compile) and
+  [Automated testing](#automated-testing-validation-and-debugging).
+- **Publication** — the `compile-inform.yml` GitHub Actions workflow compiles
+  `adventure_lovecraft.inf` to the canonical `adventure_lovecraft.z5` and
+  commits it to `main`, where it is served via GitHub Pages. See
+  [Compile](#compile).
 
 The included game **"The Goddess in the Cellar"** is a small test project used
 to exercise and validate the toolchain. It is a Lovecraftian text adventure: a
@@ -45,7 +55,8 @@ goddess`. Type `help` in the game for a list of standard commands.
 ```
 inform/
 ├── adventure_lovecraft.inf   # main source
-├── adventure_lovecraft.z5     # compiled game (Z-machine v5)
+├── adventure_lovecraft.z5     # compiled game (Z-machine v5, CI-produced, canonical)
+├── test_lovecraft.z5          # local test build (gitignored, not committed)
 ├── adventure.inf / .z5        # original (non-Lovecraft) version
 ├── ztest.py                   # headless Z-machine v5 interpreter (testing)
 ├── zmap.py                    # source parser → Graphviz DOT map (debugging)
@@ -64,10 +75,17 @@ inform/
 
 ### Compile
 
-From the `inform/` directory (Git Bash):
+The repo keeps two distinct build outputs:
+
+- **`adventure_lovecraft.z5`** — the canonical compiled game, tracked in git,
+  served via GitHub Pages, and produced by the `compile-inform.yml` workflow.
+  This is the only `.z5` file that should ever be committed.
+- **`test_lovecraft.z5`** — a throwaway local build for testing before pushing.
+  Gitignored. Produce it by passing a second argument to override the output
+  filename:
 
 ```bash
-./inform6_compiler/inform6.exe +inform6lib/inform6lib-master adventure_lovecraft.inf
+./inform6_compiler/inform6.exe +inform6lib/inform6lib-master adventure_lovecraft.inf test_lovecraft.z5
 ```
 
 The `+path` argument adds the library directory to the include search path so
@@ -75,18 +93,33 @@ The `+path` argument adds the library directory to the include search path so
 clean compile prints only the version banner and exits 0; any other output is
 an error or warning.
 
-> **Contributor workflow:** Local compilation is for testing only. When
-> changing `adventure_lovecraft.inf`, do not commit or push the locally
-> generated `adventure_lovecraft.z5`. Commit the source change by itself; the
-> `compile-inform.yml` GitHub Actions workflow recompiles the game and commits
-> the updated `.z5` to `main`. After local testing, use
-> `git restore adventure_lovecraft.z5` to discard the local generated copy.
+`.gitignore` blocks all `*.z5` files and then re-allows the canonical one:
+
+```
+*.z5
+!adventure_lovecraft.z5
+```
+
+This prevents accidental commits of `test_lovecraft.z5` or any other local
+build. Note that gitignore only stops *untracked* files from being added — it
+cannot prevent modifications to `adventure_lovecraft.z5`, which is already
+tracked. So do not run the compiler without the second argument, or you will
+overwrite the tracked canonical file and could commit a stale local build over
+it. If that happens, restore it with `git restore adventure_lovecraft.z5`.
+
+> **Contributor workflow:** Always compile to `test_lovecraft.z5` locally.
+> Commit the source change by itself; the `compile-inform.yml` GitHub Actions
+> workflow recompiles `adventure_lovecraft.inf` and commits the updated
+> `adventure_lovecraft.z5` to `main` (using `git add -f`, since `*.z5` is
+> gitignored except for the canonical build).
 
 ### Run
 
 ```bash
 ./frotz/Frotz.exe adventure_lovecraft.z5
 ```
+
+To play a locally compiled test build instead, run `./frotz/Frotz.exe test_lovecraft.z5`.
 
 For automated testing, pipe commands via stdin:
 
@@ -101,12 +134,15 @@ testing, validation, and debugging, use `ztest.py` — a headless Z-machine v5
 interpreter that feeds scripted commands to the story file and prints all
 output to stdout. Full documentation in [`Z_TEST_TOOL.md`](Z_TEST_TOOL.md).
 
+Point ztest at your local `test_lovecraft.z5` build with `--story`, not the
+canonical `adventure_lovecraft.z5`:
+
 ```bash
 # regression-test a scoring path after a code change
-python ztest.py --mark --seed 1 "take key" "n" "e" "unlock ornate box with rusty key" "open ornate box" "take flower" "eat flower" "score"
+python ztest.py --mark --seed 1 --story test_lovecraft.z5 "take key" "n" "e" "unlock ornate box with rusty key" "open ornate box" "take flower" "eat flower" "score"
 
 # run a script of commands and diff against a baseline
-python ztest.py --mark --seed 1 --script tests/scoring.txt > tests/scoring.out
+python ztest.py --mark --seed 1 --story test_lovecraft.z5 --script tests/scoring.txt > tests/scoring.out
 diff tests/scoring.out tests/scoring.baseline
 ```
 
