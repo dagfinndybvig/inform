@@ -166,8 +166,27 @@ Object coin "gold coin"
     has scored;
 
 ! ============================================================
-! A simple custom verb
+! Custom verbs
 ! ============================================================
+
+[ HelpSub;
+    print "^HOW TO PLAY INTERACTIVE FICTION^";
+    print "Type short commands telling the game what you want to do, then press Enter. Most commands take the form VERB or VERB NOUN.^";
+    print "^Useful commands:^";
+    print "  LOOK                 describe your surroundings^";
+    print "  EXAMINE THING        inspect an object (X THING also works)^";
+    print "  TAKE THING           pick something up^";
+    print "  DROP THING           put something down^";
+    print "  INVENTORY             list what you are carrying^";
+    print "  NORTH, SOUTH, EAST, WEST, UP, DOWN (or N, S, E, W, U, D)^";
+    print "  OPEN, CLOSE, ENTER, READ, GIVE, and other everyday verbs^";
+    print "  SAVE / RESTORE       save or resume your progress^";
+    print "  UNDO                 take back your previous move^";
+    print "  SCORE                 show your current score^";
+    print "  QUIT                  leave the game^";
+    print "^Explore carefully, examine unusual objects, and pay attention to descriptions. If a command is not understood, try a simpler verb or a different name for the object.^";
+    "You can type HELP or INSTRUCTIONS at any time to see this message again.^";
+];
 
 [ InhaleSub;
     if (noun == 0) {
@@ -181,6 +200,9 @@ Object coin "gold coin"
     }
     "You inhale near ", (the) noun, ", and the air seems to thicken with unseen presences.";
 ];
+
+Verb meta 'help' 'instructions'
+    * -> Help;
 
 Verb 'inhale'
     * noun -> Inhale
