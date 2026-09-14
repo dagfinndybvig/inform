@@ -18,7 +18,7 @@ Global flower_eaten;
     move lantern to Cottage;
     move notebook to Cottage;
     move flower to ornate_box;
-    "You are a stranger in a strange alnd. In the wilderness you find yourself before an ancient and foreboding structure, seeking refuge from forces you dare not name.^^";
+    "You are a stranger in a strange land. In the wilderness you find yourself before an ancient and foreboding structure, seeking refuge from forces you dare not name.^^";
 ];
 
 ! ============================================================
