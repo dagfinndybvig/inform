@@ -101,6 +101,13 @@ to `adventure_lovecraft.z5` and overwrites the tracked canonical file.
 > Commit the source change by itself; the `compile-inform.yml` GitHub Actions
 > workflow recompiles `adventure_lovecraft.inf` and commits the updated
 > `adventure_lovecraft.z5` to `main`.
+>
+> Because CI commits directly to `main`, the remote often moves ahead of your
+> local clone between sessions. Run `git pull --rebase origin main` before
+> starting work and again before pushing — otherwise your push will be
+> rejected with "fetch first". `--rebase` keeps the history linear, preserving
+> the alternating source-commit / auto-compile-commit pattern. Only rebase
+> commits you have not pushed yet.
 
 ### Run
 
