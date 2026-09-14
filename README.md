@@ -93,25 +93,14 @@ The `+path` argument adds the library directory to the include search path so
 clean compile prints only the version banner and exits 0; any other output is
 an error or warning.
 
-`.gitignore` blocks all `*.z5` files and then re-allows the canonical one:
-
-```
-*.z5
-!adventure_lovecraft.z5
-```
-
-This prevents accidental commits of `test_lovecraft.z5` or any other local
-build. Note that gitignore only stops *untracked* files from being added — it
-cannot prevent modifications to `adventure_lovecraft.z5`, which is already
-tracked. So do not run the compiler without the second argument, or you will
-overwrite the tracked canonical file and could commit a stale local build over
-it. If that happens, restore it with `git restore adventure_lovecraft.z5`.
+`test_lovecraft.z5` is listed in `.gitignore` so it can never be committed by
+accident. Always pass the second argument — without it, the compiler writes
+to `adventure_lovecraft.z5` and overwrites the tracked canonical file.
 
 > **Contributor workflow:** Always compile to `test_lovecraft.z5` locally.
 > Commit the source change by itself; the `compile-inform.yml` GitHub Actions
 > workflow recompiles `adventure_lovecraft.inf` and commits the updated
-> `adventure_lovecraft.z5` to `main` (using `git add -f`, since `*.z5` is
-> gitignored except for the canonical build).
+> `adventure_lovecraft.z5` to `main`.
 
 ### Run
 

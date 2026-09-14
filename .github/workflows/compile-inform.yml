@@ -44,7 +44,7 @@ jobs:
           if git diff --quiet adventure_lovecraft.z5; then
             echo "No changes to adventure_lovecraft.z5"
           else
-            git add -f adventure_lovecraft.z5
+            git add adventure_lovecraft.z5
             git commit -m "Auto-compile adventure_lovecraft.inf [skip ci]"
             git push origin main
           fi
