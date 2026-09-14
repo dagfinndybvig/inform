@@ -3,7 +3,7 @@ Constant Headline "^A Lovecraftian tale of portals and sacrifice^";
 Constant IFID "8ba9c0d1-e2f3-4456-9a7b-c8d9e0f1a2b3";
 Serial "240916";
 Release 2;
-Constant MAX_SCORE 76;
+Constant MAX_SCORE 80;
 
 Include "Parser";
 Include "VerbLib";
