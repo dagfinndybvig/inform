@@ -9,7 +9,8 @@ goddess demands tribute.
 You find yourself before an ancient, foreboding cottage, seeking refuge from
 forces you dare not name. Within lies a grandfather clock that is no mere
 timepiece — it is a gate between worlds. Beyond the Forest, a Stone Circle
-holds an ornate box with a violet bloom essential for survival beyond.
+of standing stones forms a labyrinth around an altar bearing an ornate box
+with a violet bloom essential for survival beyond.
 
 ## Walkthrough
 
@@ -17,13 +18,14 @@ holds an ornate box with a violet bloom essential for survival beyond.
 
 You begin in the Cottage. Three objects are here:
 
-- **rusty key** — on the floor. Unlocks the ornate box in the Stone Circle.
+- **rusty key** — on the floor. Unlocks the ornate box at the altar in the Stone Circle labyrinth.
 - **brass lantern** — on a shelf. Switchable; grants light when lit. Essential
   for the dark Cellar below.
 - **tattered notebook** — on the floor. Reading it (`read notebook`) reveals
   two pieces of advice, penned by a trembling hand:
-  1. Eat the violet bloom that lies within the ornate box in the Stone Circle
-     before crossing through the clock. The air beyond is death to mortal lungs.
+  1. Eat the violet bloom that lies within the ornate box at the altar in the
+     Stone Circle labyrinth before crossing through the clock. The air beyond
+     is death to mortal lungs.
   2. The goddess of blue flame demands her sacrifice — the gold coin. Offer
      it freely, or be unmade.
 
@@ -36,14 +38,22 @@ From here, proceed east to the **Dark Forest**.
 
 Go east to the **Dark Forest**. A faint path leads north to a clearing.
 
-### 4. The Stone Circle
+### 4. The Stone Circle and Labyrinth
 
-North of the Forest stands a ring of weathered menhirs. At the centre is a
-**stone altar** bearing an **ornate wooden box** with intricate, shifting
-patterns carved into its surface. The box is locked. To proceed:
+North of the Forest stands a ring of weathered menhirs. Going north from the
+clearing funnels you into a labyrinth of standing stones — a ring of 5 rooms
+(South, East, North, West) plus a Blind Alley dead end. Navigate clockwise
+(east) or counterclockwise (west) around the ring to Labyrinth North, then go
+north to reach the **Altar Chamber** at the centre. There you find:
+
+- **stone altar** — a dark slab stained by ancient sacrifice.
+- **ornate wooden box** — sits atop the altar, locked, carved with shifting
+  patterns.
+
+To proceed:
 
 1. Return to the Cottage and take the **rusty key**
-2. Return to the Stone Circle
+2. Return to the Altar Chamber via the labyrinth
 3. `unlock box` with the rusty key
 4. `open box` to reveal its contents
 5. Inside is the **blue flower** — eat it (`eat flower`) before proceeding
@@ -108,9 +118,17 @@ take lantern          # for the dark Cellar
 n                      # to Garden
 e                      # to Forest
 n                      # to Stone Circle
+n                      # into Labyrinth South
+e                      # to Labyrinth East
+n                      # to Labyrinth North
+n                      # to Altar Chamber
 unlock box            # with the rusty key
 open box              # reveal the flower
 eat flower            # survive the alien air
+s                      # to Labyrinth North
+e                      # to Labyrinth East
+s                      # to Labyrinth South
+s                      # to Stone Circle
 s                      # back to Forest
 w                      # back to Garden
 s                      # back to Cottage

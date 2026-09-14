@@ -128,7 +128,7 @@ canonical `adventure_lovecraft.z5`:
 
 ```bash
 # regression-test a scoring path after a code change
-python ztest.py --mark --seed 1 --story test_lovecraft.z5 "take key" "n" "e" "n" "unlock ornate box with rusty key" "open ornate box" "take flower" "eat flower" "score"
+python ztest.py --mark --seed 1 --story test_lovecraft.z5 "take key" "n" "e" "n" "n" "e" "n" "n" "unlock ornate box with rusty key" "open ornate box" "take flower" "eat flower" "score"
 
 # run a script of commands and diff against a baseline
 python ztest.py --mark --seed 1 --story test_lovecraft.z5 --script tests/scoring.txt > tests/scoring.out
@@ -186,11 +186,34 @@ failure on Linux.
 ### Map
 
 ```
-Cottage --n--> Garden --e--> Forest --n--> Stone Circle
-  |d
-  v
-Cellar  ==[enter clock]==>  Alien World
+Cottage --N--> Garden --E--> Forest --N--> Stone Circle --N--> Labyrinth South
+  |D                                                              |
+  v                                                          (ring of stones)
+Cellar  ==[enter clock]==>  Alien World                    Altar Chamber
 ```
+
+The Stone Circle is a clearing with a ring of standing stones. Going north
+from the clearing funnels the player into a labyrinth of 5 rooms forming a
+ring around the altar:
+
+```
+          Altar Chamber
+              N|S
+       Labyrinth North
+      / E|        |W \
+Labyrinth East    Labyrinth West
+  |E
+  v
+Blind Alley
+      \ S|        |E /
+       Labyrinth South
+           S|N
+       Stone Circle
+```
+
+The player enters at Labyrinth South and must go east or west around the ring
+to Labyrinth North, then north to the Altar Chamber where the altar and ornate
+box are. A Blind Alley dead end branches east off Labyrinth East.
 
 The Cellar is dark (no `light` attribute); the player must bring the brass
 lantern (switchable, grants `light` when on) or fumble in darkness. Alien

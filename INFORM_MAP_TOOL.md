@@ -98,7 +98,7 @@ Multiple `--edge` flags can be used to add several manual edges.
 From the test game `adventure_lovecraft.inf`:
 
 ```bash
-python zmap.py adventure_lovecraft.inf --edge "Cellar:Alien World:enter clock:dashed"
+python zmap.py adventure_lovecraft.inf --edge "Cellar:Alien World:enter clock:dashed" --edge "Stone Circle:Labyrinth South:n"
 ```
 
 Output:
@@ -109,10 +109,16 @@ digraph game_map {
     node [shape=box, style=rounded, fontname="Helvetica"];
     edge [fontname="Helvetica", fontsize=10];
 
-    Cottage [label="Cottage"];
+    Cottage [label="Neolithic Cottage"];
     Garden [label="Garden"];
     Forest [label="Dark Forest"];
     StoneCircle [label="Stone Circle"];
+    LabyrinthSouth [label="Labyrinth South"];
+    LabyrinthEast [label="Labyrinth East"];
+    LabyrinthBlind [label="Blind Alley"];
+    LabyrinthNorth [label="Labyrinth North"];
+    LabyrinthWest [label="Labyrinth West"];
+    AltarChamber [label="Altar Chamber"];
     Cellar [label="Dusty Cellar"];
     AlienWorld [label="Alien World"];
 
@@ -120,6 +126,13 @@ digraph game_map {
     Cottage -> Cellar [label="D / U", dir=both, style=solid];
     Garden -> Forest [label="E / W", dir=both, style=solid];
     Forest -> StoneCircle [label="N / S", dir=both, style=solid];
+    LabyrinthSouth -> StoneCircle [label="S / n", dir=both, style=solid];
+    LabyrinthSouth -> LabyrinthEast [label="E / S", dir=both, style=solid];
+    LabyrinthSouth -> LabyrinthWest [label="W / E", dir=both, style=solid];
+    LabyrinthEast -> LabyrinthNorth [label="N / E", dir=both, style=solid];
+    LabyrinthEast -> LabyrinthBlind [label="E / W", dir=both, style=solid];
+    LabyrinthNorth -> AltarChamber [label="N / S", dir=both, style=solid];
+    LabyrinthNorth -> LabyrinthWest [label="W / N", dir=both, style=solid];
     Cellar -> AlienWorld [label="enter clock", style=dashed];
 }
 ```
@@ -127,17 +140,19 @@ digraph game_map {
 This matches the game map:
 
 ```
-Cottage --N--> Garden --E--> Forest --N--> Stone Circle
-  |D
-  v
-Cellar  ==[enter clock]==>  Alien World
+Cottage --N--> Garden --E--> Forest --N--> Stone Circle --N--> Labyrinth South
+  |D                                                              |
+  v                                                          (ring of stones)
+Cellar  ==[enter clock]==>  Alien World                    Altar Chamber
 ```
 
-The five standard connections (N/S, D/U, E/W, and the second N/S to Stone
-Circle) were detected automatically from the source's `n_to`, `s_to`, `e_to`,
-`w_to`, `u_to`, `d_to` properties. The clock teleport (a `before` routine on
-the clock object) was added manually via `--edge` since it has no directional
-property.
+The standard connections (N/S, D/U, E/W, and the N/S to Stone Circle) were
+detected automatically from the source's directional properties. The
+labyrinth ring connections (South↔East, South↔West, East↔North, East↔Blind,
+North↔West, North↔Altar) were also auto-detected. Two connections required
+manual `--edge` flags: the clock teleport (a `before` routine on the clock
+object) and the Stone Circle → Labyrinth South redirect (an `n_to` routine
+on Stone Circle that returns `LabyrinthSouth`).
 
 ## Rendering
 

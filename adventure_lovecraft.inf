@@ -71,8 +71,55 @@ Object Forest "Dark Forest"
 
 Object StoneCircle "Stone Circle"
     with description
-        "In a clearing amidst the twisted trees stands a ring of weathered menhirs, their surfaces carved with symbols that predate human memory. The stones hum faintly with a resonance felt more in the bones than the ears. The forest stretches southward.",
+        "In a clearing amidst the twisted trees stands a ring of weathered menhirs, their surfaces carved with symbols that predate human memory. The stones hum faintly with a resonance felt more in the bones than the ears. To the north, a narrow gap between the menhirs leads into a labyrinth of stone. The forest stretches southward.",
     s_to Forest,
+    n_to [;
+        print "You squeeze through a narrow gap between two menhirs, the cold stone scraping against your shoulders, and find yourself threading through the labyrinth of standing stones.^";
+        return LabyrinthSouth;
+    ],
+    has light;
+
+Object LabyrinthSouth "Labyrinth South"
+    with description
+        "You stand in a narrow gap between massive menhirs, their carved surfaces cold and slick with lichen. The way south opens back to the clearing. To the east and west, further gaps lead deeper into the ring of stones. To the north, the menhirs stand flush, allowing no passage.",
+    s_to StoneCircle,
+    e_to LabyrinthEast,
+    w_to LabyrinthWest,
+    has light;
+
+Object LabyrinthEast "Labyrinth East"
+    with description
+        "You edge along a passage between looming stones. Gaps lead north and south along the ring. To the east, a narrow crevice beckons -- perhaps a way through, or perhaps a trap. The stones to the west are unbroken, their carvings spiralling into patterns that hurt the eye.",
+    s_to LabyrinthSouth,
+    n_to LabyrinthNorth,
+    e_to LabyrinthBlind,
+    has light;
+
+Object LabyrinthBlind "Blind Alley"
+    with description
+        "The crevice narrows to nothing. You stand in a pocket of cold stone, hemmed in on all sides by menhirs older than memory. The humming is louder here, almost a drone. There is nothing but stone and the echo of your own breath. The only way back is west.",
+    w_to LabyrinthEast,
+    has light;
+
+Object LabyrinthNorth "Labyrinth North"
+    with description
+        "You push through a gap and emerge on the far side of the ring. The air feels charged with an ancient anticipation. To the north, a wider opening leads inward, toward the heart of the circle. Passages lead east and west along the ring. The way south is blocked by stones set too close to pass.",
+    e_to LabyrinthEast,
+    w_to LabyrinthWest,
+    n_to AltarChamber,
+    has light;
+
+Object LabyrinthWest "Labyrinth West"
+    with description
+        "You thread between menhirs on the western arc of the ring. Their surfaces bear spiralling carvings that seem to shift at the edge of vision. A gap to the north leads onward, and to the east a passage returns toward the clearing. The stones to the south are impenetrable.",
+    n_to LabyrinthNorth,
+    e_to LabyrinthSouth,
+    has light;
+
+Object AltarChamber "Altar Chamber"
+    with description
+        "You push through the final gap and emerge at the heart of the stone circle. The menhirs ring you on all sides, their carvings converging inward toward this point. The air hums with a resonance that sets your teeth on edge. The only way out is south, back through the labyrinth.",
+    s_to LabyrinthNorth,
     has light;
 
 Object -> altar "stone altar"
