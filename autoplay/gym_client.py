@@ -9,6 +9,9 @@ imported as a library for programmatic play.
 Usage (interactive):
     python autoplay/gym_client.py --port 7777
 
+Usage (one command per invocation, for turn-by-turn play from a script):
+    python autoplay/gym_client.py --port 7777 --command "look"
+
 Usage (library):
     from autoplay.gym_client import GymClient
 
@@ -62,6 +65,17 @@ class GymClient:
         return json.loads(line.decode("utf-8"))
 
     def close(self):
+        # Close the makefile objects too: they hold the underlying
+        # connection open, and a socket.close() alone is not enough for
+        # the server to see the disconnect.
+        for f in (self.rfile, self.wfile):
+            if f is not None:
+                try:
+                    f.close()
+                except Exception:
+                    pass
+        self.rfile = None
+        self.wfile = None
         if self.sock:
             self.sock.close()
             self.sock = None
@@ -94,12 +108,48 @@ def wait_for_server(proc, timeout=20.0):
         raise RuntimeError("gym server exited during startup")
 
 
+def one_shot(host, port, cmd):
+    """Send one command, print the response, and exit.
+
+    The server resends the opening text on every connection; it is
+    discarded here so turn-by-turn output stays clean.
+    """
+    client = GymClient(host=host, port=port)
+    client.connect()
+    try:
+        client.recv()  # opening (resent on reconnect) -- discarded
+        resp = client.send(cmd)
+        if resp.get("error"):
+            print("Server error: %s" % resp["error"], file=sys.stderr)
+            return
+        sys.stdout.write(resp.get("output", ""))
+        if not resp.get("output", "").endswith("\n"):
+            sys.stdout.write("\n")
+        if resp.get("done"):
+            deadflag = resp.get("deadflag", 0)
+            if deadflag == 2:
+                print("\n*** Game won! Score: %d ***" % resp.get("score", 0))
+            elif deadflag == 1:
+                print("\n*** Game over (dead) ***")
+            else:
+                print("\n*** Game ended ***")
+    finally:
+        client.close()
+
+
 def main():
     ap = argparse.ArgumentParser(
         description="Client for the Z-machine gym server")
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=7777)
+    ap.add_argument("--command", default=None, metavar="CMD",
+                    help="send one command, print the response, and exit "
+                         "(for turn-by-turn play from a script)")
     args = ap.parse_args()
+
+    if args.command is not None:
+        one_shot(args.host, args.port, args.command)
+        return
 
     client = GymClient(host=args.host, port=args.port)
     client.connect()

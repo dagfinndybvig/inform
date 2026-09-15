@@ -285,4 +285,7 @@ the output routing logic.
 
 The gym server also supports `--max-turns N`, which ends the game at
 the next input request after N commands execute — the same semantics
-as `autoplay.py`'s turn limit above.
+as `autoplay.py`'s turn limit above. Its game state persists across
+client connections, and `gym_client.py --command "look"` sends one
+command per invocation, giving turn-by-turn play from a script without
+holding a connection open.

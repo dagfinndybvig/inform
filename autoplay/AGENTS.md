@@ -69,7 +69,15 @@ python autoplay/autoplay_server.py --story test_lovecraft.z5 --port 7777 --max-t
 ```
 
 The server runs forever (until Ctrl-C). It handles one client
-connection. After the game ends, restart the server to play again.
+connection at a time; a client may disconnect and reconnect without
+losing progress. When a client connects after the game ended, a fresh
+game starts automatically — no server restart needed.
+
+For turn-by-turn play from a script or agent, use one-shot mode:
+
+```bash
+python autoplay/gym_client.py --port 7777 --command "look"
+```
 
 ### Connect a client to the gym
 
@@ -162,8 +170,9 @@ score/deadflag for an unknown game, parse the game's text output
 - No screen formatting, sound, or pictures — all no-ops.
 - No disk save/restore — `save`/`restore` return failure. UNDO works.
 - Single-line input only. `read_char` returns the first character.
-- The gym server handles one connection. Game state is per-server,
-  not per-connection. Restart to play again.
+- The gym server handles one connection at a time. Game state is
+  per-server, not per-connection. Reconnects resume the game; a
+  connection after the game ended starts a fresh game.
 - A crashed game thread (e.g. an unimplemented opcode) is reported to
   the client as a final `done: true` response containing the
   traceback, not a hang.

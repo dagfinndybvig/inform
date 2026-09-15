@@ -24,7 +24,9 @@ games.
 - **`autoplay_server.py`** — TCP server that runs the Z-machine in a
   background thread. The game thread pauses at each `aread` (input
   prompt), sends accumulated output to the client, and blocks until the
-  client sends the next command.
+  client sends the next command. A manager keeps the game alive across
+  connections and starts a fresh game when a client connects after the
+  previous one ended.
 - **`gym_client.py`** — TCP client with both a `GymClient` library class
   and an interactive CLI mode.
 
@@ -51,7 +53,8 @@ Newline-delimited JSON over TCP.
 | `deadflag` | 0 = in progress, 1 = dead, 2 = won |
 
 The first response after connecting contains the game's opening text
-with `done: false` and `turn: 0`.
+with `done: false` and `turn: 0`. On a reconnect, the cached opening is
+resent and the game continues from its current state.
 
 Malformed requests (invalid JSON, or a missing `cmd` field) get an
 error response with `output` empty and the game state unchanged:
@@ -79,6 +82,17 @@ python autoplay/autoplay_server.py --story archive/adventure.z5 --port 7777
 
 ```bash
 python autoplay/gym_client.py --port 7777
+```
+
+### Send one command per invocation
+
+For turn-by-turn play from a script or an agent, `--command` connects,
+sends one command, prints the response, and exits. The game state
+persists between invocations on the server:
+
+```bash
+python autoplay/gym_client.py --port 7777 --command "look"
+python autoplay/gym_client.py --port 7777 --command "take key"
 ```
 
 ### Use as a library
@@ -164,10 +178,15 @@ will report 0. The `done` flag always works correctly regardless.
 
 ### Limitations
 
-- **Single connection.** The server handles one client at a time. The
-  game state is per-server, not per-connection.
-- **No restart.** Once the game ends, the server must be restarted to
-  play again.
+- **One connection at a time.** The server handles one client at a
+  time (sequential connections are fine — disconnect and reconnect
+  without losing progress). The game state is per-server, not
+  per-connection.
+- **Reconnect replays the opening.** A reconnecting client is sent the
+  cached opening text again, then the game continues from its current
+  state.
+- **Auto-restart on game over.** When a client connects after the game
+  ended, a fresh game starts automatically — no server restart needed.
 - **Global detection is game-specific.** The score/turn/deadflag fields
   rely on knowing the win path. For unknown games, use the `done` flag
   and parse score from the game's text output instead.

@@ -49,7 +49,9 @@ Runs a `.z5` game as a TCP server. An external agent connects, sends
 one command at a time, and receives the game's response after each
 command as structured JSON (output text, score, turn count, win/loss
 state). Supports `--max-turns N` to end the game after a fixed number
-of input turns.
+of input turns. Clients may disconnect and reconnect without losing
+progress; when a client connects after the game ended, a fresh game
+starts automatically.
 
 ```bash
 python autoplay/autoplay_server.py --story test_lovecraft.z5 --port 7777
@@ -61,11 +63,15 @@ architecture.
 ### gym_client.py — Client library and CLI
 
 Connects to the gym server. Can be used interactively from the
-terminal or imported as a Python library for programmatic play.
+terminal, one command per invocation (for turn-by-turn play from a
+script), or imported as a Python library for programmatic play.
 
 ```bash
 # interactive
 python autoplay/gym_client.py --port 7777
+
+# one command per invocation; game state persists on the server
+python autoplay/gym_client.py --port 7777 --command "look"
 ```
 
 ```python
