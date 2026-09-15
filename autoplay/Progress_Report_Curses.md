@@ -8,14 +8,12 @@ opening.
 
 ## Sessions and score
 
-Across multiple sessions the agent reached a best score of **27 out
-of 550**. A further 31 points from earlier sessions (pipe joint,
-poetry book, Phlebas boat, garden maze, Viewpoint Ledge, ship in a
-bottle, glass ball) are repeatable but require replaying from scratch
-each session because the game state does not persist between server
-restarts.
+Across multiple sessions the agent reached a best score of **82 out
+of 550**, reproducible in a single run from the opening using the
+`smart_play.py` automation script. This represents 15 puzzles solved
+in one continuous playthrough.
 
-## Puzzles solved (27 pts, reproducible in one session)
+## Puzzles solved (82 pts, reproducible in one session)
 
 | Pts | Puzzle | Solution |
 |-----|--------|----------|
@@ -28,19 +26,18 @@ restarts.
 | 3 | Rucksack | Found in Dead End (south of East Annexe) -- increases carrying capacity |
 | 6 | Robot mouse to attic key | At Cellars South: `drop mouse`, `mouse, w` (squeezes through hole), then navigate the mouse remotely by addressing the hole: `hole, w` x3, `hole, n`, `hole, w`, `hole, n` (beep = key found), `hole, s`, `hole, e`, `hole, s`, `hole, e` x4. Mouse returns with brass key. |
 | 5 | Priest's Hole | Open the skylight in the Inside Cupboard (`turn crank`) to provide light, then drop the brass key and torch down the fireplace/chimney. The torch dislodges a sooty stick blocking the passage. Enter fireplace, descend to the Priest's Hole. Find Mad Isaac's diary (disguised as a prayer book), the sooty stick, and the key. Unlock the hatch to descend to Cellar West. |
-
-## Additional puzzles solved in earlier sessions (not yet combined into one run)
-
-| Pts | Puzzle | Solution |
-|-----|--------|----------|
-| 4 | Pipe joint | `tighten joint with wrench` in Library Storage |
+| 2 | Daisy chain | Give box of chocolates to Aunt Jemima in the Potting Room, say "yellow" to request a yellow daisy chain. Wait 5 turns for her to finish. She hangs it around the player's neck. |
+| 4 | Pipe joint | `tighten joint with wrench` in Library Storage -- books fall away, revealing poetry and romantic novel |
 | 5 | Poetry book transport | `examine poetry` transports to the Unreal City (1922) |
-| 5 | Hollow man boat | `say time` to the hollow man on the Phlebas (remove gas mask first) |
+| 5 | Hollow man boat | `say time` to the hollow man on the Phlebas (remove gas mask first) -- boat drifts to Garden Stream, player receives Ace of Cups tarot card |
 | 5 | Garden maze | Ride motorised garden roller north through the privet hedge |
-| 5 | Viewpoint Ledge | Navigate the maze: N,N,W,W,N,N,N,N,W,W,W from the entrance |
-| 6 | Ship parachute | On the ship mast: `get flag`, then `port` -- flag becomes a parachute |
-| 3 | Ship in bottle | `put sticks in bottle` in the Cups and Glasses room (inside the Ace of Cups tarot card, accessed via the slide projector) |
-| 3 | Glass ball alarm | `polish glass ball` in the Observatory with the Fool tarot card in the projector slot -- beam hits the smoke detector, opens the fire escape |
+| 5 | Viewpoint Ledge | Navigate the maze: N,N,W,W,N,N,N,N,W,W,W from the entrance. Take the miniature plastic etching. |
+| 6 | Ship parachute | Put Ace of Cups in projector slot, walk through wall to Cups and Glasses room. Examine crates to find model ship. Pull anchor to fold ship into sticks. `put sticks in mounted bottle` (must specify "mounted" to disambiguate from medicine bottle). Examine ship to transport aboard. Climb mast, `get flag`, `port` to parachute down. `get all` to recover flag and timber spar. |
+| 3 | Ship in bottle | The act of putting the sticks in the bottle and examining the ship completes the puzzle. |
+| 3 | Glass ball alarm | `polish glass ball` in the Observatory with the Fool tarot card in the projector slot -- beam hits the smoke detector, opens a fire escape hatch in the Dead End |
+| 10 | Alison's Writing Room | In the Dead End, `push south wall` then `south` to discover Alison's hidden writing room behind the fake wall she installed. |
+| 5 | Melancholy Dream | In the Writing Room: `lie down` on the comfortable bed, `put flag on bed` to use as a blanket, `sleep`. Wait for the ghost to appear, then go E, E to the Octagonal Tomb. `turn wheel` (moves infinitesimally), `pinch me` to wake up. |
+| 4 | Gold key | Obtained from the Melancholy Dream (found under the window in the Tiny Balcony). Opens the jewellery box. |
 
 ## Key discoveries
 
@@ -74,6 +71,38 @@ Alison's Writing Room. The Melancholy Dream requires the flag from
 the ship-in-bottle puzzle, the daisy chain from Jemima, and access
 to Alison's Writing Room (behind the projector wall). This is a deep
 puzzle chain that gates the mid-to-late game.
+
+### Alison's Writing Room and the Melancholy Dream
+
+Alison Meldrew installed a fake wall at the south end of the Dead End
+in the attic to hide a writing room where she could write her romances
+in peace. The wall can be pushed aside (`push south wall` then
+`south`).
+
+The Writing Room contains a comfortable bed and a vanity mirror. To
+trigger the Melancholy Dream, the player must `lie down` on the bed,
+`put flag on bed` (the Merchant Navy flag from the ship puzzle serves
+as a blanket), and `sleep`. The dream sequence takes place in a
+passage with a metal barrier. After waiting for a ghost to appear, the
+player goes E, E to the Octagonal Tomb, where a wheel can be turned
+(though it moves only infinitesimally). Pinching oneself (`pinch me`)
+wakes the player. The dream also yields a delicate gold key (found
+under a window in a Tiny Balcony within the dream).
+
+The dream's wheel-turning is what opens the sandstone recess in the
+Dark Passage, granting access to the Octagon Room.
+
+### The daisy chain and Rods of Power
+
+Mad Isaac's diary (1792 entry) reveals that Merlin bound the estate
+with "Roddes of Power" that disguise themselves as ordinary objects.
+To convert an object into a Rod, the player must wave it while
+wearing the daisy chain from Jemima. The daisy chain rustles when
+waving a convertible object. However, the daisy chain was lost during
+the Melancholy Dream sequence -- it may have been consumed by the
+dream or lost during inventory transitions. This is the current
+blocker: without the daisy chain, the sooty stick, timber spar, and
+green branch cannot be converted into Rods of Power.
 
 ### Mad Isaac's diary
 
@@ -154,11 +183,15 @@ there, three main branches open up:
 The slide projector in the Souvenirs Room acts as a fourth branch
 point, using Tarot cards to open passages into card-specific worlds.
 
-The current bottleneck is the sandstone recess, which requires the
-Melancholy Dream to open. The next session will focus on completing
-the mid-game chain: daisy chain from Jemima, Tarot cards, ship
-puzzle, fire escape, Alison's Writing Room, and finally the
-Melancholy Dream.
+The current bottleneck is the **daisy chain**, which was lost during
+the Melancholy Dream. Without it, the sooty stick, timber spar, and
+green branch cannot be waved into Rods of Power. The Rods are needed
+to access the Octagon Room (behind the sandstone recess, now opened
+by the dream's wheel), where a coffin contains the Rod of Returning
+-- essential for escaping the Folly in 1808 (accessed via the etching
+in the projector). The next session will investigate the daisy chain's
+disappearance and, if necessary, re-obtain it from Jemima before
+attempting the Rods of Power conversion.
 
 ---
 
