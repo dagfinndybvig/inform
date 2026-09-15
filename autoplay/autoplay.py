@@ -8,7 +8,7 @@ at each prompt.  No scripting, no pre-fed command list.
 
 Usage:
     python autoplay/autoplay.py [--story STORY.z5] [--seed N]
-                                [--transcript FILE]
+                                [--transcript FILE] [--max-turns N]
 
 Default story is adventure_lovecraft.z5 in the repo root.
 """
@@ -36,10 +36,12 @@ def read_header(story_path):
 class InteractiveZMachine(ZMachine):
     """ZMachine that reads commands interactively from stdin."""
 
-    def __init__(self, *args, transcript=None, story_path=None, **kwargs):
+    def __init__(self, *args, transcript=None, story_path=None, max_turns=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.transcript = transcript
         self.story_path = story_path
+        self.max_turns = max_turns
+        self.turn_count = 0
 
     def _write(self, text):
         """Write text to stdout and optionally the transcript."""
@@ -59,6 +61,12 @@ class InteractiveZMachine(ZMachine):
 
     def next_command(self):
         self._flush_output()
+        self.turn_count += 1
+        if self.max_turns is not None and self.turn_count > self.max_turns:
+            self._write("\n[Turn limit reached after %d turns.]\n"
+                        % self.max_turns)
+            self.running = False
+            return None
         try:
             return input(">")
         except EOFError:
@@ -77,6 +85,8 @@ def main():
                     help="seed the PRNG for reproducible random output")
     ap.add_argument("--transcript", default=None,
                     help="write game output to this file")
+    ap.add_argument("--max-turns", type=int, default=None,
+                    help="stop after this many turns of input")
     args = ap.parse_args()
 
     version, release, serial = read_header(args.story)
@@ -94,7 +104,8 @@ def main():
         transcript.write("=" * 40 + "\n\n")
 
     z = InteractiveZMachine(args.story, commands=[], seed=args.seed,
-                           transcript=transcript, story_path=args.story)
+                           transcript=transcript, story_path=args.story,
+                           max_turns=args.max_turns)
     try:
         z.run()
     except Quit:

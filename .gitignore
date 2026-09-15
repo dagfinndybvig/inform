@@ -2,3 +2,4 @@ __pycache__/
 nul
 test_lovecraft.z5
 curses.z5
+autoplay/curses_transcript.txt
