@@ -20,6 +20,11 @@ card an agent (or human) must follow in every session.
 
 ## Checking CI status
 
+- **Only check CI when the `.inf` source changed.** The
+  `compile-inform.yml` workflow recompiles `adventure_lovecraft.z5`
+  only on `.inf` changes; the `pages` deploy is a static-site rebuild
+  that has never failed on tooling or doc changes. If a push touched
+  only Python tooling, docs, or `.gitignore`, skip the CI check.
 - The `compile-inform.yml` and `pages` workflows run on every push to
   `main`. To check their status without authenticating `gh`, query the
   public GitHub API directly (this repo is public, so no token needed):
