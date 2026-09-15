@@ -175,3 +175,93 @@ No save/restore is needed — the `ZMachine` instance holds all state
   stdin. Key-character input (`read_char`) returns the first character.
 - **Same compiler quirks as ztest.py.** See the "Quirks" section of
   [`Z_TEST_TOOL.md`](../Z_TEST_TOOL.md).
+
+## Z-machine header fields
+
+`read_header` extracts metadata from the story file's binary header.
+The Z-machine v5 header is a fixed-layout region at the start of the
+`.z5` file:
+
+| Offset | Size | Field | Value read |
+|--------|------|-------|-------------|
+| `0x00` | 1 byte | Version | `5` (Z-machine v5) |
+| `0x02` | 2 bytes | Release number | Big-endian word, e.g. `2` |
+| `0x12` | 6 bytes | Serial code | ASCII string, e.g. `240916` |
+
+These fields are used to construct the transcript header and are
+also available to the gym server for startup logging. The game's
+title and headline are not in the header — they are printed by the
+game's own code at startup and appear in the game output stream.
+
+Other header fields used by the underlying `ZMachine` (in `ztest.py`)
+but not read by `autoplay.py` directly:
+
+| Offset | Size | Field | Used for |
+|--------|------|-------|----------|
+| `0x04` | 2 bytes | High memory mark | `high_mem` |
+| `0x06` | 2 bytes | Initial PC | `initial_pc` (entry point) |
+| `0x08` | 2 bytes | Dictionary address | `dict_addr` (word lookup) |
+| `0x0A` | 2 bytes | Object table address | `obj_table` |
+| `0x0C` | 2 bytes | Globals table address | `globals` |
+| `0x0E` | 2 bytes | Static memory mark | `static_mem` |
+| `0x18` | 2 bytes | Abbreviations table | `abbrev_table` (z-string decoding) |
+
+## How `aread` works
+
+The Z-machine `aread` opcode (VAR form, opcode 4) is the input
+primitive. When the game wants player input, it executes `aread`,
+which:
+
+1. Reads a line of text from the player (via `next_command`).
+2. Stores the text in the text buffer at the address given by operand
+   1. In v5, byte 0 of the buffer is the max chars, byte 1 is set to
+   the actual length, and the text follows from byte 2.
+3. Tokenizes the text into the parse buffer at the address given by
+   operand 2, using the game's dictionary for word separation and
+   lookup.
+4. Returns a store value of 10 (newline terminator) to the game.
+
+In `ztest.py`, `aread` calls `self.next_command()` to get the input
+line. `autoplay.py` overrides this method to read from `input()`
+instead of a pre-fed list. The gym server (`autoplay_server.py`)
+overrides it again to block on a thread-safe queue until the client
+sends a command.
+
+## Transcript format
+
+When `--transcript FILE` is set, a header is written before the game
+starts:
+
+```
+Transcript of <basename>
+Z-machine v<version>, Release <release>, Serial <serial>
+Recorded: <YYYY-MM-DD HH:MM:SS>
+[Seed: <N>]
+========================================
+
+```
+
+The body is a verbatim copy of all game output written to stream 1
+(the screen), including the `>` prompt markers. The prompt is injected
+by `_flush_output` — it adds a newline if the game output doesn't end
+with one before printing `>`. This ensures the prompt always sits on
+its own line.
+
+The transcript file is opened in UTF-8 encoding and closed after the
+game ends (either by `Quit` exception or EOF on stdin).
+
+## Relationship to the gym server
+
+`autoplay.py` and `autoplay_server.py` share the same design pattern:
+both subclass `ZMachine` and override `next_command` to change the
+input source. The difference is where the command comes from:
+
+| Tool | Input source | Output destination | Use case |
+|------|-------------|-------------------|----------|
+| `ztest.py` | Pre-fed command list | stdout (batch) | Regression testing |
+| `autoplay.py` | `input()` (stdin) | stdout + transcript file | Interactive terminal play |
+| `autoplay_server.py` | Thread-safe queue (from TCP client) | JSON over TCP | Agent-driven play (world-gym) |
+
+All three inherit the same opcode implementations from the `ZMachine`
+base class. The only per-tool code is the `next_command` override and
+the output routing logic.
