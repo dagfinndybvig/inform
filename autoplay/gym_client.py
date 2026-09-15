@@ -28,6 +28,7 @@ import argparse
 import json
 import socket
 import sys
+import threading
 
 
 class GymClient:
@@ -66,6 +67,33 @@ class GymClient:
             self.sock = None
 
 
+def wait_for_server(proc, timeout=20.0):
+    """Block until a gym server subprocess finishes starting.
+
+    Reads proc.stderr (must be a pipe) on a helper thread until the
+    server prints its 'Listening on' startup line, so a dead or hung
+    server cannot block the caller forever.  Raises RuntimeError on
+    timeout or if the server exits before finishing startup.
+    """
+    outcome = {}
+
+    def read_stderr():
+        for line in proc.stderr:
+            if b"Listening on" in line:
+                outcome["ready"] = True
+                return
+        outcome["ready"] = False
+
+    t = threading.Thread(target=read_stderr, daemon=True)
+    t.start()
+    t.join(timeout)
+    if "ready" not in outcome:
+        raise RuntimeError(
+            "gym server did not report ready within %g s" % timeout)
+    if not outcome["ready"]:
+        raise RuntimeError("gym server exited during startup")
+
+
 def main():
     ap = argparse.ArgumentParser(
         description="Client for the Z-machine gym server")
@@ -80,6 +108,10 @@ def main():
 
     # Receive opening output
     resp = client.recv()
+    if resp.get("error"):
+        print("Server error: %s" % resp["error"], file=sys.stderr)
+        client.close()
+        return
     sys.stdout.write(resp["output"])
     if not resp["output"].endswith("\n"):
         sys.stdout.write("\n")
@@ -96,6 +128,9 @@ def main():
             continue
 
         resp = client.send(cmd)
+        if resp.get("error"):
+            print("Server error: %s" % resp["error"], file=sys.stderr)
+            continue
         sys.stdout.write(resp.get("output", ""))
         if not resp.get("output", "").endswith("\n"):
             sys.stdout.write("\n")

@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """Live demo: start gym server, play the Lovecraft game turn by turn."""
-import os, sys, time, subprocess, json
+import os, sys, subprocess, json
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gym_client import GymClient
+from gym_client import GymClient, wait_for_server
 
 # Start server
 proc = subprocess.Popen(
-    [sys.executable, "autoplay_server.py",
+    [sys.executable, "autoplay/autoplay_server.py",
      "--story", "test_lovecraft.z5", "--port", "7799"],
-    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    stdout=subprocess.DEVNULL, stderr=subprocess.PIPE,
     cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-time.sleep(4)
+wait_for_server(proc)
 
 try:
     c = GymClient(port=7799)

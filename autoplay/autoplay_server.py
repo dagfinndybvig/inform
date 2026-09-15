@@ -12,6 +12,8 @@ Protocol: newline-delimited JSON over TCP.
   Request:  {"cmd": "take key"}
   Response: {"output": "Taken.", "done": false, "turn": 1}
 
+Bad requests get {"error": "..."} with "output" empty.
+
 When the game ends (quit, win, or death):
   Response: {"output": "...", "done": true, "turn": 38,
              "score": 90, "deadflag": 2}
@@ -20,6 +22,7 @@ When the game ends (quit, win, or death):
 
 Usage:
     python autoplay/autoplay_server.py --story archive/adventure.z5 --port 7777
+                                       [--max-turns N]
 
 Then connect with any TCP client, or use gym_client.py.
 """
@@ -31,6 +34,7 @@ import queue
 import socketserver
 import sys
 import threading
+import traceback
 
 # ztest.py lives in the repo root, one level up.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -76,14 +80,14 @@ def find_score_globals(story_path):
     try:
         z2 = ZMachine(story_path, commands=win_cmds, seed=1)
         z2.run()
-    except (Quit, Exception):
+    except Exception:
         pass
 
     quit_cmds = ["look", "quit", "y"]
     try:
         z3 = ZMachine(story_path, commands=quit_cmds, seed=1)
         z3.run()
-    except (Quit, Exception):
+    except Exception:
         pass
 
     # Score: 0 -> 90 after win, still 0 after quit
@@ -114,10 +118,12 @@ class GameThread(threading.Thread):
       - result_queue: game -> handler (output + done flag after each turn)
     """
 
-    def __init__(self, story_path, seed=None):
+    def __init__(self, story_path, seed=None, max_turns=None):
         super().__init__(daemon=True)
         self.story_path = story_path
         self.seed = seed
+        self.max_turns = max_turns
+        self.turn_count = 0
         self.cmd_queue = queue.Queue()
         self.result_queue = queue.Queue()
         self.z = None
@@ -132,6 +138,14 @@ class GameThread(threading.Thread):
                 self.z.step()
         except Quit:
             pass
+        except Exception:
+            # A crashed game thread would otherwise leave the client
+            # blocked forever on get_result().  Report and stop.
+            output = "".join(self.z.out_buf) if self.z.out_buf else ""
+            self.z.out_buf.clear()
+            output += "\n[Game thread error]\n%s" % traceback.format_exc()
+            self.result_queue.put({"output": output, "done": True})
+            return
 
         # Send final output
         output = "".join(self.z.out_buf)
@@ -144,10 +158,18 @@ class GameThread(threading.Thread):
         self.z.out_buf.clear()
         self.result_queue.put({"output": output, "done": False})
 
+        # Stop after max_turns commands of input (like autoplay.py)
+        if self.max_turns is not None and self.turn_count >= self.max_turns:
+            self.z.out_buf.append(
+                "\n[Turn limit reached after %d turns.]\n" % self.max_turns)
+            self.z.running = False
+            return None
+
         # Block until the handler provides the next command
         cmd = self.cmd_queue.get()
         if cmd is None:
             return None
+        self.turn_count += 1
         return cmd
 
     def send_command(self, cmd):
@@ -189,12 +211,12 @@ class GymHandler(socketserver.StreamRequestHandler):
                     break
                 req = json.loads(line.decode("utf-8"))
             except (json.JSONDecodeError, ValueError):
-                self._send({"error": "invalid JSON"})
+                self._send(error="invalid JSON")
                 continue
 
             cmd = req.get("cmd", "")
             if not cmd:
-                self._send({"error": "missing 'cmd' field"})
+                self._send(error="missing 'cmd' field")
                 continue
 
             # Feed command to game, wait for response
@@ -208,7 +230,8 @@ class GymHandler(socketserver.StreamRequestHandler):
             self._send(output, done=done, turn=turn, score=score,
                        deadflag=deadflag)
 
-    def _send(self, output, done=False, turn=0, score=0, deadflag=0):
+    def _send(self, output="", done=False, turn=0, score=0, deadflag=0,
+              error=None):
         resp = {
             "output": output,
             "done": done,
@@ -216,6 +239,8 @@ class GymHandler(socketserver.StreamRequestHandler):
             "score": score,
             "deadflag": deadflag,
         }
+        if error is not None:
+            resp["error"] = error
         self.wfile.write((json.dumps(resp) + "\n").encode("utf-8"))
         self.wfile.flush()
 
@@ -237,6 +262,8 @@ def main():
                     help="host to bind")
     ap.add_argument("--seed", type=int, default=None,
                     help="seed the PRNG for reproducible random output")
+    ap.add_argument("--max-turns", type=int, default=None,
+                    help="end the game after this many turns of input")
     args = ap.parse_args()
 
     version, release, serial = read_header(args.story)
@@ -257,7 +284,7 @@ def main():
 
     # Start the game thread
     print("  Starting game thread...", file=sys.stderr)
-    game = GameThread(args.story, seed=args.seed)
+    game = GameThread(args.story, seed=args.seed, max_turns=args.max_turns)
     game.start()
 
     server = GymServer((args.host, args.port), GymHandler)

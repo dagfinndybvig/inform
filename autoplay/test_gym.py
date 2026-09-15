@@ -5,10 +5,9 @@ import os
 import socket
 import subprocess
 import sys
-import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gym_client import GymClient
+from gym_client import GymClient, wait_for_server
 
 def test_game(story_path, commands, expect_win=True):
     # Start server
@@ -19,7 +18,7 @@ def test_game(story_path, commands, expect_win=True):
         cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
     # Wait for server to be ready
-    time.sleep(4)
+    wait_for_server(proc)
 
     try:
         client = GymClient(port=7788)
@@ -45,6 +44,7 @@ def test_game(story_path, commands, expect_win=True):
 
         if expect_win:
             assert resp.get("deadflag") == 2, "Expected win (deadflag=2), got %s" % resp.get("deadflag")
+            assert resp.get("score") == 90, "Expected score 90, got %s" % resp.get("score")
             print("WIN: score %d, deadflag %d" % (resp.get("score"), resp.get("deadflag")))
 
         client.close()
