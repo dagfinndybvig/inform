@@ -2,5 +2,8 @@ __pycache__/
 nul
 test_lovecraft.z5
 curses.z5
+autoplay/curses.z5
 autoplay/curses_transcript.txt
 autoplay/*turns.txt
+autoplay/.gym_server.pid
+autoplay/.gym_server.log

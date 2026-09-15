@@ -57,35 +57,33 @@ printf 'look\nnorth\nquit\ny\n' | python autoplay/autoplay.py --story autoplay/c
 
 ### Serve a game as a gym
 
+Use `gym_ctl.py` to manage the server lifecycle. It kills stale
+servers before starting, tracks the PID, and waits until the server
+is ready:
+
 ```bash
-python autoplay/autoplay_server.py --story test_lovecraft.z5 --port 7777
+# Start a server
+python autoplay/gym_ctl.py start --story test_lovecraft.z5 --port 7777 --max-turns 50
+
+# Check if a server is running
+python autoplay/gym_ctl.py status
+
+# Stop the server
+python autoplay/gym_ctl.py stop
 ```
+
+`start` kills any existing gym servers (found via PowerShell on
+Windows, pgrep on Unix), launches a fresh one in the background, and
+blocks until it prints "Listening on". The PID is saved to
+`autoplay/.gym_server.pid`.
 
 End the game automatically after N turns of input (useful for bounding
-agent sessions):
+agent sessions) with `--max-turns N`.
 
-```bash
-python autoplay/autoplay_server.py --story test_lovecraft.z5 --port 7777 --max-turns 50
-```
-
-The server runs forever (until Ctrl-C). It handles one client
+The server runs forever (until stopped). It handles one client
 connection at a time; a client may disconnect and reconnect without
 losing progress. When a client connects after the game ended, a fresh
 game starts automatically — no server restart needed.
-
-**Kill stale servers before starting a new one.** Old gym server
-processes accumulate across sessions and hold the port, causing
-connection timeouts or "address already in use" errors. Before
-starting a server, kill any existing ones:
-
-```bash
-pkill -f "autoplay_server" 2>/dev/null
-```
-
-This targets only the server script by command-line match — it will
-not affect other Python processes (e.g. the agent's own runtime).
-Never use `pkill -f "python"` or `taskkill /f /im python.exe`, which
-would kill unrelated processes.
 
 For turn-by-turn play from a script or agent, use one-shot mode:
 
