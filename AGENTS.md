@@ -132,3 +132,9 @@ fail and fall through to the library default.
   verify room connections after adding or moving rooms.
 - Dynamic connections (teleports, conditional exits) are not
   auto-detected — add them with `--edge`.
+
+## Further reading
+
+This file is the quick-rules card. Read the full `README.md` for the
+detailed reasoning, code examples, and library references behind every
+rule listed here.
