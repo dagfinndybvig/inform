@@ -3,7 +3,7 @@ Constant Headline "^A Lovecraftian tale of portals and sacrifice^";
 Constant IFID "8ba9c0d1-e2f3-4456-9a7b-c8d9e0f1a2b3";
 Serial "240916";
 Release 2;
-Constant MAX_SCORE 80;
+Constant MAX_SCORE 90;
 
 Include "Parser";
 Include "VerbLib";
@@ -11,6 +11,7 @@ Include "VerbLib";
 Global goddess_appeased;
 Global flower_eaten;
 Global coin_pried;
+Global note_read;
 
 [ Initialise;
     location = Cottage;
@@ -18,6 +19,7 @@ Global coin_pried;
     move lantern to Cottage;
     move notebook to Cottage;
     move flower to ornate_box;
+    move carter_note to player;
     StartDaemon(VisionDaemon);
     "You are a stranger in a strange land.^^In the wilderness you find yourself before an ancient and foreboding structure, seeking refuge from forces you dare not name.^^Type 'help' for instructions.";
 ];
@@ -25,6 +27,12 @@ Global coin_pried;
 ! ============================================================
 ! Rooms and their contents
 ! ============================================================
+
+[ WakeInArkham;
+    deadflag = 2;
+    score = score + 10;
+    "^You step inside the clock, but the interior is gone. There is only darkness, and a pulling sensation, as though reality itself were unwinding around you.^^You wake in a narrow bed in a room that smells of old books and pipe smoke. Morning light filters through curtains you know by heart. Your room in Arkham. Your name is Randolph Carter, and you have been asleep.^^But the crumpled note is still in your hand. And outside the window, for just a moment, the light flickers blue.^";
+];
 
 [ HearthstoneReveal;
     if (parent(rusty_key) == nothing) {
@@ -88,6 +96,19 @@ Object notebook "tattered notebook"
     description "A small notebook bound in cracked leather, its pages yellowed and spotted with mildew. Seems to have belonged to someone named Randolph Carter. The hand that penned these words trembled, the ink faded and blotched, yet four passages remain legible. The first, dated in a scrawled hand: 'She demands a sacrifice of gold, or she will cross into our world and consume it whole.' The second, written in a steady, educated hand: 'Eat the blue flower before you enter her realm. Its nectar will shield your lungs from the air of that place.' The third, hastily scrawled in a shaking hand: 'The stones form a ring. Enter from the south, go east or west around, and seek the gap to the north. Map it if you would not be lost.' The fourth, in a cramped, furtive hand: 'I will hide the key.'",
     initial "A tattered notebook lies upon the floor, its pages curled and stained.",
     has scored;
+
+Object carter_note "crumpled note"
+    with name 'crumpled' 'note' 'paper' 'scrap' 'reminder',
+    description "A scrap of paper, creased and softened by the warmth of your pocket. In your own hand -- though you do not recall writing it -- a single line: 'Remember: You are Randolph Carter.'",
+    after [;
+        Examine:
+            if (note_read == false) {
+                note_read = true;
+                score = score + 10;
+                if (goddess_appeased && location == Cellar)
+                    return WakeInArkham();
+            }
+    ];
 
 Object Garden "Garden"
     with description
@@ -218,12 +239,13 @@ Object -> grandfather_clock "grandfather clock"
             }
             else if (parent(grandfather_clock) == AlienWorld) {
                 move grandfather_clock to Cellar;
+                if (goddess_appeased && note_read) {
+                    return WakeInArkham();
+                }
                 print "As you step inside the clock, the fabric of space inverts upon itself. The clock's interior writhes unnaturally, and suddenly you are back in the familiar darkness of the cellar.^";
                 PlayerTo(Cellar, 2);
                 if (goddess_appeased) {
-                    deadflag = 2;
-                    score = score + 10;
-                    "^You stumble from the clock into the reeking darkness of the cellar, and the alien weight upon your soul lifts at last. The clock's ticking slows, then stills, and when you look back at the clock, it too has gone cold. You have won the game.^";
+                    "^You stumble from the clock into the reeking darkness of the cellar, and the alien weight upon your soul lifts at last. The clock's ticking slows, then stills. Yet something is not finished. The crumpled note in your pocket pulses with a quiet insistence, as though it guards a truth you have not yet faced.^";
                 }
                 rtrue;
             }
