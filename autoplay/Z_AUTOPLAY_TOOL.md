@@ -44,6 +44,13 @@ You can also pipe commands in for non-interactive use:
 printf 'take key\nlook\nnorth\nquit\ny\n' | python autoplay/autoplay.py --story archive/adventure.z5
 ```
 
+Use `--max-turns N` to stop after a fixed number of input turns, which is
+useful for bounded exploration or testing:
+
+```bash
+printf 'look\nnorth\nquit\ny\n' | python autoplay/autoplay.py --story curses.z5 --max-turns 5 --transcript out.txt
+```
+
 ### Options
 
 | Flag | Default | Description |
@@ -51,6 +58,7 @@ printf 'take key\nlook\nnorth\nquit\ny\n' | python autoplay/autoplay.py --story 
 | `--story PATH` | `adventure_lovecraft.z5` (repo root) | Path to the `.z5` story file |
 | `--seed N` | none | Seed for the `random` opcode (deterministic playthrough) |
 | `--transcript FILE` | none | Write a transcript of the session to this file |
+| `--max-turns N` | none | Stop after N turns of input (each `aread` counts as one turn) |
 
 ## Example session
 
@@ -124,9 +132,12 @@ without needing to parse it separately.
 
 ```python
 class InteractiveZMachine(ZMachine):
-    def __init__(self, *args, transcript=None, story_path=None, **kwargs):
+    def __init__(self, *args, transcript=None, story_path=None,
+                 max_turns=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.transcript = transcript
+        self.max_turns = max_turns
+        self.turn_count = 0
 
     def _write(self, text):
         sys.stdout.write(text)
@@ -144,6 +155,12 @@ class InteractiveZMachine(ZMachine):
 
     def next_command(self):
         self._flush_output()
+        self.turn_count += 1
+        if self.max_turns is not None and self.turn_count > self.max_turns:
+            self._write("\n[Turn limit reached after %d turns.]\n"
+                        % self.max_turns)
+            self.running = False
+            return None
         try:
             return input(">")
         except EOFError:

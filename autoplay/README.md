@@ -34,7 +34,8 @@ action — exactly how a human plays.
 
 Plays any `.z5` game in the terminal. Output appears as the game
 produces it; you type commands at the `>` prompt. Supports
-`--transcript` to record the session to a file with a game-info header.
+`--transcript` to record the session to a file with a game-info header,
+and `--max-turns N` to stop after a fixed number of input turns.
 
 ```bash
 python autoplay/autoplay.py --story archive/adventure.z5
