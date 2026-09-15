@@ -120,7 +120,7 @@ Object Garden "Garden"
 Object -> pond "still pond"
     with name 'pond' 'pool' 'water' 'reflection' 'mirror' 'surface',
     description [;
-        "The pond is unnaturally still -- no wind troubles its surface, no creature stirs within. You look down, and the face that looks back is not your own.^^A scholarly gentleman in a suit and hat gazes up at you from the water.^^You blink, and the water is only water again, dark and still and giving nothing back.";
+        "The pond is unnaturally still -- no wind troubles its surface, no creature stirs within.^^A scholarly gentleman in a suit and hat gazes up at you from the water.^^You blink, and the water is only water again, dark and still and giving nothing back.";
     ],
     initial "A still pond mirrors the bruise-coloured sky, its surface untouched by wind.",
     has static;
@@ -418,6 +418,9 @@ Verb 'inhale'
 ];
 
 Include "Grammar";
+
+Extend 'look' first
+    * 'in'/'inside'/'into' noun -> Examine;
 
 Extend 'pry' first
     * noun 'with' held -> Pry
