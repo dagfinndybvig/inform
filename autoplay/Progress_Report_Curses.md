@@ -8,12 +8,12 @@ opening.
 
 ## Sessions and score
 
-Across multiple sessions the agent reached a best score of **82 out
+Across multiple sessions the agent reached a best score of **117 out
 of 550**, reproducible in a single run from the opening using the
-`smart_play.py` automation script. This represents 15 puzzles solved
+`smart_play2.py` automation script. This represents 25 puzzles solved
 in one continuous playthrough.
 
-## Puzzles solved (82 pts, reproducible in one session)
+## Puzzles solved (117 pts, reproducible in one session)
 
 | Pts | Puzzle | Solution |
 |-----|--------|----------|
@@ -24,9 +24,9 @@ in one continuous playthrough.
 | 7 | Light torch | Open torch, remove old battery, insert new battery, close compartment |
 | 3 | Cellars | Via dumbwaiter: switch off wheel, turn wheel, enter dumbwaiter, pull ropes |
 | 3 | Rucksack | Found in Dead End (south of East Annexe) -- increases carrying capacity |
-| 6 | Robot mouse to attic key | At Cellars South: `drop mouse`, `mouse, w` (squeezes through hole), then navigate the mouse remotely by addressing the hole: `hole, w` x3, `hole, n`, `hole, w`, `hole, n` (beep = key found), `hole, s`, `hole, e`, `hole, s`, `hole, e` x4. Mouse returns with brass key. |
+| 6 | Robot mouse to attic key | At Cellars South: `drop mouse`, `mouse, w`, then navigate the mouse remotely by addressing the hole: `hole, w` x3, `hole, n`, `hole, w`, `hole, n` (beep = key found), `hole, s`, `hole, e`, `hole, s`, `hole, e` x4. Mouse returns with brass key. |
 | 5 | Priest's Hole | Open the skylight in the Inside Cupboard (`turn crank`) to provide light, then drop the brass key and torch down the fireplace/chimney. The torch dislodges a sooty stick blocking the passage. Enter fireplace, descend to the Priest's Hole. Find Mad Isaac's diary (disguised as a prayer book), the sooty stick, and the key. Unlock the hatch to descend to Cellar West. |
-| 2 | Daisy chain | Give box of chocolates to Aunt Jemima in the Potting Room, say "yellow" to request a yellow daisy chain. Wait 5 turns for her to finish. She hangs it around the player's neck. |
+| 2 | Daisy chain | Give box of chocolates to Aunt Jemima, say "yellow", wait 8 turns. Daisy chain is destroyed by the chimney squeeze, so a NEW one must be obtained from Jemima after the priest's hole (just say "jemima, yellow" again, no more chocolates needed). |
 | 4 | Pipe joint | `tighten joint with wrench` in Library Storage -- books fall away, revealing poetry and romantic novel |
 | 5 | Poetry book transport | `examine poetry` transports to the Unreal City (1922) |
 | 5 | Hollow man boat | `say time` to the hollow man on the Phlebas (remove gas mask first) -- boat drifts to Garden Stream, player receives Ace of Cups tarot card |
@@ -38,6 +38,10 @@ in one continuous playthrough.
 | 10 | Alison's Writing Room | In the Dead End, `push south wall` then `south` to discover Alison's hidden writing room behind the fake wall she installed. |
 | 5 | Melancholy Dream | In the Writing Room: `lie down` on the comfortable bed, `put flag on bed` to use as a blanket, `sleep`. Wait for the ghost to appear, then go E, E to the Octagonal Tomb. `turn wheel` (moves infinitesimally), `pinch me` to wake up. |
 | 4 | Gold key | Obtained from the Melancholy Dream (found under the window in the Tiny Balcony). Opens the jewellery box. |
+| 10 | Sandstone passage | The Melancholy Dream's wheel-turning opens the sandstone recess in the Dark Passage, granting access to the Sandstone Passage and the Octagon Room. |
+| 4 | Octagon Room | Enter via the Sandstone Passage from the Dark Passage. Contains exhibits from the Nile Valley Expedition, a gilded model coffin, a scroll, a charcoal sketch, and a dog-eared letter. |
+| 7 | Rod of Fire | Wave the sooty stick with the daisy chain to create a featureless mahogany rod. Put it in the coffin, close, open -- it becomes the Rod of Fire. |
+| 0 | Rod of Returning | Wave the timber spar with the daisy chain to create a second rod. Put it in the coffin, close, open -- it becomes the Rod of Returning. |
 
 ## Key discoveries
 
@@ -97,12 +101,26 @@ Dark Passage, granting access to the Octagon Room.
 Mad Isaac's diary (1792 entry) reveals that Merlin bound the estate
 with "Roddes of Power" that disguise themselves as ordinary objects.
 To convert an object into a Rod, the player must wave it while
-wearing the daisy chain from Jemima. The daisy chain rustles when
-waving a convertible object. However, the daisy chain was lost during
-the Melancholy Dream sequence -- it may have been consumed by the
-dream or lost during inventory transitions. This is the current
-blocker: without the daisy chain, the sooty stick, timber spar, and
-green branch cannot be converted into Rods of Power.
+wearing the daisy chain from Jemima. The daisy chain rustles and
+light pulses when waving a convertible object, transforming it into a
+featureless mahogany rod.
+
+The daisy chain is fragile: it falls to pieces if dropped, and is
+destroyed by the chimney squeeze during the priest's hole descent.
+The solution is to obtain a NEW daisy chain from Jemima after the
+priest's hole -- she will give another one without needing more
+chocolates (just say "jemima, yellow" and wait 8 turns).
+
+The sooty stick and timber spar both convert to featureless rods.
+The green branch does NOT convert. A third rod would require the
+clover from the jewellery box (location not yet found).
+
+The coffin in the Octagon Room identifies rods: put a featureless
+rod in the coffin, close it, open it, and the rod becomes a named
+Rod of Power. Two rods have been identified: the **Rod of Fire**
+(+7 pts) and the **Rod of Returning**. The Rod of Returning is
+essential for escaping the Folly in 1808 (accessed via the etching
+in the projector), which collapses on a timer.
 
 ### Mad Isaac's diary
 
@@ -183,15 +201,13 @@ there, three main branches open up:
 The slide projector in the Souvenirs Room acts as a fourth branch
 point, using Tarot cards to open passages into card-specific worlds.
 
-The current bottleneck is the **daisy chain**, which was lost during
-the Melancholy Dream. Without it, the sooty stick, timber spar, and
-green branch cannot be waved into Rods of Power. The Rods are needed
-to access the Octagon Room (behind the sandstone recess, now opened
-by the dream's wheel), where a coffin contains the Rod of Returning
--- essential for escaping the Folly in 1808 (accessed via the etching
-in the projector). The next session will investigate the daisy chain's
-disappearance and, if necessary, re-obtain it from Jemima before
-attempting the Rods of Power conversion.
+The current bottleneck is finding the **jewellery box** for the
+clover (needed for the third Rod of Power) and exploring the
+**Folly** (1808, via the etching in the projector) with the Rod of
+Returning. The agent has the Rod of Fire and Rod of Returning in
+hand. The next session will attempt the Folly, explore the White
+Hallway (accessible from the Octagon Room per the walkthrough), and
+search for the jewellery box and other late-game areas.
 
 ---
 
