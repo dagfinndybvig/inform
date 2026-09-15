@@ -145,3 +145,31 @@ or by scarf. The session is a small demonstration of the gym's
 purpose: an agent walking into a game it has never seen, reading,
 reasoning, and getting stuck exactly where a human player would —
 one command at a time.
+
+## A note on novelty
+
+Connecting an LLM to a Z-machine world model is not a first. There is
+a research lineage: Microsoft's TextWorld (2018) generated text-game
+environments for agents; Jericho (2020) is a Frotz-based gym connecting
+agents to Infocom-era Z-machine games, including *Curses* itself; and
+CALM (2020) trained a GPT-2 to generate commands and play text
+adventures. So an LLM at a Z-machine has precedent.
+
+What is less common in this repo's setup:
+
+- **A from-scratch interpreter.** Jericho wraps Frotz; this repo wrote
+  the Z-machine in Python (`ztest.py`), so the whole stack is
+  inspectable and fixable by the agent itself.
+- **One command per invocation, state on the server.** Jericho and
+  TextWorld are library APIs for Python processes. This gym is a TCP
+  server where the game state persists independently of any
+  connection, and the agent sends one command per invocation from
+  anywhere — a better fit for how a coding agent works across tool
+  calls.
+- **The world-model framing.** The research treats these games as
+  games. Treating the Z-machine as a cheap, deterministic, inspectable
+  world simulator for arbitrary domains — industrial plants,
+  evacuations, debugging scenarios as `.inf` files — is the sharper
+  idea, and the direction where something new could live.
+
+No priority is claimed; these are just the facts.
