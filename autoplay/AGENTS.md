@@ -52,7 +52,7 @@ python autoplay/autoplay.py --story archive/adventure.z5 --transcript playthru.t
 Limit to N turns of input (useful for bounded exploration):
 
 ```bash
-printf 'look\nnorth\nquit\ny\n' | python autoplay/autoplay.py --story curses.z5 --max-turns 5 --transcript out.txt
+printf 'look\nnorth\nquit\ny\n' | python autoplay/autoplay.py --story autoplay/curses.z5 --max-turns 5 --transcript out.txt
 ```
 
 ### Serve a game as a gym

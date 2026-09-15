@@ -48,7 +48,7 @@ Use `--max-turns N` to stop after a fixed number of input turns, which is
 useful for bounded exploration or testing:
 
 ```bash
-printf 'look\nnorth\nquit\ny\n' | python autoplay/autoplay.py --story curses.z5 --max-turns 5 --transcript out.txt
+printf 'look\nnorth\nquit\ny\n' | python autoplay/autoplay.py --story autoplay/curses.z5 --max-turns 5 --transcript out.txt
 ```
 
 ### Options
