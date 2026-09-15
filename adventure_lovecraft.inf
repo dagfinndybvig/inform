@@ -112,10 +112,18 @@ Object carter_note "crumpled note"
 
 Object Garden "Garden"
     with description
-        "You tread upon a garden long abandoned to forces beyond mortal comprehension. The stone path is cracked and uneven, as if rejected by some non-Euclidean geometry. To the south lies the ancient cottage, and to the east, a forest of twisted trees.",
+        "You tread upon a garden long abandoned to forces beyond mortal comprehension. The stone path is cracked and uneven, as if rejected by some non-Euclidean geometry. A still pond reflects the bruise-coloured sky. To the south lies the ancient cottage, and to the east, a forest of twisted trees.",
     s_to Cottage,
     e_to Forest,
     has light scored;
+
+Object -> pond "still pond"
+    with name 'pond' 'pool' 'water' 'reflection' 'mirror' 'surface',
+    description [;
+        "The pond is unnaturally still -- no wind troubles its surface, no creature stirs within. You look down, and the face that looks back is not your own.^^A gentleman in a tweed suit and a soft fedora hat gazes up at you from the water, his features sharp and scholarly, his eyes wide with a recognition you do not share. He holds a leather-bound book. The reflection is meticulous in every detail -- the weave of the tweed, the crease of the hat's brim -- yet it belongs to no world of cyclopean stone and neolithic fire. It belongs to a world of paved streets and electric lamps and houses with gabled roofs.^^You blink, and the water is only water again, dark and still and giving nothing back.";
+    ],
+    initial "A still pond mirrors the bruise-coloured sky, its surface untouched by wind.",
+    has static;
 
 Object Forest "Dark Forest"
     with description
