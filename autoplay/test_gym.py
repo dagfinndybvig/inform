@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """End-to-end test for the gym server + client."""
-import json
 import os
-import socket
 import subprocess
 import sys
 
@@ -31,21 +29,26 @@ def test_game(story_path, commands, expect_win=True):
         print("done:", resp.get("done"))
         print()
 
+        # Collect all output to check for win text
+        all_output = resp.get("output", "")
+
         # Send commands
         for cmd in commands:
             resp = client.send(cmd)
             print(">>> %s" % cmd)
             print(resp["output"][:200])
-            print("done:", resp.get("done"), "score:", resp.get("score"),
-                  "turn:", resp.get("turn"), "deadflag:", resp.get("deadflag"))
+            print("done:", resp.get("done"))
             print()
+            all_output += resp.get("output", "")
             if resp.get("done"):
                 break
 
         if expect_win:
-            assert resp.get("deadflag") == 2, "Expected win (deadflag=2), got %s" % resp.get("deadflag")
-            assert resp.get("score") == 90, "Expected score 90, got %s" % resp.get("score")
-            print("WIN: score %d, deadflag %d" % (resp.get("score"), resp.get("deadflag")))
+            assert "*** You have won ***" in all_output, \
+                "Expected win text in output"
+            assert "90 out of a possible 90" in all_output, \
+                "Expected score 90 in output"
+            print("WIN: output contains 'You have won' and score 90/90")
 
         client.close()
     finally:

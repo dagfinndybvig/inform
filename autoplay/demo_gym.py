@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Live demo: start gym server, play the Lovecraft game turn by turn."""
-import os, sys, subprocess, json
+import os, sys, subprocess
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gym_client import GymClient, wait_for_server
@@ -20,8 +20,7 @@ try:
     # Turn 0: opening
     r = c.recv()
     print("=" * 60)
-    print("OPENING (turn %d, score %d, deadflag %d)" % (
-        r["turn"], r["score"], r["deadflag"]))
+    print("OPENING (done %s)" % r["done"])
     print("=" * 60)
     print(r["output"][:500])
     print("...")
@@ -30,8 +29,7 @@ try:
     r = c.send("examine note")
     print("\n" + "=" * 60)
     print(">>> examine note")
-    print("turn %d, score %d, deadflag %d, done %s" % (
-        r["turn"], r["score"], r["deadflag"], r["done"]))
+    print("done %s" % r["done"])
     print("=" * 60)
     print(r["output"])
 
@@ -39,8 +37,7 @@ try:
     r = c.send("examine hearthstone")
     print("=" * 60)
     print(">>> examine hearthstone")
-    print("turn %d, score %d, deadflag %d, done %s" % (
-        r["turn"], r["score"], r["deadflag"], r["done"]))
+    print("done %s" % r["done"])
     print("=" * 60)
     print(r["output"])
 
@@ -48,8 +45,7 @@ try:
     r = c.send("take key")
     print("=" * 60)
     print(">>> take key")
-    print("turn %d, score %d, deadflag %d, done %s" % (
-        r["turn"], r["score"], r["deadflag"], r["done"]))
+    print("done %s" % r["done"])
     print("=" * 60)
     print(r["output"])
 
@@ -57,8 +53,7 @@ try:
     r = c.send("n")
     print("=" * 60)
     print(">>> n (go to garden)")
-    print("turn %d, score %d, deadflag %d, done %s" % (
-        r["turn"], r["score"], r["deadflag"], r["done"]))
+    print("done %s" % r["done"])
     print("=" * 60)
     print(r["output"])
 
@@ -66,8 +61,7 @@ try:
     r = c.send("look into pond")
     print("=" * 60)
     print(">>> look into pond")
-    print("turn %d, score %d, deadflag %d, done %s" % (
-        r["turn"], r["score"], r["deadflag"], r["done"]))
+    print("done %s" % r["done"])
     print("=" * 60)
     print(r["output"])
 

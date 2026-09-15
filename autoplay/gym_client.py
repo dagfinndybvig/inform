@@ -126,13 +126,7 @@ def one_shot(host, port, cmd):
         if not resp.get("output", "").endswith("\n"):
             sys.stdout.write("\n")
         if resp.get("done"):
-            deadflag = resp.get("deadflag", 0)
-            if deadflag == 2:
-                print("\n*** Game won! Score: %d ***" % resp.get("score", 0))
-            elif deadflag == 1:
-                print("\n*** Game over (dead) ***")
-            else:
-                print("\n*** Game ended ***")
+            print("\n*** Game ended ***")
     finally:
         client.close()
 
@@ -188,14 +182,7 @@ def main():
 
         done = resp.get("done", False)
         if done:
-            score = resp.get("score", 0)
-            deadflag = resp.get("deadflag", 0)
-            if deadflag == 2:
-                print("\n*** Game won! Score: %d ***" % score)
-            elif deadflag == 1:
-                print("\n*** Game over (dead) ***")
-            else:
-                print("\n*** Game ended ***")
+            print("\n*** Game ended ***")
 
     client.close()
 

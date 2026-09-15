@@ -15,15 +15,13 @@ automatically.
 Protocol: newline-delimited JSON over TCP.
 
   Request:  {"cmd": "take key"}
-  Response: {"output": "Taken.", "done": false, "turn": 1}
+  Response: {"output": "Taken.", "done": false}
+
+The done flag is true when the game has ended (quit, win, or death).
+Score, turn, and deadflag fields are always 0 — parse the game's
+text output if you need them.
 
 Bad requests get {"error": "..."} with "output" empty.
-
-When the game ends (quit, win, or death):
-  Response: {"output": "...", "done": true, "turn": 38,
-             "score": 90, "deadflag": 2}
-
-  deadflag: 0 = game in progress, 1 = dead, 2 = won
 
 Usage:
     python autoplay/autoplay_server.py --story archive/adventure.z5 --port 7777
@@ -54,65 +52,6 @@ def read_header(story_path):
     release = (data[0x02] << 8) | data[0x03]
     serial = data[0x12:0x18].decode("ascii", errors="replace")
     return version, release, serial
-
-
-def find_score_globals(story_path):
-    """Find which Z-machine global variables hold score, turns, and deadflag.
-
-    Plays a known win path on the Lovecraft game and identifies variables
-    that changed to expected values.  Uses a quit-path comparison to
-    distinguish deadflag from unrelated globals.  Returns (score_var,
-    turns_var, deadflag_var) or (None, None, None).
-    """
-    try:
-        z = ZMachine(story_path, commands=[], seed=1)
-    except Exception:
-        return None, None, None
-
-    init = {}
-    for v in range(16, 256):
-        init[v] = z.read_var(v)
-
-    win_cmds = [
-        "examine note", "examine hearthstone", "take key", "take notebook",
-        "take lantern", "n", "e", "take twig", "w", "s", "d",
-        "switch on lantern", "examine crack", "pry coin with twig",
-        "take coin", "u", "n", "e", "n", "n", "e", "n", "n",
-        "unlock ornate box with rusty key", "open ornate box", "take flower",
-        "eat flower", "s", "e", "s", "s", "s", "w", "s", "d",
-        "enter clock", "give coin to goddess", "enter clock",
-    ]
-    try:
-        z2 = ZMachine(story_path, commands=win_cmds, seed=1)
-        z2.run()
-    except Exception:
-        pass
-
-    quit_cmds = ["look", "quit", "y"]
-    try:
-        z3 = ZMachine(story_path, commands=quit_cmds, seed=1)
-        z3.run()
-    except Exception:
-        pass
-
-    # Score: 0 -> 90 after win, still 0 after quit
-    # Turns: 1 -> 38 after win
-    # Deadflag: 0 -> 2 after win, still 0 after quit
-    score_var = None
-    turns_var = None
-    deadflag_var = None
-
-    for v in range(16, 256):
-        win_val = z2.read_var(v)
-        quit_val = z3.read_var(v)
-        if init[v] == 0 and win_val == 90 and quit_val == 0:
-            score_var = v
-        if init[v] in (0, 1) and win_val == 38 and quit_val in (0, 1, 2):
-            turns_var = v
-        if init[v] == 0 and win_val == 2 and quit_val == 0:
-            deadflag_var = v
-
-    return score_var, turns_var, deadflag_var
 
 
 class GameThread(threading.Thread):
@@ -194,12 +133,6 @@ class GameThread(threading.Thread):
     def get_result(self):
         return self.result_queue.get()
 
-    def get_state(self, score_var, turns_var, deadflag_var):
-        score = self.z.read_var(score_var) if score_var else 0
-        turns = self.z.read_var(turns_var) if turns_var else 0
-        deadflag = self.z.read_var(deadflag_var) if deadflag_var else 0
-        return score, turns, deadflag
-
 
 class GymManager:
     """Keeps the current game thread across client connections.
@@ -235,9 +168,6 @@ class GymHandler(socketserver.StreamRequestHandler):
 
     def handle(self):
         manager = self.server.manager
-        score_var = self.server.score_var
-        turns_var = self.server.turns_var
-        deadflag_var = self.server.deadflag_var
 
         game = manager.current_game()
 
@@ -254,10 +184,7 @@ class GymHandler(socketserver.StreamRequestHandler):
             done = result.get("done", False)
             output = result.get("output", "")
 
-        score, turn, deadflag = game.get_state(score_var, turns_var,
-                                                 deadflag_var)
-        self._send(output, done=done, turn=turn, score=score,
-                   deadflag=deadflag)
+        self._send(output, done=done)
 
         while not done:
             try:
@@ -280,19 +207,12 @@ class GymHandler(socketserver.StreamRequestHandler):
             done = result.get("done", False)
             output = result.get("output", "")
 
-            score, turn, deadflag = game.get_state(score_var, turns_var,
-                                                     deadflag_var)
-            self._send(output, done=done, turn=turn, score=score,
-                       deadflag=deadflag)
+            self._send(output, done=done)
 
-    def _send(self, output="", done=False, turn=0, score=0, deadflag=0,
-              error=None):
+    def _send(self, output="", done=False, error=None):
         resp = {
             "output": output,
             "done": done,
-            "turn": turn,
-            "score": score,
-            "deadflag": deadflag,
         }
         if error is not None:
             resp["error"] = error
@@ -327,25 +247,12 @@ def main():
     print("  v%d, Release %d, Serial %s" % (version, release, serial),
           file=sys.stderr)
 
-    # Detect score/turns/deadflag global variables
-    print("  Detecting game globals...", file=sys.stderr)
-    score_var, turns_var, deadflag_var = find_score_globals(args.story)
-    if score_var:
-        print("    score: var %d" % score_var, file=sys.stderr)
-    if turns_var:
-        print("    turns: var %d" % turns_var, file=sys.stderr)
-    if deadflag_var:
-        print("    deadflag: var %d" % deadflag_var, file=sys.stderr)
-
     # Game manager: starts the game on the first connection and a fresh
     # game whenever a client connects after the previous one ended.
     manager = GymManager(args.story, seed=args.seed, max_turns=args.max_turns)
 
     server = GymServer((args.host, args.port), GymHandler)
     server.manager = manager
-    server.score_var = score_var
-    server.turns_var = turns_var
-    server.deadflag_var = deadflag_var
 
     print("  Listening on %s:%d" % (args.host, args.port), file=sys.stderr)
     print("  Press Ctrl-C to stop.", file=sys.stderr)

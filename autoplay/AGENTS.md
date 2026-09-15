@@ -95,9 +95,9 @@ from gym_client import GymClient
 client = GymClient(port=7777)
 client.connect()
 resp = client.recv()          # opening text
-resp = client.send("look")    # one command, one response
+resp = client.send("look")   # one command, one response
 print(resp["output"])
-print("done:", resp["done"], "score:", resp["score"])
+print("done:", resp["done"])
 client.close()
 ```
 
@@ -109,8 +109,7 @@ python autoplay/test_gym.py
 
 Starts the server, plays both `archive/adventure.z5` and
 `test_lovecraft.z5` through the client, verifies the Lovecraft win
-scores 90/90 with `deadflag: 2`, and shuts down. Takes about 10
-seconds.
+output contains `*** You have won ***` and score 90/90, and shuts down.
 
 ### Run the demo
 
@@ -119,7 +118,7 @@ python autoplay/demo_gym.py
 ```
 
 Starts the server on port 7799, plays 5 turns of the Lovecraft game
-interactively, prints output with score/turn/deadflag per turn, and
+interactively, prints output with the done flag per turn, and
 shuts down.
 
 ## Gym protocol
@@ -127,27 +126,18 @@ shuts down.
 Newline-delimited JSON over TCP.
 
 Send: `{"cmd": "take key"}`
-Recv: `{"output": "Taken.", "done": false, "turn": 3, "score": 14, "deadflag": 0}`
+Recv: `{"output": "Taken.", "done": false}`
 
 Malformed requests get `{"error": "..."}` with `output` empty and the
 game state unchanged; the connection stays open.
 
 The first response after connecting is the game's opening text with
-`turn: 0` and `done: false`. No command is needed to get it — just
-`recv()`.
+`done: false`. No command is needed to get it — just `recv()`.
 
-When `done: true`, the game is over. `deadflag` is 0 = in progress,
-1 = dead, 2 = won. The connection can be closed.
-
-## Global variable detection
-
-On startup, `autoplay_server.py` auto-detects which Z-machine globals
-hold `score`, `turns`, and `deadflag` by running two playthroughs (a
-win path and a quit path) and comparing state. This works for the
-Lovecraft game. For unknown games, detection may fail and these
-fields will report 0. The `done` flag always works. If you need
-score/deadflag for an unknown game, parse the game's text output
-(e.g. search for "You have won" or "*** You have won ***").
+When `done: true`, the game is over. The server does not report
+score, turn count, or win/death state — parse the game's text output
+for those (e.g. search for "*** You have won ***"). The connection
+can be closed.
 
 ## Modifying the tools
 

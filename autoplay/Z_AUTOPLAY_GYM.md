@@ -41,26 +41,28 @@ Newline-delimited JSON over TCP.
 
 **Response** (server -> client):
 ```json
-{"output": "Taken.\n", "done": false, "turn": 1, "score": 4, "deadflag": 0}
+{"output": "Taken.\n", "done": false}
 ```
 
 | Field | Description |
 |-------|-------------|
 | `output` | Game text produced since the last command (room descriptions, responses, prompts) |
 | `done` | `true` when the game has ended (quit, win, or death) |
-| `turn` | Current turn count (from the game's `turns` global) |
-| `score` | Current score (from the game's `score` global) |
-| `deadflag` | 0 = in progress, 1 = dead, 2 = won |
+
+The server does not track score, turn count, or win/death state.
+Parse the game's text output if you need those (e.g. search for
+`*** You have won ***` or the score line the Inform library prints
+at game end).
 
 The first response after connecting contains the game's opening text
-with `done: false` and `turn: 0`. On a reconnect, the cached opening is
+with `done: false`. On a reconnect, the cached opening is
 resent and the game continues from its current state.
 
 Malformed requests (invalid JSON, or a missing `cmd` field) get an
 error response with `output` empty and the game state unchanged:
 
 ```json
-{"output": "", "done": false, "turn": 0, "score": 0, "deadflag": 0, "error": "invalid JSON"}
+{"output": "", "done": false, "error": "invalid JSON"}
 ```
 
 The connection stays open after an error — the client can simply send
@@ -112,14 +114,13 @@ resp = client.send("look")
 if resp.get("error"):
     print("Server error:", resp["error"])
 print(resp["output"])
-print("score:", resp["score"], "turn:", resp["turn"])
 
 resp = client.send("take key")
 print(resp["output"])
 
 # Check if game is over
 if resp["done"]:
-    print("Game over! deadflag:", resp["deadflag"])
+    print("Game over!")
 
 client.close()
 ```
@@ -131,8 +132,8 @@ python autoplay/test_gym.py
 ```
 
 Runs end-to-end tests on both `archive/adventure.z5` and
-`test_lovecraft.z5`, verifying the full win path scores 90/90 with
-`deadflag: 2`.
+`test_lovecraft.z5`, verifying the full win path produces
+`*** You have won ***` and a score of 90/90.
 
 ## Server options
 
@@ -166,16 +167,6 @@ unimplemented opcode on an unusual story file), the game thread catches
 it and sends a final `done: true` response containing the traceback, so
 the client sees the failure instead of hanging forever.
 
-### Global variable detection
-
-On startup, the server auto-detects which Z-machine global variables
-hold `score`, `turns`, and `deadflag` by running two playthroughs of the
-game — one win path and one quit path — and comparing which globals
-change to expected values (score = 90, turns = 38, deadflag = 2 after
-win; all 0 after quit). This is game-specific and works for the
-Lovecraft game; for unknown games, detection may fail and these fields
-will report 0. The `done` flag always works correctly regardless.
-
 ### Limitations
 
 - **One connection at a time.** The server handles one client at a
@@ -187,9 +178,9 @@ will report 0. The `done` flag always works correctly regardless.
   state.
 - **Auto-restart on game over.** When a client connects after the game
   ended, a fresh game starts automatically — no server restart needed.
-- **Global detection is game-specific.** The score/turn/deadflag fields
-  rely on knowing the win path. For unknown games, use the `done` flag
-  and parse score from the game's text output instead.
+- **No score/turn/deadflag tracking.** The server only reports `done`
+  (game ended) and `output` (text). Parse the game's text output for
+  score, turn count, or win/death state.
 - **Same Z-machine limitations as ztest.py.** No screen formatting, no
   sound, no disk save/restore. See
   [`Z_TEST_TOOL.md`](../Z_TEST_TOOL.md) for the full list.

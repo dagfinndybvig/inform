@@ -138,11 +138,6 @@ server throughout, so the twenty commands formed one continuous game —
 no replays, no lost progress. The session ended at turn 20 in the Old
 Winery, score 0, game still in progress.
 
-A small bonus: the gym's startup routine, which identifies the game's
-score and turn counters by playing the game to itself, successfully
-detected them for *Curses* — so the score and turn fields in the
-protocol were live during the session, not just the text output.
-
 ## Summary
 
 Twenty turns was enough to map a third of the attic, locate the map,
