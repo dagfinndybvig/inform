@@ -41,10 +41,11 @@ card an agent (or human) must follow in every session.
   `adventure_lovecraft.z5` (the canonical CI build).
 - **Regression-test after every source change.** Compile to
   `test_lovecraft.z5`, then run the full win path and verify the score
-  is 80/80. A command sequence that achieves this:
+  is 90/90. A command sequence that achieves this:
 
   ```bash
   python ztest.py --mark --seed 1 --story test_lovecraft.z5 \
+    "examine note" \
     "examine hearthstone" "take key" "take notebook" "take lantern" \
     "n" "e" "take twig" "w" "s" \
     "d" "switch on lantern" "examine crack" "pry coin with twig" "take coin" "u" \
@@ -54,7 +55,7 @@ card an agent (or human) must follow in every session.
     "enter clock" "give coin to goddess" "enter clock" "score"
   ```
 
-  The final output must show "scored 80 out of a possible 80".
+  The final output must show "scored 90 out of a possible 90".
 
 ## Inform 6.44 compiler bug: comma-separated switch labels
 
@@ -88,8 +89,10 @@ fail and fall through to the library default.
   `notify_mode = true`) prints this automatically for all score
   changes. Adding your own duplicates it. Just increment `score` and
   let the library announce it.
-- `MAX_SCORE` is 80. The score breakdown: rooms (5 each x4 = 20),
-  objects (4 each x5 = 20), milestones (10 + 20 + 10 = 40).
+- `MAX_SCORE` is 90. The score breakdown: rooms (5 each x4 = 20),
+  objects (4 each x5 = 20), milestones (10 + 10 + 20 + 10 = 50).
+  Milestones: read note (10), eat flower (10), give coin to goddess (20),
+  wake in Arkham (10).
 
 ## Grammar and library extensions
 

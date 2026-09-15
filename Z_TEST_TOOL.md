@@ -121,11 +121,11 @@ swim and right itself. You sense, with a certainty beyond all reason, that
 your lungs have been quietly remade to endure an atmosphere not of this earth.
 [The score has just gone up by ten points.]
 ###CMD: score
-You have so far scored 28 out of a possible 80, in 12 turns.
+You have so far scored 28 out of a possible 90, in 12 turns.
 ```
 
 Score breakdown: key (+4) + Garden (+5) + Forest (+5) + flower (+4) + eat
-flower milestone (+10) = **28 out of 80**, in 12 turns. The Stone Circle and
+flower milestone (+10) = **28 out of 90**, in 12 turns. The Stone Circle and
 all labyrinth rooms have no `scored` attribute, so they award no points. This
 matches the scoring design documented in `README.md` exactly.
 

@@ -32,10 +32,18 @@ compilation is split into two paths:
   [Compile](#compile).
 
 The included game **"The Goddess in the Cellar"** is a small test project used
-to exercise and validate the toolchain. It is a Lovecraftian text adventure: a
-grandfather clock in a dark cellar teleports the player to an alien world, where
-a flaming goddess demands a gold coin offering — any other action while in her
-presence is punished by a lightning bolt.
+to exercise and validate the toolchain. It is a Lovecraftian text adventure
+starring Randolph Carter, a dreamer from Arkham who returns to a dreamworld
+he has explored before but cannot remember. A grandfather clock in a dark
+cellar teleports him to an alien world, where a flaming goddess demands a
+gold coin offering — any other action while in her presence is punished by
+a lightning bolt. A crumpled note in his pocket ("Remember: You are
+Randolph Carter") is the key to the final awakening: once the goddess is
+appeased and the note has been read, returning through the clock wakes him
+in his bed in Arkham. The dreamworld contains breadcrumbs he left for
+himself on a previous visit — a notebook with clues, a brass lantern, and
+the identity note — because the dream strips his waking memory each time
+he enters.
 
 Read this article on my motivation. The link between text adventures, ontology and agentic coding:<br>
 https://www.linkedin.com/pulse/text-adventures-ontology-through-looking-glass-dagfinn-dybvig-eawie/
@@ -47,8 +55,9 @@ The page loads a self-hosted copy of [Parchment](https://github.com/curiousdanni
 (a JavaScript Z-machine interpreter) which runs the compiled game in any modern
 browser. Both the interpreter and the story file are served from the same GitHub
 Pages domain, so there are no CORS or third-party caching issues. You type
-commands like `look`, `examine hearthstone`, `go north`, `enter clock`,
-`give coin to goddess`. Type `help` in the game for a list of standard commands.
+commands like `look`, `examine hearthstone`, `examine pond`, `go north`,
+`enter clock`, `give coin to goddess`, `examine note`. Type `help` in the
+game for a list of standard commands.
 
 ## Toolchain
 
@@ -135,7 +144,7 @@ canonical `adventure_lovecraft.z5`:
 
 ```bash
 # regression-test a scoring path after a code change
-python ztest.py --mark --seed 1 --story test_lovecraft.z5 "examine hearthstone" "take key" "n" "e" "n" "n" "e" "n" "n" "unlock ornate box with rusty key" "open ornate box" "take flower" "eat flower" "score"
+python ztest.py --mark --seed 1 --story test_lovecraft.z5 "examine note" "examine hearthstone" "take key" "take notebook" "take lantern" "n" "e" "take twig" "w" "s" "d" "switch on lantern" "examine crack" "pry coin with twig" "take coin" "u" "n" "e" "n" "n" "e" "n" "n" "unlock ornate box with rusty key" "open ornate box" "take flower" "eat flower" "s" "e" "s" "s" "s" "w" "s" "d" "enter clock" "give coin to goddess" "enter clock" "score"
 
 # run a script of commands and diff against a baseline
 python ztest.py --mark --seed 1 --story test_lovecraft.z5 --script tests/scoring.txt > tests/scoring.out
@@ -197,7 +206,7 @@ out of the box).
 `if (i hasnt moved)`. If `give coin moved` is called *before* the player takes
 the object — e.g., in a `PrySub` routine that dislodges the coin — the
 library sees `moved` already set and skips the award. The full win path then
-scores 76/80 instead of 80/80. The fix: never `give X moved` manually for a
+scores 86/90 instead of 90/90. The fix: never `give X moved` manually for a
 `scored` object; let the library set `moved` naturally on `take`. If the
 `moved` flag was being used to suppress a stale `initial` description, replace
 the string `initial` with a routine that checks the relevant flag (e.g.,
@@ -256,8 +265,9 @@ Cellar  ==[enter clock]==>  Alien World                    Altar Chamber
 ```
 
 The Stone Circle is a clearing with a ring of standing stones. Going north
-from the clearing funnels the player into a labyrinth of 5 rooms forming a
-ring around the altar:
+from the clearing funnels the player into a labyrinth of 4 rooms forming a
+ring around the altar, plus a Blind Alley dead end branching east off
+Labyrinth East (5 rooms total):
 
 ```
           Altar Chamber
@@ -280,7 +290,9 @@ box are. A Blind Alley dead end branches east off Labyrinth East.
 
 The Cellar is dark (no `light` attribute); the player must bring the brass
 lantern (switchable, grants `light` when on) or fumble in darkness. Alien
-World has `light`.
+World has `light`. The Garden contains a still pond whose reflection shows
+a 1920s scholarly gentleman — a dream-logic foreshadowing of the player's
+true identity as Randolph Carter.
 
 ### Key objects
 
@@ -306,24 +318,38 @@ World has `light`.
   any action except `give coin to goddess`; accepts the coin and becomes
   pacified (`goddess_appeased` flag), after which the player may leave.
 - **indescribable horror** — a `found_in` floating object in Alien World.
+- **crumpled note** — starts in the player's inventory. Examining it for the
+  first time awards 10 points and sets the `note_read` flag. The game cannot
+  end until the note has been read: returning through the clock after
+  appeasing the goddess without having read it sends the player back to the
+  Cellar with a hint. Once read, returning through the clock (with the
+  goddess appeased) triggers the waking ending — the player wakes in bed in
+  Arkham as Randolph Carter. Reading the note in the Cellar after returning
+  (goddess already appeased) also triggers the waking.
+- **still pond** — `static` object in the Garden. Examining it reveals a
+  reflection of a 1920s scholarly gentleman in a tweed suit and fedora —
+  the player's true identity as Randolph Carter, leaking through the dream.
+  The reflection foreshadows the Arkham waking ending.
 
 ### Scoring
 
-The game has 80 points (`MAX_SCORE 80`), from three sources:
+The game has 90 points (`MAX_SCORE 90`), from three sources:
 
 | Source | Items | Points |
 |--------|-------|--------|
 | Room exploration (`has scored`) | Garden, Forest, Cellar, Alien World | 5 each = 20 |
 | Object acquisition (`has scored`) | notebook, rusty key, twig, flower, coin | 4 each = 20 |
-| Milestone (manual `score +=`) | eat flower, give coin to goddess, return safely | 10 + 20 + 10 = 40 |
-| **Total** | | **80** |
+| Milestone (manual `score +=`) | read note, eat flower, give coin to goddess, wake in Arkham | 10 + 10 + 20 + 10 = 50 |
+| **Total** | | **90** |
 
 - Rooms with `has scored` award `ROOM_SCORE` (default 5) on first visit, via
   `ScoreArrival` (called by `LookSub`). The starting room (Cottage) is not
   scored.
 - Objects with `has scored` award `OBJECT_SCORE` (default 4) when first taken,
-  via `NoteObjectAcquisitions` (called every turn).
-- The three narrative milestones award points manually with `score = score + N`
+  via `NoteObjectAcquisitions` (called every turn). The crumpled note is not
+  scored — it starts in inventory and awards its points via a manual
+  milestone on first examination.
+- The four narrative milestones award points manually with `score = score + N`
   and print `[Your score has just gone up by N points.]`.
 - The Z-machine v5 status line shows the current score automatically; `score`
   prints it, and `fullscore` shows the places/things breakdown.
@@ -520,13 +546,14 @@ not on subsequent turns.
 
 **Task/milestone scoring** (manual `score += N`):
 
-For one-time narrative milestones (eating the flower, giving the coin,
-winning), award points manually with `score = score + N;` at the right
-point in the code. Do **not** append a notification string — the library
-prints its own automatically (see "Score notification" below).
+For one-time narrative milestones (reading the note, eating the flower,
+giving the coin, waking in Arkham), award points manually with
+`score = score + N;` at the right point in the code. Do **not** append a
+notification string — the library prints its own automatically (see
+"Score notification" below).
 
 ```inform
-Constant MAX_SCORE 80;
+Constant MAX_SCORE 90;
 
 ! In the flower's after routine:
 Eat:
@@ -620,12 +647,20 @@ before [;
             move grandfather_clock to AlienWorld;
             print "...^";
             PlayerTo(AlienWorld, 2);
+            if (~~flower_eaten) {
+                deadflag = 1;
+                "...asphyxiation...";
+            }
             rtrue;
         }
         else if (parent(grandfather_clock) == AlienWorld) {
             move grandfather_clock to Cellar;
+            if (goddess_appeased && note_read)
+                return WakeInArkham();
             print "...^";
             PlayerTo(Cellar, 2);
+            if (goddess_appeased)
+                "...the note pulses with quiet insistence...";
             rtrue;
         }
         else "You step inside the clock, but nothing unusual happens.";
@@ -637,6 +672,13 @@ before [;
 - `PlayerTo(..., 2)` is essential: flag 2 calls `LookSub` directly without
   generating a `Look` action, so the goddess's `react_before` does not fire
   on arrival.
+- On return from Alien World, the win check is `goddess_appeased &&
+  note_read`. If both are true, `WakeInArkham()` is called (sets `deadflag
+  = 2`, awards the final 10 points, prints the Arkham waking text). If the
+  goddess is appeased but the note has not been read, the player is sent
+  to the Cellar with a hint instead — the game does not end. Reading the
+  note in the Cellar at this point (via the note's `after` routine) also
+  calls `WakeInArkham()`.
 - `rtrue` from `before` stops the default `Enter` handling.
 
 ### The goddess (`react_before` + `life`)
@@ -669,7 +711,10 @@ has animate;                                              # required for `give .
 - `has animate` is mandatory so the `creature` token in the `Give` grammar
   accepts her as a recipient.
 - After `goddess_appeased`, `react_before` returns false, so all actions
-  (including `enter clock` to leave) are allowed.
+  (including `enter clock` to leave) are allowed. The player may then
+  return through the clock — but the game only ends (waking in Arkham) if
+  the note has also been read (`note_read` flag). See the clock teleport
+  implementation above.
 
 ### The coin
 
@@ -703,6 +748,40 @@ inserting the goddess as a child of Alien World would otherwise have made the
 coin (originally `Object -> coin` after the goddess) a child of the goddess.
 Keeping it top-level and placing it explicitly (via the crack's `description`
 routine) avoids the source-order parentage trap.
+
+### The crumpled note and the Arkham waking
+
+The note starts in the player's inventory (moved in `Initialise`). It is
+not `scored` — points are awarded manually via its `after` routine on
+first `Examine`:
+
+```inform
+Object carter_note "crumpled note"
+    with name 'crumpled' 'note' 'paper' 'scrap' 'reminder',
+    description "A scrap of paper ... 'Remember: You are Randolph Carter.'",
+    after [;
+        Examine:
+            if (note_read == false) {
+                note_read = true;
+                score = score + 10;
+                if (goddess_appeased && location == Cellar)
+                    return WakeInArkham();
+            }
+    ];
+```
+
+The `WakeInArkham` routine sets `deadflag = 2` (win), awards the final
+10 points, and prints the waking text. It is called from two places:
+
+1. The clock's `before` routine, when returning from Alien World with
+   `goddess_appeased && note_read` both true.
+2. The note's `after` routine, when the note is read while in the Cellar
+   with the goddess already appeased (the "read it after returning" path).
+
+This dual-entry design means the player can read the note at any point
+during the game — early or late — and the waking ending triggers at the
+earliest moment both conditions (goddess appeased + note read) are met
+while in the Cellar or returning through the clock.
 
 ## Gotchas summary
 
