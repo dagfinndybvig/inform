@@ -150,6 +150,16 @@ fail and fall through to the library default.
 - Dynamic connections (teleports, conditional exits) are not
   auto-detected — add them with `--edge`.
 
+## Autoplay and world-gym (experimental)
+
+- `autoplay/` contains an interactive headless player (`autoplay.py`)
+  and a TCP gym server (`autoplay_server.py`) that serves any `.z5`
+  file for agent-driven play. See `autoplay/AGENTS.md` for the
+  operational guide.
+- All autoplay tools subclass `ZMachine` from `ztest.py` — do not
+  duplicate Z-machine logic in `autoplay/`. Fix opcode bugs in
+  `ztest.py`.
+
 ## Further reading
 
 This file is the quick-rules card. Read the full `README.md` for the

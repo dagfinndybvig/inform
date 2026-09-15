@@ -79,6 +79,10 @@ inform/
 │   └── inform6lib-master/     # Inform 6 library (parser.h, verblib.h, grammar.h, ...)
 ├── frotz/
 │   └── Frotz.exe              # Z-machine interpreter
+├── autoplay/                  # experimental: headless player + world-gym server
+│   ├── autoplay.py            # play any .z5 in the terminal
+│   ├── autoplay_server.py     # serve a .z5 over TCP for agent-driven play
+│   └── gym_client.py          # TCP client for the gym server
 └── archive/                   # earlier versions, cover art, generated maps
 ```
 
@@ -252,6 +256,19 @@ binary is consistent with local compilation. It also creates case-sensitivity
 symlinks for the library headers, which are lowercase on disk but referenced
 with mixed case in the game source — a non-issue on Windows but a hard
 failure on Linux.
+
+### Autoplay and world-gym (experimental)
+
+The `autoplay/` folder contains an experimental tool that turns any
+`.z5` game into a TCP server. An external agent — a human, a script, or
+an LLM — can connect and play the game one command at a time, reading
+the game's response after each turn and deciding the next move. This
+enables blind exploration of unknown games without pre-scripting
+commands. The same mechanism can serve any Z-machine world modelled
+in an `.inf` file, not just fantasy adventures — industrial plants,
+evacuation drills, debugging scenarios, and so on. See
+[`autoplay/README.md`](autoplay/README.md) for an overview and
+[`autoplay/AGENTS.md`](autoplay/AGENTS.md) for the operational guide.
 
 ## The game
 
