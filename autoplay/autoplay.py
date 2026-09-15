@@ -68,7 +68,9 @@ class InteractiveZMachine(ZMachine):
             self.running = False
             return None
         try:
-            return input(">")
+            cmd = input(">")
+            self._write(cmd + "\n")
+            return cmd
         except EOFError:
             self.running = False
             return None
