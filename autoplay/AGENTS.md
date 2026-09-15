@@ -73,6 +73,20 @@ connection at a time; a client may disconnect and reconnect without
 losing progress. When a client connects after the game ended, a fresh
 game starts automatically — no server restart needed.
 
+**Kill stale servers before starting a new one.** Old gym server
+processes accumulate across sessions and hold the port, causing
+connection timeouts or "address already in use" errors. Before
+starting a server, kill any existing ones:
+
+```bash
+pkill -f "autoplay_server" 2>/dev/null
+```
+
+This targets only the server script by command-line match — it will
+not affect other Python processes (e.g. the agent's own runtime).
+Never use `pkill -f "python"` or `taskkill /f /im python.exe`, which
+would kill unrelated processes.
+
 For turn-by-turn play from a script or agent, use one-shot mode:
 
 ```bash
