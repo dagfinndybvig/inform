@@ -291,8 +291,8 @@ box are. A Blind Alley dead end branches east off Labyrinth East.
 The Cellar is dark (no `light` attribute); the player must bring the brass
 lantern (switchable, grants `light` when on) or fumble in darkness. Alien
 World has `light`. The Garden contains a still pond whose reflection shows
-a 1920s scholarly gentleman — a dream-logic foreshadowing of the player's
-true identity as Randolph Carter.
+a scholarly gentleman in a suit and hat — a dream-logic foreshadowing of
+the player's true identity as Randolph Carter.
 
 ### Key objects
 
@@ -327,9 +327,9 @@ true identity as Randolph Carter.
   Arkham as Randolph Carter. Reading the note in the Cellar after returning
   (goddess already appeased) also triggers the waking.
 - **still pond** — `static` object in the Garden. Examining it reveals a
-  reflection of a 1920s scholarly gentleman in a tweed suit and fedora —
-  the player's true identity as Randolph Carter, leaking through the dream.
-  The reflection foreshadows the Arkham waking ending.
+  reflection of a scholarly gentleman in a suit and hat — the player's
+  true identity as Randolph Carter, leaking through the dream. The
+  reflection foreshadows the Arkham waking ending.
 
 ### Scoring
 

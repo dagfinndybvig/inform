@@ -22,9 +22,9 @@ clues, a brass lantern for the dark cellar, and a crumpled note in your
 pocket reading "Remember: You are Randolph Carter." Examining the note is
 the key to the final awakening — once the goddess is appeased and the note
 has been read, returning through the clock wakes you in your bed in Arkham.
-A still pond in the Garden offers another clue: its reflection shows a 1920s
-scholarly gentleman, not the figure you appear to be in this neolithic
-dreamworld.
+A still pond in the Garden offers another clue: its reflection shows a
+scholarly gentleman in a suit and hat, not the figure you appear to be in
+this neolithic dreamworld.
 
 ## Walkthrough
 
@@ -60,11 +60,10 @@ You begin in the Cottage. Three objects are here, and you are carrying one:
 
 Go north to the Garden. A **still pond** reflects the bruise-coloured sky.
 Examining it (`examine pond`) reveals a reflection that is not your own:
-a 1920s scholarly gentleman in a tweed suit and fedora, holding a
-leather-bound book — a jarring vision of paved streets and gabled roofs
-that belongs to no neolithic dreamworld. The reflection vanishes when you
-blink. This is a dream-logic foreshadowing of your true identity as
-Randolph Carter.
+a scholarly gentleman in a suit and hat, a jarring vision that belongs
+to no neolithic dreamworld. The reflection vanishes when you blink.
+This is a dream-logic foreshadowing of your true identity as Randolph
+Carter.
 
 From the Garden, proceed east to the **Dark Forest**.
 
@@ -175,7 +174,7 @@ take key              # for the ornate box
 take notebook         # scored object (4 pts)
 take lantern          # for the dark Cellar
 n                      # to Garden
-examine pond          # see the 1920s gentleman reflection (optional, atmospheric)
+examine pond          # see the gentleman reflection (optional, atmospheric)
 e                      # to Forest
 take twig             # needed to pry the coin from the crack
 n                      # to Stone Circle
