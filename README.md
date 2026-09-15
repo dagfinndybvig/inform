@@ -66,7 +66,6 @@ inform/
 ├── adventure_lovecraft.inf   # main source
 ├── adventure_lovecraft.z5     # compiled game (Z-machine v5, CI-produced, canonical)
 ├── test_lovecraft.z5          # local test build (gitignored, not committed)
-├── adventure.inf / .z5        # original (non-Lovecraft) version
 ├── ztest.py                   # headless Z-machine v5 interpreter (testing)
 ├── zmap.py                    # source parser → Graphviz DOT map (debugging)
 ├── Z_TEST_TOOL.md             # ztest.py documentation
@@ -78,8 +77,9 @@ inform/
 │   └── inform6.exe            # Inform 6.44 compiler (Windows)
 ├── inform6lib/
 │   └── inform6lib-master/     # Inform 6 library (parser.h, verblib.h, grammar.h, ...)
-└── frotz/
-    └── Frotz.exe              # Z-machine interpreter
+├── frotz/
+│   └── Frotz.exe              # Z-machine interpreter
+└── archive/                   # earlier versions, cover art, generated maps
 ```
 
 ### Compile
