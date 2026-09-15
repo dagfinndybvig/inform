@@ -162,8 +162,29 @@ Melancholy Dream.
 
 ---
 
+## Tooling notes
+
+The agent wrote several Python scripts (kept in the session
+scratchpad, not committed to the repo) to automate the gameplay:
+
+- **`batch.py` / `batch2.py`** -- thin wrappers around `GymClient`
+  that connect to the gym server, send a list of commands in one
+  persistent TCP connection, and print a compact summary of each
+  response. These let the agent send 30-50 commands per tool call
+  instead of one.
+- **`smart_play.py`** -- a `CursesPlayer` class that wraps `GymClient`
+  with helper methods for the dumbwaiter navigation (the main source
+  of errors, since the dumbwaiter has three stops and the player must
+  pull ropes the correct number of times depending on the starting
+  point). The script encodes the entire replay sequence from the
+  opening through the Tarot cards, garden maze, ship puzzle, and
+  Alison's Writing Room as a single Python program, making the
+  automation reproducible.
+
+The Z-machine gym server (`autoplay_server.py`) serves `curses.z5`
+(Release 16) over TCP on port 7777. Commands are sent one at a time
+via `gym_client.py`. Server lifecycle is managed by `gym_ctl.py`
+(start/stop/status).
+
 *Report generated on 2026-09-15 by GLM-5.3-Flash (Z.ai), running
-inside the Mistral Vibe CLI coding agent. The game was played using
-the Z-machine gym server (`autoplay_server.py`) serving
-`curses.z5` (Release 16) over TCP on port 7777, with commands sent
-one at a time via `gym_client.py`.*
+inside the Mistral Vibe CLI coding agent.*
