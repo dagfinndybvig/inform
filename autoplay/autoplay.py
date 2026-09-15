@@ -8,11 +8,13 @@ at each prompt.  No scripting, no pre-fed command list.
 
 Usage:
     python autoplay/autoplay.py [--story STORY.z5] [--seed N]
+                                [--transcript FILE]
 
 Default story is adventure_lovecraft.z5 in the repo root.
 """
 
 import argparse
+import datetime
 import os
 import sys
 
@@ -21,18 +23,42 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ztest import ZMachine, Quit
 
 
+def read_header(story_path):
+    """Extract release number, serial, and Z-machine version from a .z5 file."""
+    with open(story_path, "rb") as f:
+        data = f.read()
+    version = data[0]
+    release = (data[0x02] << 8) | data[0x03]
+    serial = data[0x12:0x18].decode("ascii", errors="replace")
+    return version, release, serial
+
+
 class InteractiveZMachine(ZMachine):
     """ZMachine that reads commands interactively from stdin."""
 
-    def next_command(self):
-        # Flush any accumulated output before prompting.
+    def __init__(self, *args, transcript=None, story_path=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.transcript = transcript
+        self.story_path = story_path
+
+    def _write(self, text):
+        """Write text to stdout and optionally the transcript."""
+        sys.stdout.write(text)
+        if self.transcript is not None:
+            self.transcript.write(text)
+
+    def _flush_output(self):
+        """Flush accumulated game output to stdout and transcript."""
         if self.out_buf:
             text = "".join(self.out_buf)
-            sys.stdout.write(text)
+            self._write(text)
             if not text.endswith("\n"):
-                sys.stdout.write("\n")
+                self._write("\n")
             sys.stdout.flush()
             self.out_buf.clear()
+
+    def next_command(self):
+        self._flush_output()
         try:
             return input(">")
         except EOFError:
@@ -49,18 +75,35 @@ def main():
                     help="path to .z5 story file")
     ap.add_argument("--seed", type=int, default=None,
                     help="seed the PRNG for reproducible random output")
+    ap.add_argument("--transcript", default=None,
+                    help="write game output to this file")
     args = ap.parse_args()
 
-    z = InteractiveZMachine(args.story, commands=[], seed=args.seed)
+    version, release, serial = read_header(args.story)
+
+    transcript = None
+    if args.transcript:
+        transcript = open(args.transcript, "w", encoding="utf-8")
+        transcript.write("Transcript of %s\n" % os.path.basename(args.story))
+        transcript.write("Z-machine v%d, Release %d, Serial %s\n"
+                         % (version, release, serial))
+        transcript.write("Recorded: %s\n" % datetime.datetime.now()
+                         .strftime("%Y-%m-%d %H:%M:%S"))
+        if args.seed is not None:
+            transcript.write("Seed: %d\n" % args.seed)
+        transcript.write("=" * 40 + "\n\n")
+
+    z = InteractiveZMachine(args.story, commands=[], seed=args.seed,
+                           transcript=transcript, story_path=args.story)
     try:
         z.run()
     except Quit:
         pass
 
-    # Flush any remaining output after the game ends.
-    if z.out_buf:
-        sys.stdout.write("".join(z.out_buf))
-        sys.stdout.flush()
+    z._flush_output()
+
+    if transcript is not None:
+        transcript.close()
 
 
 if __name__ == "__main__":

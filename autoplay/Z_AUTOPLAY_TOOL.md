@@ -33,6 +33,9 @@ python autoplay/autoplay.py --story test_lovecraft.z5
 
 # seed the PRNG for reproducible random output
 python autoplay/autoplay.py --story test_lovecraft.z5 --seed 42
+
+# record a transcript to a file
+python autoplay/autoplay.py --story archive/adventure.z5 --transcript playthru.txt
 ```
 
 You can also pipe commands in for non-interactive use:
@@ -47,6 +50,7 @@ printf 'take key\nlook\nnorth\nquit\ny\n' | python autoplay/autoplay.py --story 
 |------|---------|-------------|
 | `--story PATH` | `adventure_lovecraft.z5` (repo root) | Path to the `.z5` story file |
 | `--seed N` | none | Seed for the `random` opcode (deterministic playthrough) |
+| `--transcript FILE` | none | Write a transcript of the session to this file |
 
 ## Example session
 
@@ -92,27 +96,64 @@ Type commands at the `>` prompt. Press Ctrl-D (or Ctrl-Z on Windows) to
 end input. When the game calls `quit`, it asks "Are you sure you want to
 quit?" — type `y` to confirm.
 
+## Transcript
+
+Use `--transcript FILE` to record the session. The transcript file begins
+with a header extracted from the story file's Z-machine header (filename,
+Z-machine version, release number, serial code, recording date, and seed
+if set), followed by a separator line and then the full game output with
+interleaved `>` prompts — exactly what appears on screen.
+
+Example transcript header:
+
+```
+Transcript of adventure.z5
+Z-machine v5, Release 1, Serial 240910
+Recorded: 2026-09-15 11:22:35
+========================================
+
+```
+
+The game's own banner (title, headline, release line) follows immediately
+after the header, so the transcript captures the game name and description
+without needing to parse it separately.
+
 ## How it works
 
 `autoplay.py` subclasses `ZMachine` and overrides `next_command`:
 
 ```python
 class InteractiveZMachine(ZMachine):
-    def next_command(self):
-        # Flush accumulated output before prompting.
+    def __init__(self, *args, transcript=None, story_path=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.transcript = transcript
+
+    def _write(self, text):
+        sys.stdout.write(text)
+        if self.transcript is not None:
+            self.transcript.write(text)
+
+    def _flush_output(self):
         if self.out_buf:
             text = "".join(self.out_buf)
-            sys.stdout.write(text)
+            self._write(text)
             if not text.endswith("\n"):
-                sys.stdout.write("\n")
+                self._write("\n")
             sys.stdout.flush()
             self.out_buf.clear()
+
+    def next_command(self):
+        self._flush_output()
         try:
             return input(">")
         except EOFError:
             self.running = False
             return None
 ```
+
+When `--transcript` is set, a header is written to the file before the
+game starts. During play, `_write` tees output to both stdout and the
+transcript file.
 
 The base `run()` method is a simple `while self.running: self.step()` loop.
 When the game hits an `aread` opcode, it calls `next_command()` to get the
