@@ -14,7 +14,7 @@ interactive fiction community he is something of a founding figure:
 Inform, and the library that comes with it, were developed alongside
 *Curses*, and the game doubled as the compiler's showcase.
 
-*Curses* is old school in the classic Infocom sense. The player wakes
+*Curses* is old school in the classic Infocom sense. The player starts
 in the attic of a cluttered ancestral house in 1993, looking for a
 tourist map of Paris, and gradually uncovers a family history that
 stretches back through a cursed bloodline to the fall of Troy. The
@@ -178,7 +178,7 @@ What is less common in this repo's setup:
   evacuations, debugging scenarios as `.inf` files — is the sharper
   idea, and the direction where something new could live.
 
-No priority is claimed; these are just the facts.
+No priority is claimed.
 
 ## The circle closed
 
