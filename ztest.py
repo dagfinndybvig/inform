@@ -262,7 +262,7 @@ class ZMachine:
 
     def _decode_abbrev(self, abbr):
         pa = self.word(self.abbrev_table + 2 * abbr)
-        self.decode_zstring(pa * self.pack_mult)
+        self.decode_zstring(pa * 2)  # abbrev entries are word addresses, not packed
 
     # ---- objects ----
     def obj_addr(self, obj):
@@ -708,10 +708,13 @@ class ZMachine:
         self.exec_2op_core(opcode, a, b)
 
     def exec_2op_var(self, opcode, ops):
-        # variable-form 2OP: take first two operands
-        a = ops[0] if len(ops) > 0 else 0
-        b = ops[1] if len(ops) > 1 else 0
-        self.exec_2op_core(opcode, a, b)
+        if opcode == 1:  # je: compare first operand against all the rest
+            a = ops[0] if len(ops) > 0 else 0
+            self.do_branch(any(a == b for b in ops[1:]))
+        else:
+            a = ops[0] if len(ops) > 0 else 0
+            b = ops[1] if len(ops) > 1 else 0
+            self.exec_2op_core(opcode, a, b)
 
     def exec_2op_core(self, opcode, a, b):
         if opcode == 1:  # je
