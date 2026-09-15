@@ -18,6 +18,20 @@ card an agent (or human) must follow in every session.
 - **Push only source changes.** If `adventure_lovecraft.z5` shows up in
   `git status` as modified, do not stage it — CI will replace it.
 
+## Checking CI status
+
+- The `compile-inform.yml` and `pages` workflows run on every push to
+  `main`. To check their status without authenticating `gh`, query the
+  public GitHub API directly (this repo is public, so no token needed):
+
+  ```bash
+  curl -s "https://api.github.com/repos/dagfinndybvig/inform/actions/runs?per_page=5" \
+    | python -c "import json,sys; [print(r['created_at'], r['name'], r['conclusion']) for r in json.load(sys.stdin)['workflow_runs']]"
+  ```
+
+  `gh` requires `GH_TOKEN` even for public repos, but the REST API is
+  anonymous-readable for public repositories.
+
 ## Compiling
 
 - Always pass a second argument to override the output filename:
