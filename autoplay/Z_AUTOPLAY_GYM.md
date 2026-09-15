@@ -72,13 +72,25 @@ a well-formed command next.
 
 ### Start the server
 
+Use `gym_ctl.py` to manage the server lifecycle (kills stale servers,
+tracks PID, waits for ready):
+
 ```bash
 # serve the Lovecraft game
-python autoplay/autoplay_server.py --story test_lovecraft.z5 --port 7777
+python autoplay/gym_ctl.py start --story test_lovecraft.z5 --port 7777
 
 # serve any .z5 file
-python autoplay/autoplay_server.py --story archive/adventure.z5 --port 7777
+python autoplay/gym_ctl.py start --story archive/adventure.z5 --port 7777
+
+# check if a server is running
+python autoplay/gym_ctl.py status
+
+# stop the server
+python autoplay/gym_ctl.py stop
 ```
+
+You can also run `autoplay_server.py` directly, but `gym_ctl.py` is
+preferred because it cleans up stale processes that hold the port.
 
 ### Connect interactively
 
@@ -137,11 +149,14 @@ Runs end-to-end tests on both `archive/adventure.z5` and
 
 ## Server options
 
+These flags are passed to `gym_ctl.py start` (or directly to
+`autoplay_server.py`):
+
 | Flag | Default | Description |
 |------|---------|-------------|
 | `--story PATH` | `adventure_lovecraft.z5` (repo root) | Path to the `.z5` story file |
 | `--port N` | 7777 | TCP port to listen on |
-| `--host H` | 127.0.0.1 | Host to bind |
+| `--host H` | 127.0.0.1 | Host to bind (autoplay_server.py only) |
 | `--seed N` | none | Seed the PRNG for reproducible random output |
 | `--max-turns N` | none | End the game after N turns of input (the limit fires at the next input request after N commands execute) |
 

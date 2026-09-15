@@ -159,8 +159,8 @@ fail and fall through to the library default.
 
 - `autoplay/` contains an interactive headless player (`autoplay.py`)
   and a TCP gym server (`autoplay_server.py`) that serves any `.z5`
-  file for agent-driven play. See `autoplay/AGENTS.md` for the
-  operational guide.
+  file for agent-driven play. Use `gym_ctl.py` to start/stop/status
+  the server. See `autoplay/AGENTS.md` for the operational guide.
 - All autoplay tools subclass `ZMachine` from `ztest.py` — do not
   duplicate Z-machine logic in `autoplay/`. Fix opcode bugs in
   `ztest.py`.

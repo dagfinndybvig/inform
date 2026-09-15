@@ -47,14 +47,18 @@ See [`Z_AUTOPLAY_TOOL.md`](Z_AUTOPLAY_TOOL.md) for full documentation.
 
 Runs a `.z5` game as a TCP server. An external agent connects, sends
 one command at a time, and receives the game's response after each
-command as structured JSON (output text, score, turn count, win/loss
-state). Supports `--max-turns N` to end the game after a fixed number
-of input turns. Clients may disconnect and reconnect without losing
-progress; when a client connects after the game ended, a fresh game
-starts automatically.
+command as structured JSON (output text and a done flag). Supports
+`--max-turns N` to end the game after a fixed number of input turns.
+Clients may disconnect and reconnect without losing progress; when a
+client connects after the game ended, a fresh game starts
+automatically.
+
+Use `gym_ctl.py` to manage the server lifecycle:
 
 ```bash
-python autoplay/autoplay_server.py --story test_lovecraft.z5 --port 7777
+python autoplay/gym_ctl.py start --story test_lovecraft.z5 --port 7777
+python autoplay/gym_ctl.py status
+python autoplay/gym_ctl.py stop
 ```
 
 See [`Z_AUTOPLAY_GYM.md`](Z_AUTOPLAY_GYM.md) for the protocol, API, and
