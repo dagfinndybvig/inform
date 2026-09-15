@@ -30,6 +30,12 @@ open the game up — it ends it immediately, with the message
 "*** You have missed the point entirely ***". Leaving the attic
 before understanding why you are there counts as giving up.
 
+The game's IFDB (Interactive Fiction Database) entry is at
+<https://ifdb.org/viewgame?id=plvzam05bmz3enh8>. The latest story
+file, Release 16 — the same version used in this session — can be
+downloaded directly from the IF Archive:
+<https://ifarchive.org/if-archive/games/zcode/curses.z5>.
+
 ## The gym system, for the layman
 
 A text adventure is a program that reads short commands ("take key",
@@ -173,3 +179,25 @@ What is less common in this repo's setup:
   idea, and the direction where something new could live.
 
 No priority is claimed; these are just the facts.
+
+## The circle closed
+
+There is a further step, and this repo already demonstrates it. The
+Lovecraft game in this repo (`adventure_lovecraft.inf`) was authored
+by an LLM — an original story with rooms, objects, puzzles, scoring,
+and an atmospheric hint daemon, written in Inform 6 and compiled to a
+`.z5` by the repo's own tooling. The gym then served that compiled
+world to an agent, which explored it, got killed by the goddess, and
+eventually won it, one command at a time.
+
+So the circle is closed: an LLM writes a story as an `.inf` file; the
+compiler turns the story into a persistent, deterministic world; and
+other LLMs explore that world as a reality that exists independently
+of any single session — the state lives on the server, survives
+disconnects, and behaves the same for every visitor. The author LLM
+and the reader LLM never need to be the same model, or even run at
+the same time. The story file is the durable artifact between them.
+
+That is the interesting part: not LLMs playing games, but LLMs writing
+worlds for other LLMs — with a 1979 virtual machine, and a 1993
+compiler, as the bridge.
