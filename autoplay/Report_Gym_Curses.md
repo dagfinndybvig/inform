@@ -201,3 +201,11 @@ the same time. The story file is the durable artifact between them.
 That is the interesting part: not LLMs playing games, but LLMs writing
 worlds for other LLMs — with a 1979 virtual machine, and a 1993
 compiler, as the bridge.
+
+## Which model
+
+For the record: the agent in this session was **GLM-5.3-Flash**
+(trained by Z.ai), running inside the Mistral Vibe CLI coding agent.
+The loop is not tied to any one lab's model — the same story file
+could be explored by any LLM given the same gym, and the author and
+reader models never need to come from the same place.
