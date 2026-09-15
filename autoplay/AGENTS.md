@@ -61,6 +61,13 @@ printf 'look\nnorth\nquit\ny\n' | python autoplay/autoplay.py --story curses.z5 
 python autoplay/autoplay_server.py --story test_lovecraft.z5 --port 7777
 ```
 
+End the game automatically after N turns of input (useful for bounding
+agent sessions):
+
+```bash
+python autoplay/autoplay_server.py --story test_lovecraft.z5 --port 7777 --max-turns 50
+```
+
 The server runs forever (until Ctrl-C). It handles one client
 connection. After the game ends, restart the server to play again.
 
@@ -114,6 +121,9 @@ Newline-delimited JSON over TCP.
 Send: `{"cmd": "take key"}`
 Recv: `{"output": "Taken.", "done": false, "turn": 3, "score": 14, "deadflag": 0}`
 
+Malformed requests get `{"error": "..."}` with `output` empty and the
+game state unchanged; the connection stays open.
+
 The first response after connecting is the game's opening text with
 `turn: 0` and `done: false`. No command is needed to get it — just
 `recv()`.
@@ -139,6 +149,10 @@ score/deadflag for an unknown game, parse the game's text output
 - **Keep `next_command` simple.** It should return a string (the
   command) or `None` (game ends). All blocking, flushing, and queue
   logic belongs in the tool, not in the base class.
+- **Use `wait_for_server` in scripts that spawn the server.** It lives
+  in `gym_client.py`, reads the server's stderr until it reports
+  ready, and fails fast on timeout — never use a blind `sleep` to wait
+  for startup.
 - **Test after changes.** Run `python autoplay/test_gym.py` to verify
   the gym still works end-to-end. Run the regression test from the
   root `AGENTS.md` to verify the game itself is unaffected.
@@ -150,5 +164,8 @@ score/deadflag for an unknown game, parse the game's text output
 - Single-line input only. `read_char` returns the first character.
 - The gym server handles one connection. Game state is per-server,
   not per-connection. Restart to play again.
+- A crashed game thread (e.g. an unimplemented opcode) is reported to
+  the client as a final `done: true` response containing the
+  traceback, not a hang.
 - Same compiler quirks as `ztest.py` — see the root
   `Z_TEST_TOOL.md` "Quirks" section.

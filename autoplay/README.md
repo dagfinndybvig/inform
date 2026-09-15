@@ -48,7 +48,8 @@ See [`Z_AUTOPLAY_TOOL.md`](Z_AUTOPLAY_TOOL.md) for full documentation.
 Runs a `.z5` game as a TCP server. An external agent connects, sends
 one command at a time, and receives the game's response after each
 command as structured JSON (output text, score, turn count, win/loss
-state).
+state). Supports `--max-turns N` to end the game after a fixed number
+of input turns.
 
 ```bash
 python autoplay/autoplay_server.py --story test_lovecraft.z5 --port 7777
@@ -77,6 +78,8 @@ opening = client.recv()
 print(opening["output"])
 
 resp = client.send("take key")
+if resp.get("error"):
+    print("Server error:", resp["error"])
 print(resp["output"])
 print("score:", resp["score"])
 ```

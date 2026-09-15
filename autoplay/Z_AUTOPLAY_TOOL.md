@@ -282,3 +282,7 @@ input source. The difference is where the command comes from:
 All three inherit the same opcode implementations from the `ZMachine`
 base class. The only per-tool code is the `next_command` override and
 the output routing logic.
+
+The gym server also supports `--max-turns N`, which ends the game at
+the next input request after N commands execute — the same semantics
+as `autoplay.py`'s turn limit above.

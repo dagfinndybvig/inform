@@ -53,6 +53,16 @@ Newline-delimited JSON over TCP.
 The first response after connecting contains the game's opening text
 with `done: false` and `turn: 0`.
 
+Malformed requests (invalid JSON, or a missing `cmd` field) get an
+error response with `output` empty and the game state unchanged:
+
+```json
+{"output": "", "done": false, "turn": 0, "score": 0, "deadflag": 0, "error": "invalid JSON"}
+```
+
+The connection stays open after an error — the client can simply send
+a well-formed command next.
+
 ## Usage
 
 ### Start the server
@@ -85,6 +95,8 @@ print(opening["output"])
 
 # Send commands and read responses
 resp = client.send("look")
+if resp.get("error"):
+    print("Server error:", resp["error"])
 print(resp["output"])
 print("score:", resp["score"], "turn:", resp["turn"])
 
@@ -116,6 +128,7 @@ Runs end-to-end tests on both `archive/adventure.z5` and
 | `--port N` | 7777 | TCP port to listen on |
 | `--host H` | 127.0.0.1 | Host to bind |
 | `--seed N` | none | Seed the PRNG for reproducible random output |
+| `--max-turns N` | none | End the game after N turns of input (the limit fires at the next input request after N commands execute) |
 
 ## How it works
 
@@ -126,10 +139,18 @@ The Z-machine runs in a background `threading.Thread`. Its
 
 1. Flush the game's `out_buf` into a `result_queue` (visible to the
    socket handler).
-2. Block on `cmd_queue.get()` until the client sends a command.
+2. End the game if `--max-turns` is set and the limit has been reached
+   (appends a `[Turn limit reached after N turns.]` message and sets
+   `running = False`).
+3. Block on `cmd_queue.get()` until the client sends a command.
 
 This lets the game loop run normally (`while self.running: self.step()`)
 while pausing at every `aread` for input.
+
+If the Z-machine raises an unexpected exception (for example an
+unimplemented opcode on an unusual story file), the game thread catches
+it and sends a final `done: true` response containing the traceback, so
+the client sees the failure instead of hanging forever.
 
 ### Global variable detection
 
