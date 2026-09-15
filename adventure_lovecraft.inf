@@ -21,7 +21,7 @@ Global note_read;
     move flower to ornate_box;
     move carter_note to player;
     StartDaemon(VisionDaemon);
-    "You are a stranger in a strange land.^^In the wilderness you find yourself before an ancient and foreboding structure, seeking refuge from forces you dare not name.^^Type 'help' for instructions.";
+    "You wake -- though that is not the right word. There is no waking, no passage from sleep to alertness, only a sudden and unaccountable presence: you are here, now, standing before an ancient and foreboding structure of cyclopean stone. You do not remember arriving. You do not remember walking. The sky above is the colour of a bruise, and the air tastes of something old and vast, something that should not be breathed by mortal lungs.^^Type 'help' for instructions.^";
 ];
 
 ! ============================================================
@@ -31,7 +31,7 @@ Global note_read;
 [ WakeInArkham;
     deadflag = 2;
     score = score + 10;
-    "^You step inside the clock, but the interior is gone. There is only darkness, and a pulling sensation, as though reality itself were unwinding around you.^^You wake in a narrow bed in a room that smells of old books and pipe smoke. Morning light filters through curtains you know by heart. Your room in Arkham. Your name is Randolph Carter, and you have been asleep.^^But the crumpled note is still in your hand. And outside the window, for just a moment, the light flickers blue.^";
+    "^You step inside the clock, but the interior is gone. There is only darkness, and a pulling sensation, as though reality itself were unwinding around you.^^You wake in a narrow bed in a room that smells of old books and pipe smoke. Morning light filters through curtains you know by heart -- the same curtains your grandmother drew shut against the New England sun when you were a boy. You are in the ancestral house in Arkham, the gabled rooms where you spent every fevered night of your youth reading of Atlantis and Ultima Thule, longing to follow the sunset.^^Your name is Randolph Carter. You have always sought the sunset lands, the places behind the world, the dreamlands that lie beyond the wall of sleep. And you have been there -- you know this now. The clock, the cellar, the goddess of blue flame, the alien world -- it was no delirium. It was a dream, and it was real.^^The crumpled note is still in your hand. You smooth it out and read your own handwriting: 'Remember: You are Randolph Carter.'^^Outside the window, for just a moment, the light flickers blue.^";
 ];
 
 [ HearthstoneReveal;
