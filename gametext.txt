@@ -1,5 +1,0 @@
-Transcript of the text of "adventure_lovecraft.inf"
-[From Inform 6.44 for Windows (11th September 2025)]
-
-The Whispering Dwelling
-^An unsettling journey into the unknown^

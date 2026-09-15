@@ -322,7 +322,10 @@ Object coin "gold coin"
         "A gold coin glints deep within the crack, wedged beyond the reach of your fingers.";
     ],
     before [;
-        Take, Remove:
+        Take:
+            if (coin_pried == false)
+                "The coin is wedged too deeply in the crack for your fingers to reach. You would need something thin and strong to pry it loose.";
+        Remove:
             if (coin_pried == false)
                 "The coin is wedged too deeply in the crack for your fingers to reach. You would need something thin and strong to pry it loose.";
     ],

@@ -51,8 +51,9 @@ Cellar to pry the gold coin from the crack.
 ### 4. The Stone Circle and Labyrinth
 
 North of the Forest stands a ring of weathered menhirs. Going north from the
-clearing funnels you into a labyrinth of standing stones — a ring of 5 rooms
-(South, East, North, West) plus a Blind Alley dead end. Navigate clockwise
+clearing funnels you into a labyrinth of standing stones — a ring of 4 rooms
+(South, East, North, West) plus a Blind Alley dead end branching
+east off Labyrinth East (5 rooms total). Navigate clockwise
 (east) or counterclockwise (west) around the ring to Labyrinth North, then go
 north to reach the **Altar Chamber** at the centre. There you find:
 
@@ -129,6 +130,7 @@ clock to the Cellar. The game ends with `*** You have won ***`.
 read notebook          # learn the four rules
 examine hearthstone    # discover the hidden key
 take key              # for the ornate box
+take notebook         # scored object (4 pts)
 take lantern          # for the dark Cellar
 n                      # to Garden
 e                      # to Forest
