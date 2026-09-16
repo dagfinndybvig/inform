@@ -119,7 +119,7 @@ gym, reads the opening description, explores, examines objects, opens
 doors, and builds a mental model of the world — turn by turn, exactly
 like a person arriving somewhere new. You score the agent on whether it
 completed the objective: did it finish the safety checklist, evacuate
-everyone, find and fix the bug?
+everyone, find and fix the problem?
 
 The infrastructure already exists. Writing a new `.inf` file is the only
 creative work needed to create a new world. 
