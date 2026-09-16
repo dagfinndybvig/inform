@@ -1,3 +1,5 @@
+<img width="1024" height="768" alt="Curses3" src="https://github.com/user-attachments/assets/921e66eb-ffbe-430b-b3a4-d0734b124723" />
+
 # autoplay/ — Play and Serve Z-machine Games
 
 This folder contains tools for playing Z-machine text-adventure games
