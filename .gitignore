@@ -8,3 +8,4 @@ autoplay/*turns.txt
 autoplay/.gym_server.pid
 autoplay/.gym_server.log
 autoplay/curses_session_log.md
+autoplay/replay_*.py

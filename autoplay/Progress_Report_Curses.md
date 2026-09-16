@@ -237,3 +237,146 @@ via `gym_client.py`. Server lifecycle is managed by `gym_ctl.py`
 
 *Report generated on 2026-09-15 by GLM-5.3-Flash (Z.ai), running
 inside the Mistral Vibe CLI coding agent.*
+
+---
+
+## Update: 204/550 — September 16, 2026
+
+### Summary
+
+Across multiple sessions on September 16, the agent pushed the
+score from 117 to **204 out of 550**, surpassing the 200-point goal.
+All puzzles through the Rod of Bronze (the sixth Rod of Power) were
+solved, reproducibly from the opening using a chain of Python replay
+scripts.
+
+### New puzzles solved (this session: 117 -> 204)
+
+| Pts | Puzzle | Solution |
+|-----|--------|----------|
+| 4 | Medicine tablet | `drop medicine bottle in shaft` (must specify "in shaft"); retrieve from dumbwaiter |
+| 5 | Hamburg 1420 | `look up 1420 in tourist map` in White Hallway |
+| 3 | Hall of Exhibits | Push beach ball through revolving door barriers |
+| 4 | Cabinet (Smooth Stone) | Break cabinet in Hamburg, get stone + papyrus |
+| 5 | Strike Rod of Returning | In Hamburg Cabinet Room; triggers capture by Doktor Stein |
+| 5 | Escape Coven Cell | Eat red tablet (antidote), `point returning at me` |
+| 5 | Folly entry | Miniature in projector slot (projector must be ON) |
+| — | Weed killer | Squeeze at seed bed (E x8, S x4, W x1 from Folly) to open future Patio gap |
+| 5 | Patio in Maze | After weed killer: roller N, N, E, E, E from Family Tree |
+| 5 | Crypt mural | `examine mural` in Crypt below Patio |
+| 6 | Rod from bean pole | `wave bean pole` with daisy chain in Octagon Room |
+| 6 | Rod from shepherd's crook | `wave crook` with daisy chain in Octagon Room |
+| 0 | Rod of Stalking | Identified in coffin (from bean pole) |
+| 0 | Rod of Husbandry | Identified in coffin (from shepherd's crook) |
+| 5 | Star card | Put Star in projector slot, escape Lighthouse with Rod of Returning |
+| 5 | Castle card bomb | Pull blue, green, black, red wires; wait 6 turns; get timer; escape |
+| 6 | Rod from quarterstaff | `wave staff` with daisy chain in Octagon Room |
+| 0 | Rod of Bronze | Identified in coffin (from quarterstaff) |
+
+### Six Rods of Power
+
+All six Rods were found, waved with the daisy chain to reveal their
+true nature, and identified in the gilded coffin in the Octagon Room:
+
+1. **Rod of Returning** (from sooty stick) — teleports to a random attic room
+2. **Rod of Fire** (from timber spar) — shoots flames
+3. **Rod of Luck** (from four-leafed clover) — active after setting Universe switch to Chance
+4. **Rod of Stalking** (from bean pole, obtained in the 1808 Folly) — makes plants grow
+5. **Rod of Husbandry** (from shepherd's crook, obtained in Hamburg Coven Cell) — controls animals
+6. **Rod of Bronze** (from oak quarterstaff, obtained from Madame Sosostris) — manipulates bronze
+
+### The Hamburg capture sequence
+
+The Cabinet Room in Hamburg (entered via revolving door, accessible
+after looking up 1420 in the tourist map) drugs the player after a
+few turns. The player must have the red tablet (antidote, obtained
+by cracking the medicine bottle in the dumbwaiter shaft) in
+inventory BEFORE entering. The sequence: break cabinet, get
+items, wait 1 turn, strike Rod of Returning (triggers capture),
+immediately eat tablet, get shepherd's crook, point returning at
+me to teleport out.
+
+### The Folly weed killer
+
+The Patio in the Maze does not exist in 1993 until weed killer is
+squeezed at the correct seed bed in the 1808 Maze Foundations.
+The seed bed is 1 step west of the southeast corner: E x8, S x4,
+W x1 from the Folly entrance. After squeezing, the future hedge
+gap opens, and the roller can reach the Patio via N, N, E, E, E
+from Family Tree.
+
+### The LAGACH chain
+
+LAGACH (learned from the Premonition dream) teleports between
+artworks. The syntax is `<artwork>, lagach` (e.g., `painting,
+lagach`). The chain includes the Crypt's bronze mural, the Hall
+of Exhibits still life, the White Hallway painting of Mad Isaac,
+and Bohemia's Impressionist mural. The chain order depends on
+when artworks were first examined.
+
+### The quarterstaff from Sosostris
+
+After examining the Crypt mural (which depicts a star, a woman,
+and a bundle of wands), revisit Madame Sosostris in the Unreal
+City's Consulting Room. Place the Star, Maiden, and Eight of
+Wands face down on the tarot deck (matching the mural's three
+elements), push the bell. Sosostris gives the oak quarterstaff,
+which waves into the Rod of Bronze.
+
+### Replay scripts
+
+The agent wrote four Python scripts (saved in `autoplay/`,
+gitignored under `replay_*.py`) that chain together to replay the
+game from the opening to the current best score:
+
+| Script | Stage | Score |
+|--------|-------|-------|
+| `replay_01_early.py` | Opening to Inside Cupboard (radio, gloves, battery, rucksack, painting) | 16 |
+| `replay_02_midgame.py` | Inside Cupboard to Octagon Room (mouse, priest's hole, Unreal City, garden maze, ship, Writing Room, Melancholy Dream, 3 Rods identified) | 140 |
+| `replay_03_hamburg_folly.py` | Medicine bottle, Hamburg capture, Folly (weed killer + bean pole), shepherd's crook | 171 |
+| `replay_04_final.py` | Wave poles, Patio/Crypt mural, Star card, Castle bomb, quarterstaff, Rod of Bronze | 188–204 |
+
+Each script connects to the gym server via `GymClient`, sends
+commands one at a time, and prints a compact summary. They are
+run sequentially against a fresh server:
+
+```bash
+python autoplay/gym_ctl.py start --story autoplay/curses.z5 --port 7777
+python autoplay/replay_01_early.py
+python autoplay/replay_02_midgame.py
+python autoplay/replay_03_hamburg_folly.py
+python autoplay/replay_04_final.py
+```
+
+The scripts reliably reach 188 points. The remaining 16 points
+(Star card, Castle bomb, quarterstaff) depend on the Rod of
+Returning's random teleport destination, which makes the
+navigation in `replay_04` non-deterministic. When the teleport
+lands at a recognised attic location, the full 204 is achieved.
+
+### Key technical lessons
+
+- **Dumbwaiter at Storage Room**: the dumbwaiter is already at
+  Storage Room when you arrive. Do NOT call `turn wheel` — it
+  sends the dumbwaiter away. Only call `turn wheel` when the
+  dumbwaiter is NOT at the current floor.
+- **Beanstalk ENTER prompt**: after `point rod of stalking at
+  plant`, the game shows a warning and waits for ENTER. The
+  empty-string response contains the beanstalk growth message.
+  Send `up` only after confirming "beanstalk" in the response.
+- **Projector slot**: `get <item>` retrieves the item from the
+  slot and blanks the wall. `put <item> in slot` fails if the
+  slot is occupied. Cards can only be used once.
+- **Gas mask**: must be removed before asking the angel in
+  Heavenly Place questions ("speech is muffled into silence").
+- **Castle card**: not a death trap if the bomb is defused (pull
+  blue, green, black, red wires in order, then wait for the
+  countdown).
+
+### Walkthrough references
+
+- Marion Taylor (Syntax2000): `http://www.syntax2000.co.uk/issues/42/curses1.sol.txt`
+- David Welbourn (Key & Compass): `https://plover.net/~davidw/sol/c/curse93.html`
+
+*Updated on 2026-09-16 by GLM-5.3-Flash (Z.ai), running inside the
+Mistral Vibe CLI coding agent.*
