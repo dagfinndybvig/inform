@@ -122,4 +122,6 @@ completed the objective: did it finish the safety checklist, evacuate
 everyone, find and fix the bug?
 
 The infrastructure already exists. Writing a new `.inf` file is the only
-creative work needed to create a new world. And even that can be done by an agent.
+creative work needed to create a new world. 
+
+And even that can be done by an agent, as the top-level project of this repo shows.
