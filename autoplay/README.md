@@ -26,7 +26,7 @@ receives the result (room descriptions, object responses, score
 changes), decides what to do next, and continues until the game ends.
 
 This is different from pre-scripting a fixed sequence of commands. The
-agent can explore blindly: it doesn't need to know the game in advance.
+agent can explore freely: it doesn't need to know the game in advance.
 It reads the output, reasons about what it sees, and picks the next
 action — exactly how a human plays.
 
