@@ -380,3 +380,76 @@ lands at a recognised attic location, the full 204 is achieved.
 
 *Updated on 2026-09-16 by GLM-5.3-Flash (Z.ai), running inside the
 Mistral Vibe CLI coding agent.*
+
+---
+
+## Update: 301/550 -- Sep 16, 2026 (GLM-5-2)
+
+The agent reached **301 out of 550 points** in a single continuous
+playthrough, using live server play (one command at a time over TCP)
+after replaying the base scripts to 234. The 234-to-301 segment was
+played interactively, exploring new situations and debugging failures
+in real time.
+
+### New puzzles solved (234 to 301, +67 pts)
+
+| Pts | Puzzle | Solution |
+|-----|--------|----------|
+| 5 | Behind Summer House | Hit croquet ball with mallet to reveal NW gap in hedge |
+| 7 | Gold watch | Show nuts to squirrel, put nuts in crack, enter Summer House, remove gas mask, blow bird whistle -- sparrows dislodge watch from roof |
+| 3 | Crescent Moon | Hypnotise Old Evans with the gold watch at Stone Cross, ask Evans for Moon |
+| 5 | Star card | Put Star in projector, enter Lighthouse, escape with Rod of Returning |
+| 5 | Castle bomb | Put Castle in projector, enter Ruined Castle Cafe, pull blue/green/black/red wires in order, wait 5 turns for timer to disarm, escape with Rod of Returning |
+| 5 | Temple of Zeus coin | In Maiden scene: burn thorns with Rod of Fire (already charged), use Rod of Luck to survive Zeus's thunderbolt, take coin |
+| 6 | Pan pipes | Wake Homer in Inner Sanctum, answer 3 trivia: Agamemnon, Ptolemy, yellow |
+| 5 | Eraina Taverna | Enter taverna (goats parted with Rod of Husbandry, already charged) |
+| 4 | Ekmek dessert | Give copper coin to bartender, take dessert |
+| 0 | Amber hairband | Give dessert to Andromeda at Sea Shore -- she gives hairband |
+| 6 | Rod of Sacrifice | Wave amber hairband with daisy chain in Octagon, identify in coffin |
+| 6 | Rod of Infinity | Wave Eight of Wands with daisy chain in Octagon, identify in coffin |
+| 10 | Chess puzzle | Strike Rod of Sacrifice (charge before entering), rub orb to enter, wait for White's turn, point Rod of Sacrifice at board -- White sacrifices knight, checkmates Black |
+
+### Key discoveries this session
+
+1. **Already-charged rods explode if struck again.** At 234 pts, Rod
+   of Fire and Rod of Husbandry are already charged. Calling `strike` on
+   them causes a cataclysmic explosion and death. The fix: just `point`
+   them directly without striking.
+
+2. **Chess puzzle timing.** The Rod of Sacrifice must be charged BEFORE
+   entering the orb (strike it in the Octagon, then rub the orb). Inside
+   the orb, wait until the images show "White is trying to make an
+   attack" or "Back to White's side" -- this is White's turn. Point the
+   Rod of Sacrifice at the board during White's turn. If done during
+   Black's turn, Black makes the sacrifice and you get checkmated.
+
+3. **Maiden card navigation.** From the Inner Sanctum (after getting Pan
+   pipes from Homer), go NW (not NE!) to West Cloister, then NE to
+   Temple of Zeus, then N through Sacred Earth and Wall of Thorns back
+   to Clifftop Walk where the goats are.
+
+4. **Homer trivia answers.** Q1: Agamemnon (brother of Menelaus). Q2:
+   Ptolemy (rules Alexandria after Alexander). Q3: yellow (Monty Python
+   reference). Gas mask must be removed before speaking to Homer.
+
+5. **Andromeda sequence.** Burn thorns with Rod of Fire (no strike --
+   already charged). Use Rod of Luck (strike + point at me) to survive
+   Zeus's thunderbolt at Sacred Earth. Get coin at Temple of Zeus. Wake
+   Homer, answer trivia, get Pan pipes. Part goats with Rod of Husbandry
+   (no strike -- already charged). Get fig, give coin to bartender for
+   dessert. Give dessert to Andromeda for hairband. Hairband is a Rod of
+   Power -- wave in Octagon for Rod of Sacrifice.
+
+### Method
+
+The agent used a hybrid approach: replay scripts (replay_01 through
+replay_06) to reproduce 234 points, then live interactive play via the
+gym server for the new puzzles from 234 to 301. Each command was sent
+individually via `gym_client.py`, with the agent reading the game's
+response and adapting. Three game deaths occurred during exploration
+(Rod of Fire explosion, Rod of Husbandry explosion, chess checkmate),
+each requiring a full restart and replay to 234 before trying again
+with the fix.
+
+*Updated on 2026-09-16T12:00 by GLM-5-2, running inside the Mistral
+Vibe CLI coding agent.*
