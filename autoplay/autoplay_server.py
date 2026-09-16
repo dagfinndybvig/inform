@@ -201,6 +201,33 @@ class GymHandler(socketserver.StreamRequestHandler):
                 self._send(error="missing 'cmd' field")
                 continue
 
+            # Gym control commands: checkpoint/restore the game state
+            # without consuming a game turn.
+            if cmd.startswith("__save") or cmd.startswith("__load"):
+                parts = cmd.split(None, 1)
+                name = parts[1].strip() if len(parts) > 1 else ""
+                fname = ".gym_save_%s.dat" % name if name else ".gym_save.dat"
+                path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    fname)
+                try:
+                    if cmd.startswith("__save"):
+                        game.z.save_to_file(path)
+                        self._send("[State saved to %s]" % fname)
+                    else:
+                        if game.finished:
+                            # Old game ended (turn limit, quit, death):
+                            # current_game() returns a fresh thread; sync
+                            # on its opening so it is parked at its aread
+                            # before we overwrite its state.
+                            game = manager.current_game()
+                            game.get_result()
+                        game.z.load_from_file(path)
+                        game.turn_count = 0
+                        self._send("[State restored from %s]" % fname)
+                except Exception as e:
+                    self._send(error="__save/__load failed: %s" % e)
+                continue
+
             # Feed command to game, wait for response
             game.send_command(cmd)
             result = game.get_result()

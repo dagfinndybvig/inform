@@ -24,6 +24,7 @@ import os
 import struct
 import argparse
 import random
+import pickle
 
 
 # ---------------------------------------------------------------------------
@@ -1161,6 +1162,60 @@ class ZMachine:
         else:
             # unknown ext: no-op (avoid crashing on obscure opcodes)
             pass
+
+    # ---- full-state snapshot / restore (gym save system) ----
+
+    def snapshot(self):
+        """Capture the full executable state as a picklable dict.
+
+        Must be called while the game is paused waiting for input (the
+        gym server guarantees this), so the program counter sits at a
+        read opcode's continuation and feeding a command after a
+        restore resumes cleanly.
+        """
+        return {
+            "mem": bytes(self.mem),
+            "stack": list(self.stack),
+            "frames": [(f.return_pc, list(f.locals), f.stack_base,
+                        f.store_var, f.discard, f.num_args)
+                       for f in self.frames],
+            "cur_frame": self.frames.index(self.current_frame),
+            "pc": self.pc,
+            "stream1_on": self.stream1_on,
+            "stream3": list(self.stream3),
+            "cur_window": self.cur_window,
+            "undo_snapshot": self.undo_snapshot,
+            "cmd_idx": self.cmd_idx,
+            "rng": random.getstate(),
+        }
+
+    def restore_snapshot(self, snap):
+        """Restore state captured by snapshot()."""
+        self.mem = bytearray(snap["mem"])
+        self.stack = list(snap["stack"])
+        self.frames = [Frame(*f) for f in snap["frames"]]
+        self.current_frame = self.frames[snap["cur_frame"]]
+        self.pc = snap["pc"]
+        self.stream1_on = snap["stream1_on"]
+        self.stream3 = list(snap["stream3"])
+        self.cur_window = snap["cur_window"]
+        self.undo_snapshot = snap["undo_snapshot"]
+        self.cmd_idx = snap["cmd_idx"]
+        random.setstate(snap["rng"])
+        self.out_buf.clear()
+
+    def save_to_file(self, path):
+        """Atomically write a snapshot to disk."""
+        tmp = path + ".tmp"
+        with open(tmp, "wb") as f:
+            pickle.dump(self.snapshot(), f)
+        os.replace(tmp, path)
+
+    def load_from_file(self, path):
+        """Restore a snapshot previously written by save_to_file()."""
+        with open(path, "rb") as f:
+            snap = pickle.load(f)
+        self.restore_snapshot(snap)
 
 
 def main():

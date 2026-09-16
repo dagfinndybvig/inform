@@ -151,6 +151,30 @@ score, turn count, or win/death state — parse the game's text output
 for those (e.g. search for "*** You have won ***"). The connection
 can be closed.
 
+## Checkpoint / restore (`__save` / `__load`)
+
+The gym server supports two control commands that do NOT consume a
+game turn. They snapshot the interpreter's full state (memory, call
+stack, PC, RNG) to disk, so a long session can be checkpointed and
+resumed — even after the game ended or the server was restarted.
+
+```bash
+python autoplay/gym_client.py --port 7777 --command "__save"            # -> autoplay/.gym_save.dat
+python autoplay/gym_client.py --port 7777 --command "__save curses277"  # -> autoplay/.gym_save_curses277.dat
+python autoplay/gym_client.py --port 7777 --command "__load"            # restore default
+python autoplay/gym_client.py --port 7777 --command "__load curses277"  # restore named
+```
+
+- `__load` works even when the current game has ended (turn limit,
+  quit, death): the server starts a fresh game and overwrites its
+  state with the snapshot. The turn budget (`--max-turns`) is reset
+  to 0 on load.
+- Snapshot files are gitignored (`.gym_save*.dat`). Save at every
+  milestone — a lost session otherwise means replaying from the
+  replay scripts.
+- The game's own in-game `save`/`restore` commands still fail; use
+  `__save`/`__load` instead.
+
 ## Modifying the tools
 
 - **Do not fork Z-machine logic.** Fix opcode bugs in `ztest.py`, not
@@ -170,7 +194,9 @@ can be closed.
 ## Limitations to keep in mind
 
 - No screen formatting, sound, or pictures — all no-ops.
-- No disk save/restore — `save`/`restore` return failure. UNDO works.
+- The game's own `save`/`restore` return failure. UNDO works. Use the
+  gym's `__save`/`__load` control commands for real checkpoints (see
+  "Checkpoint / restore" above).
 - Single-line input only. `read_char` returns the first character.
 - The gym server handles one connection at a time. Game state is
   per-server, not per-connection. Reconnects resume the game; a
