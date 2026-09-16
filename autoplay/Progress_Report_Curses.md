@@ -3,8 +3,10 @@
 This report summarises the progress of an AI agent playing Graham
 Nelson's *Curses* (1993) using the Z-machine gym server in this
 repo's `autoplay/` folder. The game is played one command at a time
-over TCP, with no save/restore -- each session replays from the
-opening.
+over TCP. At first there was no save/restore and each session
+replayed from the opening; mid-campaign a full snapshot system
+(`__save`/`__load`) was introduced (see the final update below),
+which changed the way the whole game was played.
 
 ## Sessions and score
 
@@ -453,3 +455,212 @@ with the fix.
 
 *Updated on 2026-09-16T12:00 by GLM-5-2, running inside the Mistral
 Vibe CLI coding agent.*
+
+---
+
+## Final update: GAME WON -- 549/550 -- Sep 16, 2026 (GLM-5.3-Flash)
+
+The campaign is complete. After the 301-point plateau, the agent
+started a **fresh full playthrough from 0 points** following the Key
+& Compass walkthrough (David Welbourn), played live over the gym
+server one command at a time, and drove it all the way to:
+
+```
+*** You have won ***
+In that game you scored 549 out of a possible 550, in 1780 turns,
+giving you the rank of very nearly happy Tourist.
+```
+
+The final move was `d` from the Attic with the tourist map of Paris
+in hand, authorised by the user. "You have succeeded in shaking off
+the Curse of the Meldrews: for the first time in sixty generations,
+a Meldrew has found the useless object he was doomed to seek!"
+
+### The introduction of snapshots (`__save` / `__load`)
+
+The single most important tooling change of the campaign. Until the
+score reached the high 200s, every death, turn-limit expiry or server
+crash meant replaying the entire game from the opening with chained
+Python scripts. That was the bottleneck: three exploration deaths at
+the 234-point stage each cost a full replay.
+
+The fix was a full state-snapshot system built into the tooling:
+
+- `ztest.py`'s `ZMachine` gained `snapshot()`, `restore_snapshot()`,
+  `save_to_file()` and `load_from_file()` -- the complete machine
+  state (memory image, call stack, program counter, output streams,
+  the UNDO snapshot and the RNG state) serialised as a pickled dict.
+  Because the RNG state travels inside the snapshot, replaying a
+  fixed command sequence from a checkpoint is deterministic.
+- `autoplay_server.py` intercepts `__save <name>` and `__load <name>`
+  **before the game sees them**, so checkpointing consumes no turns.
+  Files live at `autoplay/.gym_save[_name].dat` (gitignored).
+- `__load` works even after the game has ended (turn limit, quit or
+  death): a fresh game is started, the state overwritten and the turn
+  budget reset.
+
+This changed the workflow fundamentally. The agent began saving a
+named checkpoint at every milestone (`wp01` ... `wp33c`), so a death
+or crash cost minutes, not hours. It proved itself twice in the final
+sessions:
+
+1. **Server-loss recovery.** The gym server died between tool calls
+   and took the 410-point live state with it. The newest checkpoint
+   was wp25 (254 pts, Souvenirs Room). Because all chunk command
+   files were preserved, the agent restored wp25 and replayed chunks
+   26-29 deterministically back to 410 -- about twenty minutes of
+   work instead of a full replay from zero.
+2. **Checkmate recovery.** The chess puzzle was lost once (see
+   below); restoring the wp31d checkpoint put the agent back at the
+   church in one command.
+
+A session runner (`run_session.py`, kept in the session scratchpad)
+was written to do everything in one process: kill stale servers,
+start a fresh one, `__load` the checkpoint, play a chunk of commands,
+`__save` a new checkpoint. This made the workflow robust against the
+server not surviving between tool calls.
+
+### Milestones of the winning playthrough
+
+| Score | Milestone |
+|-------|-----------|
+| 138 | Early game through the Mosaic region (wp01-wp09) |
+| 254 | Souvenirs Room base, before the Maiden region (wp25) |
+| 288 | Maiden region: coin, pan pipes, gem, hairband, Oracle's digging numbers |
+| 343 | The Star: Kraken killed (+50), resurrected at the Family Tree, rucksack recovered via the lagach chain |
+| 367 | Oracle's numbers paced, spade dig, strongbox, astrolabe |
+| 410 | The sketch: Alexandria 275 BC, cloak, rusty key, adamantine heart; sailed home |
+| 440 | Sockets ("si huth thu"), coffin slide, adamantine skull |
+| 446 | Spindle waved: Rod of Ice |
+| 475 | Palace ("anoppe"), astrolabe on the Balustrade, Spire hand, West Chapel Operation, High Rod of Life |
+| 485 | Chess: White's sacrificial checkmate (+10) |
+| 498 | Nine rods in the arc, orb in the opening, Rod of Infinity at the lemniscus: Roman villa |
+| 542 | Villa survived: Language rod, sandals over coals, tent-pole escape, bluish stone |
+| 549 | Fifty-franc note, "say carte" at Chatelet: the map of Paris |
+| WIN | Monkey delivered to Old Evans, back up to the Attic, `d` |
+
+### Key mechanics mastered in the endgame
+
+- **The cloak of many colours** opens the A Tower door (turned grey)
+  and joins the Dionysus procession -- but is **fatal** if worn into
+  the palace. It must be removed at the door.
+- **The museum of Alexandria** admits you only with Austin the cat or
+  the purple sash; entering with Austin removes him permanently, so
+  the entire library circuit (Birdcage, oil anointing, messenger-boy
+  tubes, poem swap, brawl, sash) must be done in one visit.
+- **The Austin jump trick**: push Austin south into the Souvenirs
+  Room, verify he is present, then `jump` -- he springs through the
+  projection into Alexandria 275 BC.
+- **The chess parity trap**: the orb's turn-counter ticks on *every*
+  command. Striking the Rod of Sacrifice after seeing "Back to
+  White's side" burns a turn and flips the parity to Black --
+  checkmate. The rod must be charged *before* the White message, then
+  `point it at board` as the very next command.
+- **The sockets** spin randomly: turn the sceptre until the first
+  reads "si" and the second "huth" (the third stays "thu"), then the
+  coffin lid opens -- enter only oil-anointed.
+- **"anoppe"** in the palace maze, **"say carte"** at Chatelet (the
+  game never tells you the French for "map"), and the die words
+  THU=1 ZAI=2 SI=3 CA=4 MACH=5 HUTH=6.
+- **LAGACH stops working** once the map of Paris is obtained -- the
+  Druids' magic ends when the quest ends.
+
+### Why 549 and not 550
+
+The last 5 points are the author's BONUS points, awarded for small
+kindnesses (kissing Aunt Jemima, giving her the chocolate biscuit)
+and **removed four turns later**. To keep them you must earn them for
+the first time at the very end and race down from the Attic before
+the author takes them back. In this playthrough the bonus was
+earned-and-lost early on, so 549 is the honest ceiling. The pre-win
+checkpoint (`wp33c`, Attic, 549/550) is preserved should anyone ever
+want to restore and chase a perfect 550 in a fresh run.
+
+---
+
+## Synopsis of the Meldrew family history
+
+What follows is the family saga as assembled from the History of the
+Meldrews vol. II, Mad Isaac's prayer book, the tombstones, the
+portraits and the game's own revelations -- the story the player
+unwittingly completes.
+
+The Meldrews are a family under a curse: like Robert Southey's young
+chickens, their curses always come home to roost. For sixty
+generations each Meldrew has been doomed to seek some useless object,
+and each has failed. The house itself is a monument to their
+obsessions.
+
+**Henri Maladreue** (obit MCDLVI, 1356) is the earliest Meldrew whose
+trace survives in the house. His tomb lies far beneath the crypt,
+inscribed with the year that later becomes the key to the Contraption
+panel in the Universe Maintenance Room -- his name, spelled HENRI,
+must be slid down the left side of the panel to fling the golden orb
+out of the well. Even in death, Henri is a puzzle.
+
+**Mad Isaac Meldrewe** (1705-1792), antiquarian and mystic, is the
+family's chronicler of the supernatural. His prayer book, hidden in
+the Priest's Hole behind the fireplace, records by year his
+investigations -- and his discovery that Merlyn bound the back garden
+with Roddes of Power, disguised as everyday objects until waved by
+one wearing Merlyn's hat. Isaac's portrait, hung in the White Hallway
+that he converted from the scullery, becomes a station on the
+lagach chain. He died in 1792, the year of his great discovery.
+
+**Sir Joshua Meldrewe** (1710-1776), a member of the Hell-Fire Club,
+stole a hoard of gold of which only a golden astrolabe remains,
+buried in a strongbox beneath the croquet lawn. He choked to death on
+a chicken bone -- a fate the player re-enacts on his ghost by giving
+the wishbone from the dumbwaiter, freeing the gothic key he swallowed.
+His ghost haunts the Battlements until then.
+
+**Capability Meldrew** (1761-1817), landscape gardener in the manner
+of his famous namesake, laid out the privet hedge maze, the Folly and
+the croquet lawn. In 1808 he planted the maze foundations and
+whitewashed a plot of grass where a patio was planned -- the same
+plot where, two centuries later, the player squeezes weed killer to
+open the gap that lets the garden roller reach the Patio in the Maze,
+and paces out the Oracle's numbers to dig up Sir Joshua's strongbox.
+
+**Ebenezer Meldrew** (1846-1908), explorer, went to Africa; his
+canvas rucksack, left in the attic Dead End, is the first thing the
+player finds and the enabler of everything that follows.
+
+**Roger Meldrew** (1846-1913), Victorian patriarch, is remembered by
+a photograph in the Dark Room; his generation suppressed the writing
+career of his wife **Alison Meldrew** (1871-1930), who wrote romances
+under the pseudonym "Marie Swelldon" -- an anagram of her true name
+-- and built a fake wall at the south end of the attic to hide her
+writing room. Alison collected lucky charms: her jewellery box,
+initialled "A.M.", hides the four-leafed clover that becomes the Rod
+of Luck. Her bed, blanketed with the Merchant Navy flag, is the door
+to the Melancholy Dream.
+
+**Helene Meldrew** painted the murals -- the Impressionist work in
+Bohemia, the bronze mural of a wise man following a star -- and left
+her self-portrait ("H.M. '54") among the lawn ornaments. Her husband
+**Anton** was a chess grandmaster famous for his sacrificial attacks;
+his entry in the History is the hint that defeats Black in the orb.
+
+**Gerard Meldrew**, Second Lieutenant of the 19th/21st Rifles, is
+named on the village war memorial by the Stone Cross. **Tobias** is
+mentioned in the History and nowhere else in the game -- the one
+Meldrew who left no puzzle behind.
+
+And in the present day, **Aunt Jemima** -- too recent for the
+History, which records only the dead -- sulks in the Potting Room
+over being left behind on the family holiday, and it is she who
+makes the daisy chain of Merlyn's-hat yellow daisies that reveals the
+Rods of Power.
+
+Finally the player: a Meldrew of 1993, who only wanted a tourist map
+of Paris left in the attic five years ago. Following the pull of the
+family curse through the cellars, the Unreal City, Alexandria, the
+Roman villa and the afterlife itself, the player assembles the map --
+and becomes the first of sixty generations to succeed. The curse,
+like the young chickens, has finally come home to roost.
+
+---
+
+*Final update on 2026-09-16 by GLM-5.3-Flash (Z.ai), running inside
+the Mistral Vibe CLI coding agent.*
