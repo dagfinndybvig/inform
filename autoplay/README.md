@@ -3,7 +3,7 @@
 # autoplay/ — Play and Serve Z-machine Games
 
 This folder contains tools for playing Z-machine text-adventure games
-headlessly — without a human-readable interpreter — and for turning an Inform game
+headlessly — without a human-readable interpreter — and turning an Inform game
 into an interactive environment that an AI agent can explore.
 
 ## What is the Z-machine?
