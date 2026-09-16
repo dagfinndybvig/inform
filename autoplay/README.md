@@ -111,9 +111,6 @@ This means you can model anything:
 - **A building evacuation** — rooms are floors and hallways, doors lock
   and unlock, fire spreads via timers, the player must find exits and
   guide people out.
-- **A debugging scenario** — rooms are software modules, objects are
-  config files and logs, the player examines state, applies fixes, runs
-  tests.
 - **A guided tour or onboarding** — rooms are stations, objects are
   equipment, examining things teaches the player how they work.
 
