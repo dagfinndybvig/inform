@@ -175,6 +175,33 @@ python autoplay/gym_client.py --port 7777 --command "__load curses277"  # restor
 - The game's own in-game `save`/`restore` commands still fail; use
   `__save`/`__load` instead.
 
+### Snapshots and logging go together
+
+A checkpoint without a log is a blind restore: the state survives,
+but the knowledge of how you got there and what to do next does not.
+Always use the two as a pair:
+
+- **Checkpoint at every milestone** with a meaningful name
+  (`__save wp25`), and **record the same milestone in the session
+  log** (`autoplay/curses_session_log.md`, gitignored): the score,
+  location, what was just done, and the exact command sequence
+  (chunk file) that produced it.
+- **Keep the command chunks.** When a live state is lost, the
+  newest checkpoint plus the preserved chunk files let you replay
+  deterministically from the checkpoint (the RNG state travels
+  inside the snapshot, so a fixed command sequence reproduces the
+  same run). Without the chunks, a checkpoint only tells you where
+  you were — not how to move on.
+- **Log gotchas as you hit them** (parser names, fatal moves,
+  timing traps). A restored session starts with no memory; the log
+  is the only memory it has.
+
+This was proven in practice: a server crash lost a 410-point live
+state, but the wp25 checkpoint (254 pts) plus the preserved chunk
+command files plus the session log allowed a full deterministic
+replay back to 410 in minutes. Neither artifact alone would have
+sufficed.
+
 ## Modifying the tools
 
 - **Do not fork Z-machine logic.** Fix opcode bugs in `ztest.py`, not
