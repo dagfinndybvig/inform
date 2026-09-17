@@ -2,8 +2,10 @@
 """Run the published Curses walkthrough through the gym and record a transcript."""
 
 import html
+import os
 import re
 import sys
+import tempfile
 import urllib.request
 
 sys.path.insert(0, ".")
@@ -11,7 +13,25 @@ from gym_client import GymClient
 
 
 WALKTHROUGH_URL = "https://plover.net/~davidw/sol/c/curse93.html"
+STORY_URL = "https://ifarchive.org/if-archive/games/zcode/curses.z5"
+STORY_PATH = "autoplay/curses.z5"
 TRANSCRIPT = "autoplay/curses_gym_transcript.txt"
+
+
+def ensure_story_file():
+    if os.path.isfile(STORY_PATH) and os.path.getsize(STORY_PATH) > 0:
+        return
+    directory = os.path.dirname(STORY_PATH)
+    fd, temporary_path = tempfile.mkstemp(dir=directory, suffix=".download")
+    os.close(fd)
+    try:
+        urllib.request.urlretrieve(STORY_URL, temporary_path)
+        if os.path.getsize(temporary_path) == 0:
+            raise RuntimeError("downloaded story file is empty")
+        os.replace(temporary_path, STORY_PATH)
+    finally:
+        if os.path.exists(temporary_path):
+            os.remove(temporary_path)
 
 
 def walkthrough_commands():
@@ -39,6 +59,7 @@ def walkthrough_commands():
 
 
 def main():
+    ensure_story_file()
     client = GymClient(port=7777)
     client.connect()
     try:

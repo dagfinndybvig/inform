@@ -96,6 +96,26 @@ print(resp["output"])
 print("score:", resp["score"])
 ```
 
+### run_curses_walkthrough.py — Walkthrough smoke test
+
+For a first end-to-end test of the gym, use the Curses walkthrough runner.
+It downloads the ignored `autoplay/curses.z5` story file from the canonical
+IF Archive link when it is missing, then plays the published walkthrough
+through the gym and records a full transcript in
+`autoplay/curses_gym_transcript.txt`.
+
+On a clean checkout, run the runner once to fetch the story file, then start
+the gym and run it again:
+
+```bash
+python autoplay/run_curses_walkthrough.py  # downloads curses.z5; connection may fail
+python autoplay/gym_ctl.py start --story autoplay/curses.z5 --port 7777 --max-turns 2200 --seed 1
+python autoplay/run_curses_walkthrough.py
+```
+
+The first command only needs to be repeated if `autoplay/curses.z5` is
+deleted. Stop the server after testing with `python autoplay/gym_ctl.py stop`.
+
 ## Why model worlds as Z-machine games?
 
 The Z-machine is a general-purpose world simulator. The "adventure"
