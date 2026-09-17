@@ -35,14 +35,16 @@ def find_gym_pids():
     """Return a list of PIDs for running autoplay_server.py processes.
 
     Uses PowerShell on Windows (wmic is not available on newer Windows
-    builds), falls back to pgrep on Unix.
+    builds), falls back to pgrep on Unix.  On Windows the name filter
+    matches any python* executable (python.exe, python3.13.exe, etc.)
+    because Windows Store Python runs under a versioned name.
     """
     pids = []
     if sys.platform == "win32":
         try:
             ps_cmd = (
                 "Get-CimInstance Win32_Process "
-                "-Filter \"Name='python.exe'\" "
+                "-Filter \"Name LIKE 'python%'\" "
                 "| Where-Object { $_.CommandLine -like '*autoplay_server*' } "
                 "| Select-Object -ExpandProperty ProcessId"
             )
