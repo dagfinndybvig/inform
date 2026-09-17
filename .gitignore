@@ -10,4 +10,5 @@ autoplay/.gym_server.pid
 autoplay/.gym_server.log
 autoplay/.gym_save*.dat
 autoplay/curses_session_log.md
+autoplay/curses_map.md
 autoplay/replay_*.py
