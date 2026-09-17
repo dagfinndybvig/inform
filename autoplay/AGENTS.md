@@ -91,6 +91,24 @@ For turn-by-turn play from a script or agent, use one-shot mode:
 python autoplay/gym_client.py --port 7777 --command "look"
 ```
 
+### Live play: watch for stale connections
+
+When playing turn-by-turn, connection hygiene matters because game
+state is per-server, not per-connection:
+
+- **Before starting**, confirm nothing is already holding the port:
+  `gym_ctl.py status`, plus a port check (`netstat -ano | grep :7777`
+  on Windows, `ss -ltn` on Unix). A stale server from a previous
+  session will silently serve an old game.
+- **Never reconnect after `done: true`.** Any connection made after
+  the game ended starts a fresh game, so a stray reconnect silently
+  resets your progress. Quit explicitly (`quit`), then `gym_ctl.py
+  stop`.
+- **`TIME_WAIT` sockets after stopping are normal.** Each one-shot
+  turn is a connect/disconnect cycle, so a burst of `TIME_WAIT`
+  entries on the port is expected residue, not a stuck connection —
+  they clear on their own within a minute or two.
+
 ### Connect a client to the gym
 
 ```bash
