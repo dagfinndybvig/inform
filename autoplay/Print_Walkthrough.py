@@ -20,6 +20,8 @@ def clean_line(line):
     if not line.strip():
         return ""
     stripped = line.strip()
+    if stripped.startswith(">"):
+        return ""
     if " -- " in stripped:
         return ""
     if "Score:" in stripped or "Turns:" in stripped:
