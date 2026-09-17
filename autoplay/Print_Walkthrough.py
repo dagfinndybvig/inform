@@ -2,6 +2,7 @@
 """Pretty-print a Curses gym transcript."""
 
 import argparse
+import html
 import os
 import re
 import sys
@@ -28,23 +29,21 @@ def clean_line(line):
 
 def prettyprint(source):
     lines = source.splitlines()
-    output = []
+    turns = []
     turn = None
     response = []
     started = False
+    game_ended = False
 
     def write_turn():
         if turn is None:
             return
-        output.append("=" * 72)
-        output.append("Turn %s: %s" % turn)
-        output.append("-" * 72)
         cleaned = [clean_line(line) for line in response]
         while cleaned and not cleaned[0]:
             cleaned.pop(0)
         while cleaned and not cleaned[-1]:
             cleaned.pop()
-        output.extend(cleaned)
+        turns.append((turn, cleaned))
 
     for line in lines:
         match = TURN_HEADER.match(line)
@@ -57,19 +56,54 @@ def prettyprint(source):
             write_turn()
             turn = None
             response = []
-            output.extend(("=" * 72, "GAME ENDED"))
-        elif turn is None and started:
-            output.append(line.rstrip())
-        else:
+            game_ended = True
+        elif turn is not None:
             response.append(line)
 
     write_turn()
-    return "\n".join(output).rstrip() + "\n"
+    articles = []
+    for (number, command), response_lines in turns:
+        response_text = "\n".join(response_lines)
+        articles.append(
+            "<article class=\"turn\">\n"
+            "  <h2>Turn %s <code>&gt; %s</code></h2>\n"
+            "  <pre>%s</pre>\n"
+            "</article>" % (
+                html.escape(number),
+                html.escape(command),
+                html.escape(response_text),
+            )
+        )
+    ended = "<p class=\"ended\">GAME ENDED</p>" if game_ended else ""
+    return """<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Curses Walkthrough Transcript</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; }
+    body { margin: 0 auto; max-width: 64rem; padding: 2rem 1rem; color: #202124; background: #f7f7f5; }
+    h1 { margin-top: 0; font-size: 1.8rem; }
+    .turn { margin: 1rem 0; padding: 1rem; background: white; border: 1px solid #d8d8d2; border-radius: 6px; }
+    h2 { margin: 0 0 .75rem; font-size: 1rem; color: #43566b; }
+    code { font-weight: normal; color: #222; }
+    pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: .92rem/1.45 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .ended { padding: 1rem; font-weight: 700; color: #176b3a; border: 1px solid #8ac6a4; background: #eaf7ee; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Curses Walkthrough Transcript</h1>
+%s
+  %s
+</body>
+</html>
+""" % ("\n".join(articles), ended)
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Pretty-print the Curses gym transcript")
+        description="Render the Curses gym transcript as HTML")
     parser.add_argument("transcript", nargs="?", default=DEFAULT_TRANSCRIPT,
                         help="transcript to format (default: %(default)s)")
     parser.add_argument("-o", "--output", metavar="FILE",
