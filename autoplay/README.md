@@ -1,4 +1,6 @@
-<img width="1024" height="768" alt="Curses3" src="https://github.com/user-attachments/assets/921e66eb-ffbe-430b-b3a4-d0734b124723" />
+<br>
+<img width="896" height="1182" alt="worldmodel" src="https://github.com/user-attachments/assets/c37bd3b1-09cb-4c7c-a12d-ebd94bfaf1e5" />
+<br>
 
 # autoplay/ — Play and Serve Z-machine Games
 
@@ -117,10 +119,6 @@ python autoplay/run_curses_walkthrough.py
 
 The first command only needs to be repeated if `autoplay/curses.z5` is
 deleted. Stop the server after testing with `python autoplay/gym_ctl.py stop`.
-
-<br>
-<img width="896" height="1182" alt="worldmodel" src="https://github.com/user-attachments/assets/c37bd3b1-09cb-4c7c-a12d-ebd94bfaf1e5" />
-<br>
 
 ## Why model worlds as Z-machine games?
 
