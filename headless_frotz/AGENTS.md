@@ -61,6 +61,33 @@ All four tools live under the `tools.process` namespace:
    at the end of a session: no `dfrotz.exe` entry should remain
    `running`.
 
+## Save and restore
+
+Proven end-to-end with HHGG (`-s 42`): save at a safe point, die later,
+restore, and continue from the exact saved state (score, inventory,
+position, and move counter all come back).
+
+- **Save before risky or irreversible points** — standoffs, point-of-no-
+  return moves, anything the game gates on a timer. One `save` costs one
+  turn; dying without one costs the whole run.
+- **`save` is a line-input prompt.** The game asks
+  `Please enter a filename [STORYFILE.qzl]:` — send a bare
+  `control: ["enter"]` to accept the default. The `.qzl` file is written
+  in this directory (the cwd of the dfrotz process).
+- **On death, RESTORE, don't RESTART.** At the
+  `(Type RESTART, RESTORE, or QUIT): >` menu, send `RESTORE` + enter,
+  then a bare enter for the default filename. With the same `-s` seed a
+  restore is a checkpoint, not a reroll — you land exactly where you
+  saved.
+- **A restore does not change the future.** The seed makes the timeline
+  deterministic: the same events fire at the same move counts (HHGG:
+  Vogon ships at move 50, Earth destroyed at 53). If the saved position
+  is already doomed, restoring just replays the doom — change the
+  strategy *before* the gate, then save at the new safe point.
+- **Never commit `.qzl` files.** `.gitignore` covers `*.z3`/`*.z5` but
+  not `*.qzl` — add `headless_frotz/*.qzl` before committing anything
+  from this directory.
+
 ## Gotchas
 
 - **A bare `\n` inside the command text is NOT an Enter.** Under the
@@ -89,6 +116,10 @@ All four tools live under the `tools.process` namespace:
   never lifted within the timer. A different seed changes it. When a
   game seems impossibly stuck, suspect the seed before suspecting the
   setup.
+- **The move counter can jump.** In HHGG, once the bulldozer halts each
+  `wait` advances the move counter by 3 while other commands advance 1.
+  Timed events therefore arrive sooner (in commands) than the move
+  numbers suggest — plan countdowns in commands, not moves.
 
 ## Files
 
