@@ -211,11 +211,16 @@ QC pass, so the process order must be learned from environmental text
 (the process sheet, machine stencils, refusal messages), not from
 adventure-game conventions.
 
-This is the contamination-controlled half of the experiment: a novel
-domain with no Infocom-style training data, where winning can only
-come from reading the world. The Lovecraft game serves as the positive
-control — same engine, contaminated domain — and the delta between the
-two runs is the finding. The micro-world caveat still stands: the
+This is the contamination-controlled half of the experiment. Neither
+world is in training data — the Lovecraft game was written for this
+project — but contamination operates at the level of genre
+conventions, not specific worlds: the Lovecraft game is idiomatic
+adventure-game Inform (take key, unlock box, give coin to the NPC), so
+fifty years of adventure-game text transfers. The plant's conventions
+are industrial-process conventions instead, which are thin in training
+data. The Lovecraft game serves as the positive control — same engine,
+familiar conventions — and the delta between the two runs is the
+finding. The micro-world caveat still stands: the
 plant is closed, deterministic, and engineered to be solvable. But the
 protocol is now runnable end to end: serve the `.z5` through the gym,
 record the transcript blind, and score whether the agent discovered
