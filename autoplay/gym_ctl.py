@@ -124,12 +124,16 @@ def cmd_start(args):
             print("Killed stale gym server PID %d." % pid)
         time.sleep(1)
 
-    # Build the server command
+    # Build the server command.  Resolve a relative story path against
+    # the caller's working directory: the server itself is spawned with
+    # cwd=here (the repo root), so an unresolved relative path would
+    # silently point at the wrong place for any other caller.
     here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    default_story = os.path.join(here, "adventure_lovecraft.z5")
+    story = os.path.abspath(args.story) if args.story else \
+        os.path.join(here, "adventure_lovecraft.z5")
 
     cmd = [sys.executable, SERVER_SCRIPT,
-           "--story", args.story or default_story,
+           "--story", story,
            "--port", str(args.port)]
     if args.max_turns is not None:
         cmd += ["--max-turns", str(args.max_turns)]

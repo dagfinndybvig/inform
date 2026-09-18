@@ -4,6 +4,7 @@ test_lovecraft.z5
 curses.z5
 autoplay/curses.z5
 autoplay/industrial_plant.z5
+autoplay/Closed_Environment/plant.z5
 autoplay/curses_transcript.txt
 autoplay/pretty.txt
 autoplay/*turns.txt
