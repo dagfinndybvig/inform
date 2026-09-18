@@ -135,8 +135,6 @@ Thus our methodology comes down to adding a layer of strict logic to the LLM, he
 
 At the same time it is an approach to Explainable AI. Even if we can not interpret the associative mechanisms of the LLM directly, it's actions in the world-model will leave an auditable trail.
 
-It is completely universal in application.
-
 This means you can model anything:
 
 - **An industrial plant** — rooms are zones, objects are valves and
