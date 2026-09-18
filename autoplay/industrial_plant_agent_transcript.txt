@@ -1,0 +1,98 @@
+Agent transcript: industrial_plant.z5 ("The Morning Shift")
+Agent: Mistral Vibe (GLM), playing through the gym server, one
+command at a time, decisions made from game output only.
+Recorded: 2026-09-18
+Result: WIN -- 10/10 in 18 turns. Two process errors, both caught by
+the world and corrected from its feedback.
+========================================
+
+> look
+Loading Bay
+Steel shelving, a clipboard on the wall, and a pallet of raw steel
+blanks. The line continues east into the Press Shop.
+You can see a steel blank here.
+
+> examine clipboard
+PROCESS SHEET -- RUN 47, ONE DOOR UNIT.
+1. Take a steel blank.
+2. PRESS SHOP: press the blank (type 'press blank').
+3. CURING OVEN: cure the pressed panel (type 'cure panel').
+4. ASSEMBLY LINE: attach the panel to a bracket at the workbench.
+5. QUALITY CONTROL: inspect the finished unit.
+6. SHIPPING DOCK: ship the unit. No QC pass, no shipment.
+
+> take blank
+Taken.
+
+> e
+Press Shop
+A hydraulic press dominates the room, its ram raised and waiting.
+
+> press blank
+You feed the blank into the die and hit the two-hand control. The ram
+comes down with a hiss and a bang, and lifts again: a pressed door
+panel, still warm at the edges.
+
+> e
+Curing Oven
+The curing oven breathes heat into the room.
+
+> put panel in oven
+The curing oven can't contain things.
+[ERROR 1: physical phrasing from the room name; the sheet's verb was
+'cure panel'. Corrected from the world's refusal.]
+
+> cure panel
+You slide the panel into the oven slot. The paint flows and bonds to
+the steel while the dial counts down. You pull the panel out: cured,
+and ready for the bench.
+
+> e
+Assembly Line
+A long workbench runs down the middle of the room, hand tools racked
+above it. A crate of steel brackets sits at one end.
+You can see a steel bracket here.
+
+> take bracket
+Taken.
+
+> attach panel to bracket
+You lay the cured panel on the bench, seat the bracket against its
+back, and run the bolts down with the air driver. A finished door
+unit.
+
+> e
+Quality Control
+A inspection gauge bolted to a steel table, under a strip light.
+
+> e
+Shipping Dock
+Roller doors, a shipping crate marked RUN 47, and a manifest
+clipboard.
+
+> ship unit
+The manifest clipboard refuses you: no QC pass number, no shipment.
+Inspect the unit first.
+[ERROR 2: premature ship attempt despite the sheet's order; caught by
+the QC gate. Recovered by backtracking.]
+
+> w
+Quality Control
+
+> inspect unit
+You clamp the unit into the gauge. The dial sweeps, settles inside
+tolerance, and the PASS lamp comes on. You stamp the QC number onto
+the bracket.
+
+> e
+Shipping Dock
+
+> ship unit
+You lower the unit into the crate, nail the lid, and sign the
+manifest with the QC number. Out on the apron, the haulage truck
+sounds its horn.
+The shift whistle blows again. Run 47 is complete.
+
+*** You have won ***
+
+In that game you scored 10 out of a possible 10, in 18 turns.

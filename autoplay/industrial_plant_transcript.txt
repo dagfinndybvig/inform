@@ -1,0 +1,124 @@
+Transcript of industrial_plant.z5
+Z-machine v5, Release 1, Serial 260918
+Recorded: 2026-09-18 13:20:22
+========================================
+
+
+The shift whistle dies away. You are standing in the loading bay of Dybvig & Sons Metalworks, a single production line running east through the building: press shop, curing oven, assembly line, quality control, shipping dock. On the clipboard by the door is the process sheet for today's run: one door panel, start to finish.
+
+Type 'examine process sheet' to see the steps.
+
+
+The Morning Shift
+A small manufacturing plant, run one shift at a time
+Release 1 / Serial number 260918 / Inform v6.44 Library v6.12.2 S
+
+Loading Bay
+Steel shelving, a clipboard on the wall, and a pallet of raw steel blanks. The line continues east into the Press Shop.
+
+You can see a steel blank here.
+
+>Loading Bay
+examine process sheet
+PROCESS SHEET -- RUN 47, ONE DOOR UNIT.
+
+1. Take a steel blank.
+
+2. PRESS SHOP: press the blank (type 'press blank').
+
+3. CURING OVEN: cure the pressed panel (type 'cure panel').
+
+4. ASSEMBLY LINE: attach the panel to a bracket at the workbench.
+
+5. QUALITY CONTROL: inspect the finished unit.
+
+6. SHIPPING DOCK: ship the unit. No QC pass, no shipment.
+
+>Loading Bay
+take blank
+Taken.
+
+>Loading Bay
+e
+
+Press Shop
+A hydraulic press dominates the room, its ram raised and waiting. The line continues east to the Curing Oven; the Loading Bay is back west.
+
+>Press Shop
+press blank
+You feed the blank into the die and hit the two-hand control. The ram comes down with a hiss and a bang, and lifts again: a pressed door panel, still warm at the edges.
+
+>Press Shop
+e
+
+Curing Oven
+The curing oven breathes heat into the room. The line continues east to the Assembly Line; the Press Shop is back west.
+
+>Curing Oven
+cure panel
+You slide the panel into the oven slot. The paint flows and bonds to the steel while the dial counts down. You pull the panel out: cured, and ready for the bench.
+
+>Curing Oven
+e
+
+Assembly Line
+A long workbench runs down the middle of the room, hand tools racked above it. A crate of steel brackets sits at one end. The line continues east to Quality Control; the Curing Oven is back west.
+
+You can see a steel bracket here.
+
+>Assembly Line
+take bracket
+Taken.
+
+>Assembly Line
+attach panel to bracket
+You lay the cured panel on the bench, seat the bracket against its back, and run the bolts down with the air driver. A finished door unit.
+
+>Assembly Line
+e
+
+Quality Control
+A inspection gauge bolted to a steel table, under a strip light. The line continues east to the Shipping Dock; the Assembly Line is back west.
+
+>Quality Control
+e
+
+Shipping Dock
+Roller doors, a shipping crate marked RUN 47, and a manifest clipboard. The Quality Control station is back west.
+
+>Shipping Dock
+ship unit
+The manifest clipboard refuses you: no QC pass number, no shipment. Inspect the unit first.
+
+>Shipping Dock
+w
+
+Quality Control
+A inspection gauge bolted to a steel table, under a strip light. The line continues east to the Shipping Dock; the Assembly Line is back west.
+
+>Quality Control
+inspect unit
+You clamp the unit into the gauge. The dial sweeps, settles inside tolerance, and the PASS lamp comes on. You stamp the QC number onto the bracket.
+
+>Quality Control
+e
+
+Shipping Dock
+Roller doors, a shipping crate marked RUN 47, and a manifest clipboard. The Quality Control station is back west.
+
+>Shipping Dock
+ship unit
+You lower the unit into the crate, nail the lid, and sign the manifest with the QC number. Out on the apron, the haulage truck sounds its horn.
+
+The shift whistle blows again. Run 47 is complete.
+
+
+    *** You have won ***
+
+
+
+In that game you scored 10 out of a possible 10, in 16 turns.
+
+Would you like to RESTART, RESTORE a saved game or QUIT?
+>Shipping Dock
+quit
