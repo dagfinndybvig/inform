@@ -157,3 +157,17 @@ The infrastructure already exists. Writing a new `.inf` file is the only
 creative work needed to create a new world. 
 
 And even that can be done by an agent, as the top-level project of this repo shows.
+
+## How this compares to Go and reinforcement learning
+
+The gym borrows RL's vocabulary (agent, environment, step, reward) but
+inverts the economics. In Go, the environment is nearly free and the
+agent is expensive to train; here the environment is cheap but each
+step costs an LLM inference, so the millions of episodes from-scratch
+RL needs are out of reach, and credit assignment across a long text
+episode is much weaker than a board position's win probability. The
+nearer relatives are text-game RL benchmarks like Jericho, TextWorld,
+and ALFWorld. This setup is an evaluation and data-collection harness,
+not a training loop: the realistic RL-adjacent use is recording
+winning transcripts for offline fine-tuning, not online RL against
+the simulator.
