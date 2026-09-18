@@ -226,3 +226,16 @@ protocol is now runnable end to end: serve the `.z5` through the gym,
 record the transcript blind, and score whether the agent discovered
 the process, where its adventure-game priors misled it, and whether
 the action trail shows genuine process learning.
+
+The first empirical material now exists. `Report_Industrial_Plant.md`
+documents the world and reproduces a first agent run through the gym:
+10/10 in 18 turns, with two process errors — a verb chosen from the
+room's surface form, and a premature ship attempt that the QC gate
+refused — both caught and corrected by the world's feedback alone.
+The deterministic reference playthrough
+(`industrial_plant_transcript.txt`, 10/10 in 16 turns) and the
+annotated agent transcript (`industrial_plant_agent_transcript.txt`)
+are in this folder. One disclosure bounds the run: the agent and the
+world's author are the same system, so it demonstrates the protocol,
+not the finding. The finding awaits a blind agent — same procedure,
+then compare against this run and the Lovecraft positive control.
