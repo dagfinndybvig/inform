@@ -172,7 +172,7 @@ in LLM training data, so winning may measure familiarity with
 adventure-game conventions rather than world-modeling. Both argue for
 treating the gym as one instrument among several, not as a verdict.
 
-The infrastructure already exists. Writing a new `.inf` file is the only
+The good news? All the infrastructure already exists. Writing a new `.inf` file is the only
 creative work needed to create a new world. 
 
 And even that can be done by an agent, as the top-level project of this repo shows.
