@@ -16,6 +16,7 @@ autoplay/curses_map.md
 autoplay/curses_chunk_*.txt
 autoplay/replay_*.py
 headless_frotz/WinFrotzConsole/
+headless_frotz/build/
 headless_frotz/*.txt
 headless_frotz/*.err
 headless_frotz/*.z3
