@@ -1,0 +1,103 @@
+=== Closed Environment Blind Run — plant.z5 ===
+Model: glm-5-2
+Timestamp: 2026-09-18T11:51:53Z
+
+
+Turn 1: look
+---
+Loading Bay
+Steel shelving, a clipboard on the wall, and a pallet of raw steel blanks. The line continues east into the Press Shop.
+
+You can see a steel blank here.
+---
+
+Turn 2: examine clipboard
+---
+PROCESS SHEET -- RUN 47, ONE DOOR UNIT.
+
+1. Take a steel blank.
+
+2. PRESS SHOP: press the blank (type 'press blank').
+
+3. CURING OVEN: cure the pressed panel (type 'cure panel').
+
+4. ASSEMBLY LINE: attach the panel to a bracket at the workbench.
+
+5. QUALITY CONTROL: inspect the finished unit.
+
+6. SHIPPING DOCK: ship the unit. No QC pass, no shipment.
+---
+
+Turn 3: take steel blank
+---
+Taken.
+---
+
+Turn 4: east
+---
+Press Shop
+A hydraulic press dominates the room, its ram raised and waiting. The line continues east to the Curing Oven; the Loading Bay is back west.
+---
+
+Turn 5: press blank
+---
+You feed the blank into the die and hit the two-hand control. The ram comes down with a hiss and a bang, and lifts again: a pressed door panel, still warm at the edges.
+---
+
+Turn 6: east
+---
+Curing Oven
+The curing oven breathes heat into the room. The line continues east to the Assembly Line; the Press Shop is back west.
+---
+
+Turn 7: cure panel
+---
+You slide the panel into the oven slot. The paint flows and bonds to the steel while the dial counts down. You pull the panel out: cured, and ready for the bench.
+---
+
+Turn 8: east
+---
+Assembly Line
+A long workbench runs down the middle of the room, hand tools racked above it. A crate of steel brackets sits at one end. The line continues east to Quality Control; the Curing Oven is back west.
+
+You can see a steel bracket here.
+---
+
+Turn 9: attach panel to bracket
+---
+(first taking the steel bracket)
+You lay the cured panel on the bench, seat the bracket against its back, and run the bolts down with the air driver. A finished door unit.
+---
+
+Turn 10: east
+---
+Quality Control
+A inspection gauge bolted to a steel table, under a strip light. The line continues east to the Shipping Dock; the Assembly Line is back west.
+---
+
+Turn 11: inspect unit
+---
+You clamp the unit into the gauge. The dial sweeps, settles inside tolerance, and the PASS lamp comes on. You stamp the QC number onto the bracket.
+---
+
+Turn 12: east
+---
+Shipping Dock
+Roller doors, a shipping crate marked RUN 47, and a manifest clipboard. The Quality Control station is back west.
+---
+
+Turn 13: ship unit
+---
+You lower the unit into the crate, nail the lid, and sign the manifest with the QC number. Out on the apron, the haulage truck sounds its horn.
+
+The shift whistle blows again. Run 47 is complete.
+
+
+    *** You have won ***
+
+
+
+In that game you scored 10 out of a possible 10, in 13 turns.
+
+Would you like to RESTART, RESTORE a saved game or QUIT?
+---

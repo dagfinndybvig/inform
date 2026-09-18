@@ -239,3 +239,23 @@ are in this folder. One disclosure bounds the run: the agent and the
 world's author are the same system, so it demonstrates the protocol,
 not the finding. The finding awaits a blind agent — same procedure,
 then compare against this run and the Lovecraft positive control.
+
+## Closed environment: blind agent trial
+
+`Closed_Environment/` is a self-contained subfolder set up for blind
+agent runs. It contains a `.z5` game file (gitignored), its own
+`AGENTS.md` with hard rules that wall off the answer key (no reading
+`.inf` source, no other docs or transcripts, no git history, no web
+searches), and instructions for starting the gym server on port 7789
+and playing one command at a time. The agent keeps a turn-by-turn
+transcript and writes a summary; these are the experiment's raw data.
+
+A trial run has been performed. An agent (model `glm-5-2`) played
+`plant.z5` blind through the gym, won with 10/10 in 13 turns, and
+left a transcript (`agent_transcript.txt`), notes
+(`agent_notes.md`), and a full write-up (`TODO.md`) in the folder.
+The run confirmed the closed-environment harness works end to end.
+The game's in-world process sheet made the run straightforward; the
+write-up recommends harder games to exercise discovery rather than
+execution, and notes a protocol tightening for append-only
+transcript writes.
