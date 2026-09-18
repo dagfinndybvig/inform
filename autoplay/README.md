@@ -30,6 +30,8 @@ agent can explore freely: it doesn't need to know the game in advance.
 It reads the output, reasons about what it sees, and picks the next
 action — exactly how a human plays.
 
+Intuitively you might think of it as an "escape room" for LLMs.
+
 ## Tools in this folder
 
 ### autoplay.py — Interactive terminal player
