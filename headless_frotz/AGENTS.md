@@ -85,6 +85,12 @@ position, and move counter all come back).
   `Please enter a filename [STORYFILE.qzl]:` — send a bare
   `control: ["enter"]` to accept the default. The `.qzl` file is written
   in this directory (the cwd of the dfrotz process).
+- **Give saves descriptive names.** Type a name at the filename prompt
+  (e.g. `vogon-hold-checkpoint`) instead of accepting the default — the
+  game appends `.qzl` automatically (verified: `vogon-hold-checkpoint`
+  → `vogon-hold-checkpoint.qzl`). Descriptive names make it obvious
+  which checkpoint is which when several exist, and avoid clobbering
+  the default save. Restore with the same explicit filename.
 - **On death, RESTORE, don't RESTART.** At the
   `(Type RESTART, RESTORE, or QUIT): >` menu, send `RESTORE` + enter,
   then a bare enter for the default filename. With the same `-s` seed a
@@ -111,6 +117,17 @@ position, and move counter all come back).
   it in the session report (e.g. PROGRESS.md).
 
 ## Gotchas
+
+- **Examine things — don't miss hidden affordances.** When a new object
+  or device appears (e.g. HHGG's dropped Sub-Etha device), `examine` it
+  before acting on guesswork. The examination text often names the
+  action that matters (the device's `press green button` was missed for
+  three runs because the device was taken but never examined). Make
+  `examine` part of the first turn after picking anything up.
+- **When in doubt, look.** A plain `look` is cheap (one turn) and
+  re-syncs the parser's view of the room: who is present, what has
+  appeared or moved, which exits exist. After any plot event, NPC
+  movement, or unexpected response, `look` before guessing at commands.
 
 - **A bare `\n` inside the command text is NOT an Enter.** Under the
   conpty the game never sees it; the command just sits at the prompt
