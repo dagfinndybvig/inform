@@ -45,7 +45,14 @@ All four tools live under the `tools.process` namespace:
    has exited (normal after QUIT). Check it before writing — writing to
    a completed process raises `process_not_running`.
 
-6. **Stop cleanly — and always do it before ending the session.** At a
+6. **Keep the user updated continuously — this is mandatory, not
+   optional.** Never batch a long playthrough silently. Report between
+   tool calls: what milestone was just reached, what the score/moves
+   are, what the next move is and why. A turn-by-turn account is the
+   whole point of live play; a silent run is a failed run even if the
+   game is won.
+
+7. **Stop cleanly — and always do it before ending the session.** At a
    game-over or menu prompt, send the menu word (`QUIT`, etc.) + enter
    and let the process exit on its own. To kill a runaway session
    (e.g. stuck waiting for input), use `tools.process.stop` — but note
@@ -67,9 +74,13 @@ Proven end-to-end with HHGG (`-s 42`): save at a safe point, die later,
 restore, and continue from the exact saved state (score, inventory,
 position, and move counter all come back).
 
-- **Save before risky or irreversible points** — standoffs, point-of-no-
-  return moves, anything the game gates on a timer. One `save` costs one
-  turn; dying without one costs the whole run.
+- **Save early, save often — this is mandatory, not optional.** Save at
+  *every* safe checkpoint: after the opening inventory, after each major
+  plot milestone (e.g. the Prosser swap), and always before risky or
+  irreversible points — standoffs, point-of-no-return moves, anything
+  the game gates on a timer. One `save` costs one turn; dying without
+  one costs the whole run. A run that reaches a milestone without a
+  save has not banked it.
 - **`save` is a line-input prompt.** The game asks
   `Please enter a filename [STORYFILE.qzl]:` — send a bare
   `control: ["enter"]` to accept the default. The `.qzl` file is written
@@ -87,6 +98,17 @@ position, and move counter all come back).
 - **Never commit `.qzl` files.** `.gitignore` covers `*.z3`/`*.z5` but
   not `*.qzl` — add `headless_frotz/*.qzl` before committing anything
   from this directory.
+
+## Walkthroughs and cheats
+
+- **Do not use walkthroughs, Invisiclues, web solutions, or any other
+  cheats unless absolutely required — and ask the user first.** Solve
+  puzzles by playing: observe the room descriptions, experiment, and
+  reason from what the game tells you. External help is a last resort
+  for a hard blocker, never a default. If a puzzle stalls after genuine
+  attempts, stop and ask the user whether to consult a walkthrough
+  before fetching one. When the user approves, cite what was taken from
+  it in the session report (e.g. PROGRESS.md).
 
 ## Gotchas
 
