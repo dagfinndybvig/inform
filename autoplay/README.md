@@ -129,11 +129,21 @@ framing is just one skin. An `.inf` source file can define any set of
 interconnected rooms with objects, containers, doors, NPCs, timers, and
 state machines. The game compiles to `.z5`, and the gym serves it.
 
-When the LLM is embedded in a world-model like this, it's associative mechanisms are disciplined by the logic of the tools and the environment.
+When an LLM is embedded in a world-model like this, its associative
+mechanisms are disciplined by the environment's feedback loop: bad
+inferences are punished by the game state, good ones are rewarded. The
+strict logic lives in the game engine, outside the model — this is
+scaffolding around the LLM, not a fix inside it. The model's reasoning
+remains associative; the world makes the consequences of each
+inference concrete and immediate, which is what helps it deal with
+causal chains.
 
-Thus our methodology comes down to adding a layer of strict logic to the LLM, helping it to deal with causal chains.
-
-At the same time it is an approach to Explainable AI. Even if we can not interpret the associative mechanisms of the LLM directly, it's actions in the world-model will leave an auditable trail, and speaks for themselves.
+At the same time it is an approach to Explainable AI — with a limit.
+An action trail shows what the agent did, never why: LLMs can
+rationalize a move after the fact, so the stated reason may not be the
+causal one. What the trail gives is behavioral auditability, closer to
+an ethogram than to an explanation. That is weaker than reading the
+model directly, but it is evidence you can check, replay, and score.
 
 This means you can model a wide range of real-world environments and observe how the LLM behaves:
 
@@ -153,12 +163,30 @@ like a person arriving somewhere new. You score the agent on whether it
 completed the objective: did it finish the safety checklist, evacuate
 everyone, find and fix the problem?
 
+Two caveats bound what such experiments can show. First, the
+micro-world problem (Dreyfus's critique of GOFAI): these worlds are
+closed, deterministic, and engineered to be solvable, so competence
+inside them may not transfer to open-world situations. Second,
+training-data contamination: Infocom-style games are well represented
+in LLM training data, so winning may measure familiarity with
+adventure-game conventions rather than world-modeling. Both argue for
+treating the gym as one instrument among several, not as a verdict.
+
 The infrastructure already exists. Writing a new `.inf` file is the only
 creative work needed to create a new world. 
 
 And even that can be done by an agent, as the top-level project of this repo shows.
 
 ## How this compares to Go and reinforcement learning
+
+Intellectually the setup descends from GOFAI's micro-worlds —
+SHRDLU's blocks world and Newell and Simon's physical symbol system
+hypothesis — and from the modern neuro-symbolic and agent-benchmark
+lines (TextWorld, ALFWorld, ReAct). A compiled `.z5` file is a fully
+specified possible world: every object, rule, and causal chain
+explicit. Judging an agent inside one by its actions rather than its
+self-reports tests practical reasoning under feedback, which static
+benchmarks cannot.
 
 The gym borrows RL's vocabulary (agent, environment, step, reward) but
 inverts the economics. In Go, the environment is nearly free and the
