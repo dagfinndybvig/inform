@@ -129,7 +129,7 @@ state machines. The game compiles to `.z5`, and the gym serves it.
 
 When the LLM is embedded in a world-model, it's associative mechanisms are disciplined by the logic of the tools and the environment.
 
-Thus our methodology comes down to adding a layer of strict logic to the LLM. Perhaps even causality.
+Thus our methodology comes down to adding a layer of strict logic to the LLM, helping it to deal with causal chains.
 
 It is completely universal in application.
 
