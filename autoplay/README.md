@@ -135,7 +135,7 @@ Thus our methodology comes down to adding a layer of strict logic to the LLM, he
 
 At the same time it is an approach to Explainable AI. Even if we can not interpret the associative mechanisms of the LLM directly, it's actions in the world-model will leave an auditable trail, and speaks for themselves.
 
-This means you can model a wide range of real-world environments:
+This means you can model a wide range of real-world environments and observe how th LLM behaves:
 
 - **An industrial plant** — rooms are zones, objects are valves and
   gauges, the player is an operator doing a safety walkthrough. Score
