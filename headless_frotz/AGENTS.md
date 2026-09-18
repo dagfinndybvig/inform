@@ -45,11 +45,21 @@ All four tools live under the `tools.process` namespace:
    has exited (normal after QUIT). Check it before writing — writing to
    a completed process raises `process_not_running`.
 
-6. **Stop cleanly**: at a game-over or menu prompt, send the menu word
-   (`QUIT`, etc.) + enter and let the process exit on its own. To kill
-   a runaway session (e.g. stuck waiting for input), use
-   `tools.process.stop` — but note it raises `process_not_running` if
-   the game already exited, so guard with the status field first.
+6. **Stop cleanly — and always do it before ending the session.** At a
+   game-over or menu prompt, send the menu word (`QUIT`, etc.) + enter
+   and let the process exit on its own. To kill a runaway session
+   (e.g. stuck waiting for input), use `tools.process.stop` — but note
+   it raises `process_not_running` if the game already exited, so guard
+   with the status field first.
+
+   **Why this matters:** dfrotz with no `MORE` prompts sits waiting for
+   input forever — an abandoned process never exits on its own. Every
+   session that forgets to stop leaves an orphaned `dfrotz.exe`
+   accumulating in the process list (they show up in later
+   `tools.process.list` calls as stale entries), and a live one can
+   hold the story or save file open. Verify with `tools.process.list`
+   at the end of a session: no `dfrotz.exe` entry should remain
+   `running`.
 
 ## Gotchas
 
