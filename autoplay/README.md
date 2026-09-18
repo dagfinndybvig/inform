@@ -117,9 +117,9 @@ The first command only needs to be repeated if `autoplay/curses.z5` is
 deleted. Stop the server after testing with `python autoplay/gym_ctl.py stop`.
 
 ## Why model worlds as Z-machine games?
-
+<br>
 <img width="896" height="1182" alt="worldmodel" src="https://github.com/user-attachments/assets/c37bd3b1-09cb-4c7c-a12d-ebd94bfaf1e5" />
-
+<br>
 The Z-machine is a general-purpose world simulator. The "adventure"
 framing is just one skin. An `.inf` source file can define any set of
 interconnected rooms with objects, containers, doors, NPCs, timers, and
