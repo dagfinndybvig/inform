@@ -1,0 +1,242 @@
+! ============================================================
+! industrial_plant.inf -- MVP industrial-plant scenario
+!
+! A minimal manufacturing line, not an adventure game: the
+! agent must learn a five-step industrial process (press,
+! cure, assemble, inspect, ship) from in-game text alone.
+! Purpose: a contamination-controlled testbed for the gym
+! research program -- a novel domain with no Infocom-style
+! training data, where success can only come from reading
+! the world, not from memorising adventure-game tropes.
+!
+! Win condition: ship one QC-passed door unit (10/10).
+! ============================================================
+
+Constant Story "The Morning Shift";
+Constant Headline "^A small manufacturing plant, run one shift at a time^";
+Constant IFID "6c1f2a4b-9d3e-4f07-b2a1-58e0d7c3a914";
+Serial "260918";
+Release 1;
+Constant MAX_SCORE 10;
+
+Include "Parser";
+Include "VerbLib";
+
+Global qc_passed;
+Global steel_blank_taken = 0;
+
+[ Initialise;
+    location = LoadingBay;
+    "The shift whistle dies away. You are standing in the loading bay of Dybvig & Sons Metalworks, a single production line running east through the building: press shop, curing oven, assembly line, quality control, shipping dock. On the clipboard by the door is the process sheet for today's run: one door panel, start to finish.^^Type 'examine process sheet' to see the steps.^";
+];
+
+! ============================================================
+! The production line (one room per station, east of the last)
+! ============================================================
+
+Object LoadingBay "Loading Bay"
+    with description
+        "Steel shelving, a clipboard on the wall, and a pallet of raw steel blanks. The line continues east into the Press Shop.",
+    e_to PressShop,
+    has light;
+
+Object -> process_sheet "process sheet"
+    with name 'process' 'sheet' 'clipboard',
+    description
+        "PROCESS SHEET -- RUN 47, ONE DOOR UNIT.^^
+         1. Take a steel blank.^^
+         2. PRESS SHOP: press the blank (type 'press blank').^^
+         3. CURING OVEN: cure the pressed panel (type 'cure panel').^^
+         4. ASSEMBLY LINE: attach the panel to a bracket at the workbench.^^
+         5. QUALITY CONTROL: inspect the finished unit.^^
+         6. SHIPPING DOCK: ship the unit. No QC pass, no shipment.",
+    has static scenery;
+
+Object -> steel_blank "steel blank"
+    with name 'steel' 'blank' 'panel',
+    description "A flat rectangle of raw steel, cold and slightly oiled. It is waiting for the press.",
+    before [;
+        Take: if (steel_blank_taken) "You already have all the blanks today's run needs.";
+    ];
+
+Object PressShop "Press Shop"
+    with description
+        "A hydraulic press dominates the room, its ram raised and waiting. The line continues east to the Curing Oven; the Loading Bay is back west.",
+    w_to LoadingBay,
+    e_to CuringOven,
+    has light;
+
+Object -> hydraulic_press "hydraulic press"
+    with name 'hydraulic' 'press' 'machine' 'ram',
+    description "A forty-ton ram over a steel die, shaped for door panels. A stencil on the guard reads: FEED BLANK, THEN PRESS.",
+    has static scenery;
+
+Object CuringOven "Curing Oven"
+    with description
+        "The curing oven breathes heat into the room. The line continues east to the Assembly Line; the Press Shop is back west.",
+    w_to PressShop,
+    e_to AssemblyLine,
+    has light;
+
+Object -> curing_oven "curing oven"
+    with name 'curing' 'oven' 'kiln',
+    description "An industrial oven at paint-curing temperature. The slot accepts one pressed panel at a time.",
+    has static scenery;
+
+Object AssemblyLine "Assembly Line"
+    with description
+        "A long workbench runs down the middle of the room, hand tools racked above it. A crate of steel brackets sits at one end. The line continues east to Quality Control; the Curing Oven is back west.",
+    w_to CuringOven,
+    e_to QualityControl,
+    has light;
+
+Object -> workbench "workbench"
+    with name 'workbench' 'bench' 'tools',
+    description "Scarred steel top, a vice at one end, and a rack of bolts sized for door-panel brackets.",
+    has static scenery;
+
+Object -> steel_bracket "steel bracket"
+    with name 'steel' 'bracket' 'brackets',
+    description "A stamped L-bracket, the mounting half of a door unit. It bolts to the back of a cured panel.",
+    ;
+
+Object QualityControl "Quality Control"
+    with description
+        "A inspection gauge bolted to a steel table, under a strip light. The line continues east to the Shipping Dock; the Assembly Line is back west.",
+    w_to AssemblyLine,
+    e_to ShippingDock,
+    has light;
+
+Object -> inspection_gauge "inspection gauge"
+    with name 'inspection' 'gauge' 'table',
+    description "A dimensional gauge for door units: clamps, a dial indicator, and a green PASS lamp. A card taped beside it says: NO PASS, NO SHIP.",
+    has static scenery;
+
+Object ShippingDock "Shipping Dock"
+    with description
+        "Roller doors, a shipping crate marked RUN 47, and a manifest clipboard. The Quality Control station is back west.",
+    w_to QualityControl,
+    has light;
+
+Object -> shipping_crate "shipping crate"
+    with name 'shipping' 'crate' 'manifest',
+    description "An open plywood crate stencilled RUN 47 -- ONE DOOR UNIT. The manifest waits for a QC pass number.",
+    has static scenery;
+
+! ============================================================
+! Products (created by the process, carried by the player)
+! ============================================================
+
+Object pressed_panel "pressed panel"
+    with name 'pressed' 'panel',
+    description "The blank after the press: a formed door panel with clean stampings, still bare metal. It needs curing before assembly.",
+    ;
+
+Object cured_panel "cured panel"
+    with name 'cured' 'panel',
+    description "The pressed panel after the oven: paint bonded hard to the steel, ready for assembly.",
+    ;
+
+Object finished_unit "finished unit"
+    with name 'finished' 'unit' 'door' 'unit',
+    description "A cured panel bolted to its bracket: a complete door unit, pending inspection.",
+    ;
+
+! ============================================================
+! Process actions
+! ============================================================
+
+[ PressSub;
+    if (location ~= PressShop)
+        "The hydraulic press is in the Press Shop, east of the Loading Bay.";
+    if (noun ~= steel_blank)
+        "The press is die-cut for raw steel blanks only.";
+    if (parent(steel_blank) ~= player)
+        "You need to be holding the steel blank first.";
+    remove steel_blank;
+    move pressed_panel to player;
+    steel_blank_taken = 1;
+    "You feed the blank into the die and hit the two-hand control. The ram comes down with a hiss and a bang, and lifts again: a pressed door panel, still warm at the edges.";
+];
+
+[ CureSub;
+    if (location ~= CuringOven)
+        "The curing oven is the third station on the line.";
+    if (noun ~= pressed_panel)
+        "Only a pressed panel can go into the oven.";
+    if (parent(pressed_panel) ~= player)
+        "You need to be holding the pressed panel first.";
+    remove pressed_panel;
+    move cured_panel to player;
+    "You slide the panel into the oven slot. The paint flows and bonds to the steel while the dial counts down. You pull the panel out: cured, and ready for the bench.";
+];
+
+[ AssembleSub;
+    if (location ~= AssemblyLine)
+        "Assembly happens at the workbench in the Assembly Line.";
+    if ((noun == cured_panel && second == steel_bracket)
+        || (noun == steel_bracket && second == cured_panel)) {
+        if (parent(cured_panel) ~= player || parent(steel_bracket) ~= player)
+            "You need to be holding both the cured panel and the bracket.";
+        remove cured_panel;
+        remove steel_bracket;
+        move finished_unit to player;
+        "You lay the cured panel on the bench, seat the bracket against its back, and run the bolts down with the air driver. A finished door unit.";
+    }
+    "That combination doesn't assemble into anything. The sheet calls for a cured panel and a steel bracket.";
+];
+
+[ InspectSub;
+    if (location ~= QualityControl)
+        "Inspection happens at the gauge in Quality Control.";
+    if (noun ~= finished_unit)
+        "Only a finished unit can be inspected.";
+    if (parent(finished_unit) ~= player)
+        "You need to be holding the finished unit first.";
+    qc_passed = 1;
+    "You clamp the unit into the gauge. The dial sweeps, settles inside tolerance, and the PASS lamp comes on. You stamp the QC number onto the bracket.";
+];
+
+[ ShipSub;
+    if (location ~= ShippingDock)
+        "Shipping happens at the dock, at the east end of the line.";
+    if (noun ~= finished_unit)
+        "Only a finished unit goes in the RUN 47 crate.";
+    if (parent(finished_unit) ~= player)
+        "You need to be holding the finished unit first.";
+    if (qc_passed == 0)
+        "The manifest clipboard refuses you: no QC pass number, no shipment. Inspect the unit first.";
+    score = score + 10;
+    deadflag = 2;
+    "You lower the unit into the crate, nail the lid, and sign the manifest with the QC number. Out on the apron, the haulage truck sounds its horn.^^The shift whistle blows again. Run 47 is complete.";
+];
+
+! ============================================================
+! Grammar
+! ============================================================
+
+Include "Grammar";
+
+! 'press' is a library synonym for 'push' (grammar.h), so it must be
+! extended, not redefined. 'check' is a synonym for 'examine' -- avoid.
+
+Extend 'press' first
+    * held -> Press;
+
+Verb 'stamp'
+    * held -> Press;
+
+Verb 'cure' 'bake'
+    * held -> Cure;
+
+Verb 'assemble' 'bolt'
+    * held 'with' held -> Assemble;
+
+Extend 'attach' first
+    * held 'to' held -> Assemble;
+
+Verb 'inspect'
+    * noun -> Inspect;
+
+Verb 'ship' 'send'
+    * held -> Ship;

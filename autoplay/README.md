@@ -199,3 +199,25 @@ and ALFWorld. This setup is an evaluation and data-collection harness,
 not a training loop: the realistic RL-adjacent use is recording
 winning transcripts for offline fine-tuning, not online RL against
 the simulator.
+
+## A first step: the industrial plant MVP
+
+Both caveats above have a concrete response in this folder:
+`industrial_plant.inf` ("The Morning Shift"), a minimal manufacturing
+line rather than an adventure game. The agent runs one door unit
+through a five-step process — press, cure, assemble, inspect, ship —
+across six stations, and the shipping dock refuses any unit without a
+QC pass, so the process order must be learned from environmental text
+(the process sheet, machine stencils, refusal messages), not from
+adventure-game conventions.
+
+This is the contamination-controlled half of the experiment: a novel
+domain with no Infocom-style training data, where winning can only
+come from reading the world. The Lovecraft game serves as the positive
+control — same engine, contaminated domain — and the delta between the
+two runs is the finding. The micro-world caveat still stands: the
+plant is closed, deterministic, and engineered to be solvable. But the
+protocol is now runnable end to end: serve the `.z5` through the gym,
+record the transcript blind, and score whether the agent discovered
+the process, where its adventure-game priors misled it, and whether
+the action trail shows genuine process learning.
