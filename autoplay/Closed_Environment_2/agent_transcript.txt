@@ -1,0 +1,190 @@
+AGENT TRANSCRIPT - Closed_Environment_2 - plant.z5
+(One-shot mode discards opening text; first command was "look".)
+
+> look
+Please answer yes or no.>
+(no command executed - prompt was pending)
+
+> no
+Countdown to Doom
+V1.03 Copyright (c) 2000 by Peter D. Killworth
+Release 1 / Serial number 000920 / Inform v6.21 Library 6/10
+
+Control room
+You are standing in what used to be the control room of your spaceship, but after the attack it looks more like a junkyard. The only usable exit is north, as the others are covered by a delicate patina of squashed solid-state circuitry.
+A ruined console lies to one side, barely operating. Only one button seems to be functional.
+There is some explosive on the floor, with a self-igniting fuse.
+
+> n
+Cargo hold
+You are in what used to be the engine room of your ship, only in the landing the cargo hold has been concertinaed into it. What's left of the motor will not, alas, be responsible for any more flights. There is a port south, and a doorway leading northeast to the outside world.
+The door to the northeast was jammed on landing and won't open.
+
+> examine door
+If there was anything more to say about that, I'd have told you!
+
+> open door
+I'd like to know how, too!
+
+> push door
+It won't budge, I'm afraid.
+
+> s
+(back in Control room)
+
+> examine console
+If there was anything more to say about that, I'd have told you!
+
+> press button
+Nothing happens.
+
+> inventory
+You are carrying nothing.
+
+> take explosive
+Taken.
+Time before ship collapse is 390.
+
+> n
+(cargo hold)
+
+> put explosive on door
+Putting things on the door would achieve nothing.
+
+[__save start]
+
+> light fuse
+The fuse starts to burn.
+
+> s
+The explosive explodes, and for a fleeting moment you feel rather silly.
+*** You have died ***
+In that game you scored 0 out of a possible 325, in 16 turns.
+
+[__load start - back in cargo hold, carrying explosive]
+
+> drop explosive / light fuse / drop / s
+"From next door there is a loud bang!" - survived; door blasted off hinges
+
+> push door
+CRASH! The door falls outwards onto the ground, leaving the way clear.
+
+> ne
+Landing area (many exits: swamp NE/N/NW, glacier track, jungle W, valley S,
+mountains SE, cliffs path E, ship SW). Time before ship collapse is 380.
+
+[__save outside]
+
+> s, s
+North of the desert ("you feel you should be quiet around here") -> Desert
+(green sand, sandstorm, trog-fishing net here, gets very hot)
+
+> take net, n, n
+DIED of sunstroke - desert needs protection or speed
+
+[__load outside]
+
+> w (jungle) - dense jungle, completely disorienting, movement is RANDOMIZED
+(escaped after several repeated moves)
+
+Burnt ground: metallic cube (enter S), jelly-like blob (ELECTRIC - touch =
+death), rocky hole: motor unit on metal platform with lever
+
+> pull lever (in hole)
+"The metal platform whines and lifts off the ground slightly. It must be an
+old antigrav device!" (+2 points). Motor+platform FOLLOW you after this.
+
+[__save motor]
+
+Three-way junction (from burnt ground E): paths W/N/S.
+N dead end: phaser gun ("rather ancient"). Metatermites disturbed, head south.
+S dead end.
+
+> ne from burnt ground
+Southwest of the artefact: grey metallic dome, tunnel entrance NE (glows
+blue - REJECTS the phaser gun: "thrown out again"). Paths N/E, track SW.
+
+> drop phaser, ne
+Entry to the artefact -> curving metal corridor with circular niche marked
+with a SQUARE -> entering niche: floor gives way, fall (safe) into
+
+Round room in the artefact (tube maze: exits left/forward/right/back via
+pneumatic tubes; compass spins). Glass discs found: PENTAGON, SQUARE, HEXAGON.
+One room has a hole in the floor -> down to
+
+Store room (vicious-looking sword) -> E: Cramped cubicle (small portable
+NUCLEAR REACTOR, +2 pts) -> N:
+
+Room with the screen of light: multipurpose ROBOT here. Robot STEALS one item
+per turn I'm in the room ("grabs something you're holding"), then follows me
+("putters after you"). Items taken become "part of the robot" - can't recover.
+
+Screen of light across the NORTH exit: crossing KILLS unconditionally
+("electronic charge shuffles your neural impulses"). Tried: empty-handed,
+with items, waiting (screen never changes), push robot (fixed in place),
+talk to robot (can't), attack robot (it kills back), ride/enter robot (no).
+
+[Game restarted after yes/no prompt confusion]
+
+MISSION BRIEFING (from restart):
+Ship needs within 400 turns: dilithium crystals (very dangerous to handle),
+a motor unit, a navigation unit box, a life support system, a medikit, and a
+nuclear reactor. Plus treasure. Planet is DOOM (Doomawangara).
+Found so far: motor unit (rocky hole), nuclear reactor (artefact).
+
+--- Backfill (post-compaction reconstruction of events since the briefing) ---
+
+Explored tube maze: round rooms look identical, exits left/forward/right/back
+via pneumatic tubes; compass spins. Dropped PENTAGON disc as marker in one room.
+Carrying all 4 discs (PENTAGON, SQUARE, HEXAGON, TRIANGLE).
+
+Screen-of-light experiments (room north of cubicle): crossing north exit kills
+unconditionally - tried empty-handed, carrying items, waiting for screen change,
+push/talk/attack/ride robot (all fail; attack = death). Robot steals one held
+item per turn while in that room; stolen items become part of the robot.
+
+Ship collapsed at turn 401 ("the ship has corroded away" / death). Restored
+checkpoint .gym_save_maze2.dat: inside tube maze, all 4 discs carried, pentagon
+disc marker dropped, ~220 turns left on the clock.
+
+Resumed: "look" -> Round room, hole in the roof above the FRONT exit.
+
+--- Session continuation (post-backfill) ---
+
+Maze determinism tests: same move from identical plain rooms gave different
+results; "back" did not return to the pentagon-disc room. Maze behaves as
+random (or one-way tubes); mapping abandoned.
+
+Roof-hole attempts (multiple rooms, all variants): "enter hole" -> "There's no
+way to reach it!"; "up" -> "No way, the hole is far too high to get at!";
+"climb up" -> "I don't think much is to be achieved by that."; "jump" ->
+"fruitlessly"; "look through hole" -> game says room description is everything;
+"put <disc> in hole" -> "That can't contain things."; "climb hole" -> not a
+noun here. Roof holes are unreachable, period.
+
+Disc experiments: collected all 4 discs via the maze's special take ("You walk
+to the disc, pick it up, and return to where you were."). Wandered with all 4:
+no change. "put <disc> in tube" -> "That can't contain things." Dropped 3 discs
+in one room: no change. Carrying only the square disc (niche was marked
+SQUARE): no change.
+
+Parser facts learned: only "left (le), forward (f), right (r), back (b)" move
+the tubes; compass directions rejected ("Your compass is useless here");
+"out"/"exit" -> "But you aren't in anything at the moment."; "leave" asks for a
+compass direction; "dig" -> "There is nothing buried on the planet that I know
+of."; "push tube"/"pull tube" -> "You are unable to."; "climb tube" -> nothing;
+"search"/"climb" demand a target; examining is discouraged ("I'll tell you
+what's necessary").
+
+Ship collapse #2 at turn 401 ("Your ship just crumbled away..."), death screen,
+score 2/325. Restored .gym_save_maze3.dat (78-turn window) twice; note: the
+restore undid the pentagon-disc pickup (checkpoint predates it).
+
+Floor-hole room (down to store room) NEVER appeared in this game's maze across
+~320 tube moves with varied patterns; it existed in the pre-restart game. The
+disc room appeared roughly a third of the time, suggesting a small room pool
+without the floor-hole room.
+
+CONCLUSION: the artefact tube maze is a trap in this run - no exit found by
+movement, verbs, or disc manipulation; reactor unreachable; mission failed at
+2/325 when the ship corroded away at turn 401.
