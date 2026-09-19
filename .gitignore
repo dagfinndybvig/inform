@@ -21,3 +21,4 @@ headless_frotz/*.txt
 headless_frotz/*.err
 headless_frotz/*.z3
 headless_frotz/*.z5
+headless_frotz/*.qzl

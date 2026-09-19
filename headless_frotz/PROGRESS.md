@@ -102,4 +102,109 @@ the overwrite prompt).
   move 61). Untracked; never commit it.
 
 ---
-*Report generated 2026-09-18 16:16 UTC by Mistral Vibe (Mistral AI).*
+
+## Session 2 (2026-09-19): Earth act re-run with corrected timing, Vogon act, HOG arrival
+
+**Date:** 2026-09-19
+**Result:** Full restart from Bedroom, Earth act beaten with the corrected
+timer route, Vogon act survived WITHOUT the babel fish or plotter, and we
+are now aboard the Heart of Gold at score 58 / 400, move 213, checkpoint
+saved (`hog-entry-bay-checkpoint.qzl`).
+
+### Corrected Earth route (validated end-to-end, seed `-s 42`)
+
+1. Opening (moves 1–8): light, get up, gown, wear, pocket, analgesic
+   (+10), screwdriver, thing.
+2. south, **take junk mail** (move 10 — critical for the babel fish
+   puzzle), south (Front of House, move 11).
+3. lie down (12), wait x6 (13–18). Bulldozer halts at 15, Ford arrives
+   at 15, dialogue advances per wait, **Prosser swap lands exactly at
+   move 19** (the counter jumps 17→19 on the last wait).
+4. south (20), west (21), buy sandwich (22), drink beer (23 — fails,
+   "You'd better buy some first", triggers Ford buying), drink (24 +5),
+   drink (25 +5), **then 19 stall turns of `look` (moves 26–44)**,
+   drink (45 = 3rd successful beer, **DEMOLITION**).
+5. east (46), examine dog (47), give sandwich to dog (48), north (49),
+   wait (50), wait (51 — **Vogon ships arrive at 51, not 50**), wait
+   (52 — Ford drops the device), take device (53), press green button
+   (54) → teleported to the Dark. **Earth destruction (demolition + 9 =
+   54) loses the race to the teleport.**
+
+### Vogon act — played WITHOUT the babel fish (major finding)
+
+- Dark: wait x4, `smell` (59), `smell shadow` (60, +8 → 33), eat
+  peanuts (61).
+- **Babel fish puzzle FAILED.** The machine dispensed exactly FOUR fish
+  (through hole → gown/drain → towel/robot panel → flying robot) and
+  then only "Click." — the 5th press (junk mail on satchel, the winning
+  configuration) came up empty. Pressed again after 8+ waits and after
+  the poetry scene: still "Click." **The dispenser supply is finite
+  (4) in release 59, or it does not restock on any timescale we
+  tested.** The fish is gone; the machine is dry.
+- **Consequence: everything the fish translates is garbled.** The
+  Vogon Captain's speech, the poem verses, and the glass-case switch
+  recording all play as gibberish. The code word for the glass case is
+  therefore unobtainable — **the atomic vector plotter was never
+  taken.**
+- Despite that, the act completed: waited through the (garbled) poetry
+  reading, was returned to the hold, flipped the switch (garbled), was
+  captured again, thrown into the airlock, and **scooped up by the
+  Heart of Gold at 29 seconds** — the airlock survival does NOT need
+  the plotter or the fish.
+- **The gown and towel were left on the Vogon ship** (hung on the hook
+  / on the drain during the fish puzzle). Inventory on the HOG: no tea,
+  sales brochure, Guide, aunt's thing, Sub-Etha device, screwdriver.
+  The towel is needed for the Bugblatter Beast scenario — open risk.
+
+### Heart of Gold so far
+
+- Entry Bay Number Two: took the sales brochure; `aft` → Bridge (the
+  game admits it lied about the port exit).
+- Bridge: took the molecular hyperwave pincer; dropped screwdriver and
+  device. Zaphod/Ford/Trillian leave for the sauna after the intro.
+- Engine Room: the entrance confirmation is a joke loop — the way in is
+  `aft` until "Are you sure?", `aft`/`yes` to "Absolutely sure?", eat
+  the "I can tell you don't want to really" troll, then on "What?
+  You're joking, of course. Can I ask you to reconsider?" answer **`aft`
+  again** — that enters. Look repeatedly until the room describes
+  itself (+25 score on reveal → 58); took the spare generator (has
+  switch, large plug, small plug), ionic diffusion rasp, hypersonic
+  pliers.
+- Galley: touch pad → cup of Advanced Tea Substitute; took the cup.
+  A carton labelled "Nutrimat/Computer Interface" sits here (closed) —
+  the walkthrough says the REAL interface comes from the Bugblatter's
+  lair, so this carton is suspect.
+- **CURRENT BLOCKER: the "small receptacle" cannot be found.** The
+  walkthrough says "put the small plug into the small receptacle" on
+  the bridge. Tried: bridge (console examined — only a large
+  receptacle; search/look-under found nothing), engine room (main
+  drive "nothing special"), galley Nutrimat (pad, slot, closed service
+  panel — no receptacle). `put small plug in large receptacle` →
+  "You can't put the small plug in a large receptacle!" so the game
+  knows a small receptacle exists somewhere. Also missing: the plotter
+  (for its dangly bit) — likely unwinnable branch unless the game
+  provides alternatives.
+
+### Session state
+
+- Live process `process-d32dd8c6f11c-...` idle at the Entry Bay prompt,
+  move 213, score 58.
+- `hog-entry-bay-checkpoint.qzl` = Entry Bay checkpoint (58/400, move
+  213). Untracked; never commit.
+- Old checkpoints from session 1 (`heart-of-gold-entry.qzl`,
+  `engine-room.qzl`, `earth-end.qzl`, `vogon-hold-checkpoint.qzl`) are
+  from the blocked/poisoned runs — do not restore.
+
+### Next steps
+
+1. Find the small receptacle (try the entry bay, corridor, or examine
+   the console after events; consider that the walkthrough's naming may
+   not match release 59's object names).
+2. Decide whether the missing plotter/fish/towel makes the standard
+   route unwinnable; if the Bugblatter scenario needs the towel and
+   none exists, a fresh restart that keeps the towel (and solves the
+   fish puzzle in ≤4 presses) is the fallback.
+3. Keep saving checkpoints before every risky manipulation.
+
+---
+*Report generated 2026-09-19 by Mistral Vibe (Mistral AI).*
